@@ -56,6 +56,12 @@ type Strings = {
   readonly mapFilterAll: string
   readonly mapFilterUnmapped: string
   readonly mapFilterMapped: string
+  readonly mapBlankCopy: string
+  readonly mapBlankCopyWhy: string
+  readonly mapBlankCopyDone: string
+  readonly mapResidue: string
+  readonly mapResidueWhy: string
+  readonly mapResidueNone: string
 
   readonly fillProfile: string
   readonly fillRequest: string
@@ -154,6 +160,14 @@ const id: Strings = {
   mapFilterAll: 'Semua',
   mapFilterUnmapped: 'Belum dipetakan',
   mapFilterMapped: 'Sudah dipetakan',
+  mapBlankCopy: 'Unduh salinan kosong',
+  mapBlankCopyWhy:
+    'Menghasilkan salinan dokumen ini dengan setiap nilai yang dipetakan diganti nama kolomnya, lalu mengarahkan pemetaan ke salinan itu. Susunan dokumen tidak berubah sedikit pun — jangan mengosongkannya lewat Word, karena penyimpanan ulang oleh Word menyusun ulang struktur teks.',
+  mapBlankCopyDone: 'Salinan kosong diunduh, pemetaan diarahkan ke salinan itu.',
+  mapResidue: 'Masih tersisa di dokumen',
+  mapResidueWhy:
+    'Hanya kolom yang dipetakan yang dikosongkan. Berikut nilai profil Anda yang masih muncul di simpul yang belum dipetakan. Pemeriksaan ini hanya mengenali nilai yang sudah Anda isi di profil — data pribadi lain yang tidak ada di profil tidak akan terlihat di sini.',
+  mapResidueNone: 'Tidak ada nilai profil Anda yang tersisa di simpul yang belum dipetakan.',
 
   fillProfile: 'Data profil',
   fillRequest: 'Data pengajuan',
@@ -276,6 +290,14 @@ const en: Strings = {
   mapFilterAll: 'All',
   mapFilterUnmapped: 'Unmapped',
   mapFilterMapped: 'Mapped',
+  mapBlankCopy: 'Download a blank copy',
+  mapBlankCopyWhy:
+    'Produces a copy of this document with every mapped value replaced by its field name, and re-points the mapping at that copy. Not a byte of structure changes — do not blank it in Word instead, because a Word re-save restructures the text runs.',
+  mapBlankCopyDone: 'Blank copy downloaded, and the mapping now points at it.',
+  mapResidue: 'Still in the document',
+  mapResidueWhy:
+    'Only mapped fields are blanked. These are values from your profile that still appear in nodes nobody mapped. This check only knows the values you have entered in your profile — personal data that is not in your profile is invisible to it.',
+  mapResidueNone: 'None of your profile values remain in unmapped nodes.',
 
   fillProfile: 'Profile',
   fillRequest: 'This request',
