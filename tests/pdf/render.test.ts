@@ -207,6 +207,37 @@ describe('an empty document', () => {
 describe('room to sign', () => {
   const pdf = () => text(renderPdf(filledModel()))
 
+  it('centres all three signature blocks on the same axis', () => {
+    // The document writes them three different ways: section VIII centres its
+    // paragraphs, VII centres the jabatan and pushes the name across with
+    // nineteen spaces, VI uses twenty-four spaces and no alignment at all.
+    // All three are meant to look the same, so all three must land on one axis.
+    const rendered = text(renderPdf(filledModel()))
+    const size = Number(/\/F1 ([\d.]+) Tf/.exec(rendered)?.[1] ?? 9)
+
+    const centreOf = (label: string): number | null => {
+      const found = new RegExp(`([\\d.]+) [\\d.]+ Td \\(${label}\\) Tj`).exec(rendered)
+      if (found === null) return null
+      return Number(found[1]) + measure(label, size, 'regular') / 2
+    }
+
+    const jabatan = centreOf('Direktur Contoh')
+    const nama = centreOf('Budi Santoso')
+    expect(jabatan).not.toBeNull()
+    expect(nama).not.toBeNull()
+    // Within a point of each other, which is the rounding in the stream.
+    expect(Math.abs(jabatan! - nama!)).toBeLessThan(1)
+  })
+
+  it('leaves ordinary cells alone', () => {
+    // The rule reads a long run of leading spaces as centring. A cell with no
+    // such run keeps its left edge.
+    const rendered = text(renderPdf(filledModel()))
+    const alamat = /([\d.]+) [\d.]+ Td \(Rusun ASN 3 Tower 3\) Tj/.exec(rendered)
+    const nama = /([\d.]+) [\d.]+ Td \(Siti Rahmawati\) Tj/.exec(rendered)
+    expect(Number(alamat?.[1])).toBeLessThan(Number(nama?.[1]))
+  })
+
   it('gives the direktur the same space as the applicant', () => {
     // The document leaves two empty paragraphs above the applicant's name and
     // one above the direktur's. On paper that is the difference between room

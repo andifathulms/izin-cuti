@@ -316,15 +316,7 @@ function columnWidths(
 type CellLine = {
   readonly text: string
   readonly alignment: 'left' | 'center' | 'right' | 'both'
-  /**
-   * Leading spaces the document put there.
-   *
-   * Section VII positions the direktur's name with a run of spaces rather than
-   * by centring the paragraph, as section VIII does. Trimming them left the
-   * name hard against the cell edge in one block and centred in the other, for
-   * two blocks that are meant to look identical. Arial and Helvetica share
-   * their metrics, so the same count of spaces reproduces the same indent.
-   */
+  /** Small leading indents the document put there, kept as written. */
   readonly indent: number
 }
 
@@ -340,14 +332,32 @@ type CellLine = {
  * Blank lines at the top and bottom of a cell are trimmed, since those are
  * padding rather than room for anything.
  */
+/**
+ * A long run of leading spaces inside a table cell is centring, done by hand.
+ *
+ * The three signature blocks in this form are written three different ways:
+ * section VIII centres its paragraphs, VII centres the jabatan and pushes the
+ * name across with nineteen spaces, VI uses twenty-four spaces and no
+ * alignment at all. All three are meant to look the same.
+ *
+ * Reproducing the spaces only works at the exact font size and column width
+ * Word used, which is not the one here — so they came out at three different
+ * positions. Reading them as what they are gets all three centred, which is
+ * both what the document means and what a signature block should look like.
+ *
+ * Four spaces is the threshold. Nobody types four spaces to nudge something.
+ */
+const MANUAL_CENTRING_SPACES = 4
+
 function lineOf(raw: string, alignment: CellLine['alignment']): CellLine {
   const withoutTabs = raw.replace(/\t/g, ' ')
   const leading = /^ */.exec(withoutTabs)?.[0].length ?? 0
-  return {
-    text: withoutTabs.replace(/ {2,}/g, ' ').trim(),
-    alignment,
-    indent: leading,
+  const text = withoutTabs.replace(/ {2,}/g, ' ').trim()
+
+  if (alignment === 'left' && leading >= MANUAL_CENTRING_SPACES && text !== '') {
+    return { text, alignment: 'center', indent: 0 }
   }
+  return { text, alignment, indent: leading }
 }
 
 function cellLines(blocks: ReadonlyArray<PreviewBlock>): CellLine[] {
