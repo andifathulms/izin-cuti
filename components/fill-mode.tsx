@@ -15,6 +15,7 @@ import {
   TextField,
 } from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
+import { DIREKTORAT, direktoratOf, managedKeys } from '@/lib/presets/kedeputian'
 import { applyMapping } from '@/lib/mapping/apply'
 import { buildPreview, resolutionFromFill } from '@/lib/preview/model'
 import { validate } from '@/lib/validate/checks'
@@ -47,6 +48,8 @@ export function FillMode({ locale }: { locale: Locale }) {
     setRequestValue,
     setChoice,
     setBox,
+    chooseDirektorat,
+    openBundledForm,
   } = app
 
   const [previewOpen, setPreviewOpen] = useState(false)
@@ -57,6 +60,16 @@ export function FillMode({ locale }: { locale: Locale }) {
   useEffect(() => {
     if (mapping === null && mappings.length === 1) selectMapping(mappings[0]!.id)
   }, [mapping, mappings, selectMapping])
+
+  // This app fills one form. Opening it is not a step worth making somebody
+  // take, so it opens itself and the picker stays available for the day the
+  // office reissues the form.
+  useEffect(() => {
+    if (template.type === 'none') openBundledForm()
+  }, [template.type, openBundledForm])
+
+  const chosenDirektorat = useMemo(() => direktoratOf(profileValues), [profileValues])
+  const managed = useMemo(() => managedKeys(chosenDirektorat), [chosenDirektorat])
 
   const leaveType = useMemo(
     () => (mapping === null ? null : leaveTypeSelection(mapping, checkboxChoice)),
@@ -84,8 +97,18 @@ export function FillMode({ locale }: { locale: Locale }) {
       warnings,
       checkboxChoice,
       checkboxState,
+      managed,
     )
-  }, [mapping, profileValues, request, t.fieldLabels, warnings, checkboxChoice, checkboxState])
+  }, [
+    mapping,
+    profileValues,
+    request,
+    t.fieldLabels,
+    warnings,
+    checkboxChoice,
+    checkboxState,
+    managed,
+  ])
 
   const applied = useMemo(() => {
     if (document === null || mapping === null) return null
@@ -162,21 +185,25 @@ export function FillMode({ locale }: { locale: Locale }) {
       <TemplatePicker locale={locale} />
 
       <div className="no-print flex flex-wrap items-center gap-4 border-b border-rule px-6 py-3">
-        <label className="flex items-center gap-2">
-          <span className="text-sm font-medium">{t.fillChooseMapping}</span>
-          <select
-            value={activeMappingId ?? ''}
-            onChange={(event) => selectMapping(event.target.value || null)}
-            className="rounded border border-rule bg-white px-2 py-1 text-base"
-          >
-            <option value="">—</option>
-            {mappings.map((candidate) => (
-              <option key={candidate.id} value={candidate.id}>
-                {candidate.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        {/* One form means one mapping, and a select with one option in it is
+            noise. It reappears the moment there is a second. */}
+        {mappings.length > 1 && (
+          <label className="flex items-center gap-2">
+            <span className="text-sm font-medium">{t.fillChooseMapping}</span>
+            <select
+              value={activeMappingId ?? ''}
+              onChange={(event) => selectMapping(event.target.value || null)}
+              className="rounded border border-rule bg-white px-2 py-1 text-base"
+            >
+              <option value="">—</option>
+              {mappings.map((candidate) => (
+                <option key={candidate.id} value={candidate.id}>
+                  {candidate.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
         <StateLegend locale={locale} />
         <button
           type="button"
@@ -200,6 +227,68 @@ export function FillMode({ locale }: { locale: Locale }) {
         <div className="grid min-h-0 flex-1 lg:grid-cols-[3fr_2fr]">
           <div className="min-h-0 overflow-auto border-r border-rule">
             <form className="space-y-8 px-6 py-6" onSubmit={(event) => event.preventDefault()}>
+              <Section title={t.fillDirektorat} note={t.fillDirektoratHint}>
+                <label className="block">
+                  <span className="block text-sm font-medium">{t.fillDirektorat}</span>
+                  <select
+                    value={chosenDirektorat?.id ?? ''}
+                    onChange={(event) => chooseDirektorat(event.target.value)}
+                    className="mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base text-typed"
+                  >
+                    <option value="">{t.fillDirektoratNone}</option>
+                    {DIREKTORAT.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.nama}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                {chosenDirektorat !== null && (
+                  <div className="border-l-2 border-derived pl-3">
+                    <p className="text-sm font-medium">{chosenDirektorat.jabatanDirektur}</p>
+                    <p className="text-base text-derived">{chosenDirektorat.direkturNama}</p>
+                    {chosenDirektorat.direkturNip === null ? (
+                      <>
+                        {/* Not invented. A plausible wrong NIP on a signed
+                            letter is worse than an empty box — so it is asked
+                            for, once, right here where the gap is visible.
+                            The NIPs reach the document through derived fields,
+                            so there is no generated input to fall back on. */}
+                        <p className="mt-1 flex max-w-[60ch] items-baseline gap-2 text-sm">
+                          <span aria-hidden className="text-attention">
+                            ▲
+                          </span>
+                          {t.fillDirekturUnknownNip}
+                        </p>
+                        <label className="mt-2 block">
+                          <span className="block text-sm font-medium">
+                            {t.fieldLabels['atasanNip']}
+                          </span>
+                          <input
+                            type="text"
+                            inputMode="numeric"
+                            value={profileValues.atasanNip}
+                            onChange={(event) => {
+                              // One person signs both blocks, so one entry.
+                              setProfileValue('atasanNip', event.target.value)
+                              setProfileValue('pejabatNip', event.target.value)
+                            }}
+                            onFocus={() => setFocus('atasan-nip')}
+                            onBlur={() => setFocus(null)}
+                            className="mt-1 w-full rounded border border-rule bg-white px-2 py-1 font-mono text-base text-typed"
+                          />
+                        </label>
+                      </>
+                    ) : (
+                      <p className="font-mono text-base text-derived">
+                        NIP. {chosenDirektorat.direkturNip}
+                      </p>
+                    )}
+                  </div>
+                )}
+              </Section>
+
               <Section title={t.fillProfile}>
                 {model.profile.map((field) => (
                   <TextField

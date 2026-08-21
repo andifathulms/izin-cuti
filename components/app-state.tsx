@@ -31,6 +31,7 @@ import {
   FORMULIR_CUTI_DOCX_BASE64,
   FORMULIR_CUTI_MAPPING,
 } from '@/lib/presets/formulir-cuti.generated'
+import { applyDirektorat, direktorat, PROFILE_DEFAULTS } from '@/lib/presets/kedeputian'
 
 /**
  * One place holds the document, the mapping and the values, so map mode and
@@ -87,6 +88,7 @@ type Action =
   | { type: 'profiles-changed'; profiles: ReadonlyArray<Profile> }
   | { type: 'profile-selected'; id: string | null; values: ProfileValues }
   | { type: 'profile-value-changed'; key: keyof ProfileValues; value: string }
+  | { type: 'direktorat-chosen'; id: string }
   | { type: 'request-value-changed'; key: keyof RequestValues; value: string }
   | { type: 'choice-changed'; group: string; targetId: string | null }
   | { type: 'box-toggled'; targetId: string; checked: boolean }
@@ -98,7 +100,9 @@ const INITIAL: State = {
   activeMappingId: null,
   profiles: [],
   activeProfileId: null,
-  profileValues: EMPTY_PROFILE,
+  // Nusantara is where these letters are written, always. Seeded rather than
+  // asked for.
+  profileValues: { ...EMPTY_PROFILE, ...PROFILE_DEFAULTS },
   request: EMPTY_REQUEST,
   checkboxChoice: {},
   checkboxState: {},
@@ -160,6 +164,12 @@ function reduce(state: State, action: Action): State {
         ...state,
         profileValues: { ...state.profileValues, [action.key]: action.value },
       }
+    case 'direktorat-chosen': {
+      const chosen = direktorat(action.id)
+      return chosen === null
+        ? state
+        : { ...state, profileValues: applyDirektorat(state.profileValues, chosen) }
+    }
     case 'request-value-changed':
       return { ...state, request: { ...state.request, [action.key]: action.value } }
     case 'choice-changed':
@@ -194,6 +204,7 @@ export type AppState = State & {
   readonly removeProfile: (id: string) => void
   readonly selectProfile: (id: string | null) => void
   readonly setProfileValue: (key: keyof ProfileValues, value: string) => void
+  readonly chooseDirektorat: (id: string) => void
   readonly setRequestValue: (key: keyof RequestValues, value: string) => void
   readonly setChoice: (group: string, targetId: string | null) => void
   readonly setBox: (targetId: string, checked: boolean) => void
@@ -327,16 +338,24 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
         dispatch({ type: 'profiles-changed', profiles: deleteProfile(store, id) })
         if (state.activeProfileId === id) {
           saveActiveProfileId(store, null)
-          dispatch({ type: 'profile-selected', id: null, values: EMPTY_PROFILE })
+          dispatch({
+            type: 'profile-selected',
+            id: null,
+            values: { ...EMPTY_PROFILE, ...PROFILE_DEFAULTS },
+          })
         }
       },
       selectProfile: (id) => {
         saveActiveProfileId(store, id)
-        const values = state.profiles.find((profile) => profile.id === id)?.values ?? EMPTY_PROFILE
+        const values = state.profiles.find((profile) => profile.id === id)?.values ?? {
+          ...EMPTY_PROFILE,
+          ...PROFILE_DEFAULTS,
+        }
         dispatch({ type: 'profile-selected', id, values })
       },
       setProfileValue: (key, valueText) =>
         dispatch({ type: 'profile-value-changed', key, value: valueText }),
+      chooseDirektorat: (id) => dispatch({ type: 'direktorat-chosen', id }),
       setRequestValue: (key, valueText) =>
         dispatch({ type: 'request-value-changed', key, value: valueText }),
       setChoice: (group, targetId) => dispatch({ type: 'choice-changed', group, targetId }),

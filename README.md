@@ -77,6 +77,19 @@ No approval workflow, no submission, no routing. No digital signature. **No
 nomor surat generation** — a shared sequential number is shared state, so the
 number is an input.
 
+## What it fills
+
+One form: the *Formulir Permintaan dan Pemberian Cuti*, for one kedeputian.
+It opens already loaded — there is nothing to pick and nothing to map.
+
+Choose your **direktorat** and the unit kerja, the atasan's jabatan, and the
+direktur's name and NIP are filled. Fill your own profile once. After that a
+request is a reason, a leave balance, two dates and a leave type.
+
+Masa kerja is not asked for: an eighteen-digit NIP encodes the TMT in digits
+9–14, so it is computed from your NIP and the letter date. The place is always
+Nusantara, so it is never asked for either.
+
 ## The bundled form
 
 A blank *Formulir Permintaan dan Pemberian Cuti* ships with a preset mapping,

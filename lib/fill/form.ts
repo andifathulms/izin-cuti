@@ -73,6 +73,12 @@ export function buildForm(
   warnings: ReadonlyArray<Warning>,
   checkboxChoice: Readonly<Record<string, string | null>>,
   checkboxState: Readonly<Record<string, boolean>>,
+  /**
+   * Profile keys some other control already owns — the direktorat selector
+   * fills the direktur's name and NIP, so the form must not also ask for them.
+   * They are still written into the document; they are just not asked twice.
+   */
+  managed: ReadonlySet<string> = new Set(),
 ): FormModel {
   const profileKeys = new Map<string, string[]>()
   const requestKeys = new Map<string, string[]>()
@@ -119,9 +125,9 @@ export function buildForm(
   })
 
   return {
-    profile: [...profileKeys].map(([key, ids]) =>
-      field(key, inputs.profile[key as keyof ProfileValues] ?? '', ids),
-    ),
+    profile: [...profileKeys]
+      .filter(([key]) => !managed.has(key))
+      .map(([key, ids]) => field(key, inputs.profile[key as keyof ProfileValues] ?? '', ids)),
     request: [...requestKeys].map(([key, ids]) =>
       field(key, inputs.request[key as keyof RequestValues] ?? '', ids),
     ),

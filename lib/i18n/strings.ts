@@ -69,6 +69,10 @@ type Strings = {
   readonly mapResidueWhy: string
   readonly mapResidueNone: string
 
+  readonly fillDirektorat: string
+  readonly fillDirektoratHint: string
+  readonly fillDirektoratNone: string
+  readonly fillDirekturUnknownNip: string
   readonly fillProfile: string
   readonly fillRequest: string
   readonly fillDerived: string
@@ -185,6 +189,12 @@ const id: Strings = {
     'Hanya kolom yang dipetakan yang dikosongkan. Berikut nilai profil Anda yang masih muncul di simpul yang belum dipetakan. Pemeriksaan ini hanya mengenali nilai yang sudah Anda isi di profil — data pribadi lain yang tidak ada di profil tidak akan terlihat di sini.',
   mapResidueNone: 'Tidak ada nilai profil Anda yang tersisa di simpul yang belum dipetakan.',
 
+  fillDirektorat: 'Direktorat',
+  fillDirektoratHint:
+    'Memilih direktorat mengisi unit kerja, jabatan atasan langsung, serta nama dan NIP direktur. Tidak perlu diketik ulang.',
+  fillDirektoratNone: 'Pilih direktorat',
+  fillDirekturUnknownNip:
+    'NIP direktur ini belum tercatat di aplikasi. Isikan sekali di bawah; setelah disimpan ke profil, tidak perlu diketik lagi.',
   fillProfile: 'Data profil',
   fillRequest: 'Data pengajuan',
   fillDerived: 'Dihitung',
@@ -328,6 +338,12 @@ const en: Strings = {
     'Only mapped fields are blanked. These are values from your profile that still appear in nodes nobody mapped. This check only knows the values you have entered in your profile — personal data that is not in your profile is invisible to it.',
   mapResidueNone: 'None of your profile values remain in unmapped nodes.',
 
+  fillDirektorat: 'Direktorat',
+  fillDirektoratHint:
+    'Choosing a direktorat fills the unit kerja, the atasan’s jabatan, and the direktur’s name and NIP.',
+  fillDirektoratNone: 'Choose a direktorat',
+  fillDirekturUnknownNip:
+    'This direktur’s NIP is not recorded in the app. Enter it once below; once saved to your profile it is not asked again.',
   fillProfile: 'Profile',
   fillRequest: 'This request',
   fillDerived: 'Computed',

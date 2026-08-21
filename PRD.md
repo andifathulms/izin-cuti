@@ -121,7 +121,10 @@ Warnings inline against the offending field, never blocking. §6.
 Saved locally, switchable, exportable as a file, clearable. Useful when filling on behalf of someone else.
 
 ### 10.6 Library
-Multiple mappings — cuti, SPPD, nota dinas — each with its own fingerprint and form.
+Multiple mappings — cuti, SPPD, nota dinas — each with its own fingerprint and form. **Not the shape of v1:** this build fills one form, the cuti form, and presents itself that way. The engine is general and the map mode still exists as the recovery path for a reissued form, but nothing in the interface asks anybody to choose between documents.
+
+### 10.7 Direktorat
+Scoped to one kedeputian. Choosing a direktorat fills the unit kerja, the atasan's jabatan, and the direktur's name and NIP, so nobody retypes a colleague's NIP or gets it wrong. **A NIP that is not known is left empty and asked for once**, never guessed — a plausible wrong NIP on a signed letter is worse than an empty box. The place the letter is written is always Nusantara and is never asked for at all.
 
 ## 11. Architecture
 

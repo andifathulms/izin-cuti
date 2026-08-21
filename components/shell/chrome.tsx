@@ -14,9 +14,12 @@ export function Header({ locale }: { locale: Locale }) {
   const pathname = usePathname()
   const other: Locale = locale === 'id' ? 'en' : 'id'
 
+  // This app fills one form, so mapping is not a place people go — it is the
+  // recovery path for the day the office reissues the form. The route stays
+  // (the drift refusal and the profile page both link to it); it is just not
+  // presented as one of two modes.
   const tabs = [
     { href: `/${locale}/isi`, label: t.navFill },
-    { href: `/${locale}/petakan`, label: t.navMap },
     { href: `/${locale}/profil`, label: t.navProfile },
   ]
 

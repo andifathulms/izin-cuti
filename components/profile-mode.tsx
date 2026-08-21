@@ -6,6 +6,7 @@ import { PrivacyLine } from '@/components/shell/chrome'
 import { EMPTY_PROFILE, type ProfileValues } from '@/lib/derive/compute'
 import { clearAll, exportAll, importAll } from '@/lib/mapping/storage'
 import { forgetTemplate } from '@/lib/mapping/template-store'
+import Link from 'next/link'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
 /**
@@ -226,6 +227,14 @@ export function ProfileMode({ locale }: { locale: Locale }) {
           </button>
           {notice !== null && <span className="text-sm text-ink/70">{notice}</span>}
         </div>
+
+        {/* Not in the main navigation: needed only if the office reissues the
+            form and the mapping has to be redrawn. */}
+        <p className="mt-6 text-sm text-ink/60">
+          <Link href={`/${locale}/petakan`} className="underline">
+            {t.navMap}
+          </Link>
+        </p>
       </section>
     </div>
   )
