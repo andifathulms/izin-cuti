@@ -69,6 +69,24 @@ export function checkboxTargets(mapping: Mapping): ReadonlyArray<CheckboxTarget>
   return mapping.targets.filter((target): target is CheckboxTarget => target.type === 'checkbox')
 }
 
+/** Takes targets rather than a mapping, so a draft can ask the same question. */
+export function claimedNodes(targets: ReadonlyArray<Target>): ReadonlySet<number> {
+  const claimed = new Set<number>()
+  for (const target of targets) {
+    if (target.type !== 'text') continue
+    for (const index of target.nodeIndices) claimed.add(index)
+  }
+  return claimed
+}
+
+export function claimedCells(targets: ReadonlyArray<Target>): ReadonlySet<number> {
+  const claimed = new Set<number>()
+  for (const target of targets) {
+    if (target.type === 'checkbox') claimed.add(target.cellIndex)
+  }
+  return claimed
+}
+
 /** The single-select groups, in the order their first box appears. */
 export function checkboxGroups(mapping: Mapping): ReadonlyArray<{
   readonly group: string
@@ -82,17 +100,4 @@ export function checkboxGroups(mapping: Mapping): ReadonlyArray<{
     else groups.set(target.group, [target])
   }
   return [...groups].map(([group, options]) => ({ group, options }))
-}
-
-/** Which text nodes and cells a mapping already claims. */
-export function claimedNodes(mapping: Mapping): ReadonlySet<number> {
-  const claimed = new Set<number>()
-  for (const target of textTargets(mapping)) {
-    for (const index of target.nodeIndices) claimed.add(index)
-  }
-  return claimed
-}
-
-export function claimedCells(mapping: Mapping): ReadonlySet<number> {
-  return new Set(checkboxTargets(mapping).map((target) => target.cellIndex))
 }
