@@ -103,7 +103,24 @@
   }
 }
 
-/* The print path is the PDF path, and it is labelled approximate. */
+/*
+ * The print path is the PDF path, and it is labelled approximate.
+ *
+ * The form is one page in Word, and it should be one page here. That is not
+ * something CSS can guarantee — it has no page-breaking engine and no idea what
+ * Word's line breaks were — but the settings below are what the difference
+ * actually comes down to: A4 with the document's own margins, the ruled table
+ * tightened to the size it is printed at, and no page break allowed to fall
+ * inside a row.
+ *
+ * If it still runs to two pages, the browser's own scale control is the answer,
+ * and the DOCX remains the authoritative output either way.
+ */
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
 @media print {
   .no-print {
     display: none !important;
@@ -113,8 +130,19 @@
     display: block !important;
   }
 
+  html,
   body {
     background: #fff;
+    /* The document is set in Arial at 10pt. Matching it is most of what
+       makes the printed page come out the length it should. */
+    font-size: 10pt;
+    line-height: 1.25;
+  }
+
+  /* Only the preview prints. Everything else is the app around it. */
+  main > div > div:first-child,
+  form {
+    display: none !important;
   }
 
   .preview-page {
@@ -123,5 +151,36 @@
     margin: 0 !important;
     padding: 0 !important;
     max-width: none !important;
+    width: 100% !important;
+    font-size: 10pt !important;
+    line-height: 1.25 !important;
+  }
+
+  .preview-page p {
+    margin-top: 0.15em !important;
+    orphans: 2;
+    widows: 2;
+  }
+
+  .preview-page table {
+    margin: 0.35em 0 !important;
+    page-break-inside: auto;
+  }
+
+  /* A ruled row split across a page boundary is unreadable. */
+  .preview-page tr,
+  .preview-page td {
+    page-break-inside: avoid;
+  }
+
+  .preview-page td {
+    padding: 1pt 3pt !important;
+    border-color: #000 !important;
+  }
+
+  /* Ink on paper, not the screen's slate blue and muted green. A printed
+     form is read by somebody who never saw the three field states. */
+  .preview-page * {
+    color: #000 !important;
   }
 }
