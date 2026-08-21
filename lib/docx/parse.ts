@@ -37,6 +37,12 @@ export type TextNode = {
   /** Offsets of the content between `<w:t ...>` and `</w:t>`. */
   readonly contentStart: number
   readonly contentEnd: number
+  /** Offsets of the whole `<w:t>` element, which is what a fill rewrites. */
+  readonly elementStart: number
+  readonly elementEnd: number
+  /** The element's raw attribute text. Never re-ordered, never dropped. */
+  readonly attrs: string
+  readonly selfClosing: boolean
   /** Offsets of the whole enclosing `<w:r>`, for span merges. */
   readonly runStart: number
   readonly runEnd: number
@@ -76,8 +82,11 @@ export type CheckboxCell = {
 
 export type Run = {
   readonly text: string
-  /** Index into `textNodes`, for preview marking. */
-  readonly textNodeIndex: number
+  /**
+   * Index into `textNodes`, for preview marking. Null for the run inside a
+   * checkbox cell, which is a box state rather than a text target.
+   */
+  readonly textNodeIndex: number | null
 }
 
 export type Block =
@@ -129,6 +138,7 @@ export function parseDocument(xml: string): ParseResult {
     paragraphCount: 0,
     tableCount: 0,
     section: '',
+    insideCheckboxCell: false,
   }
 
   const blocks = readBlocks(body, state, '')
@@ -159,6 +169,13 @@ type State = {
   paragraphCount: number
   tableCount: number
   section: string
+  /**
+   * Set while reading inside a checkbox cell. The checkmark is a `w:t` like any
+   * other, and counting it would mean every text node after a ticked box
+   * shifted by one — a mapping made against a blank template would then point
+   * one node off in a filled one. A box's contents are its state, not a target.
+   */
+  insideCheckboxCell: boolean
 }
 
 function readBlocks(parent: XmlElement, state: State, rowLabel: string): Block[] {
@@ -186,6 +203,11 @@ function readParagraph(paragraph: XmlElement, state: State, rowLabel: string): B
       if (t.type !== 'element' || t.name !== 'w:t') continue
       const raw = t.selfClosing ? '' : state.xml.slice(t.innerStart, t.innerEnd)
       const text = unescapeXmlText(raw)
+      if (state.insideCheckboxCell) {
+        runs.push({ text, textNodeIndex: null })
+        pieces.push(text)
+        continue
+      }
       const index = state.textNodes.length
       state.textNodes.push({
         kind: 'text',
@@ -193,6 +215,10 @@ function readParagraph(paragraph: XmlElement, state: State, rowLabel: string): B
         text,
         contentStart: t.selfClosing ? t.end : t.innerStart,
         contentEnd: t.selfClosing ? t.end : t.innerEnd,
+        elementStart: t.start,
+        elementEnd: t.end,
+        attrs: t.attrs,
+        selfClosing: t.selfClosing,
         runStart: run.start,
         runEnd: run.end,
         preserveSpace: attr(t, 'xml:space') === 'preserve',
@@ -254,11 +280,13 @@ function readTable(table: XmlElement, state: State): Block {
     let columnIndex = 0
     for (const tc of tcs) {
       const checkbox = readCheckboxCell(tc, state, { tableIndex, rowIndex, columnIndex, rowLabel })
+      state.insideCheckboxCell = checkbox !== null
       cells.push({
         blocks: readBlocks(tc, state, rowLabel),
         checkboxIndex: checkbox,
         widthTwips: cellWidth(tc),
       })
+      state.insideCheckboxCell = false
       columnIndex++
     }
     rows.push({ cells })

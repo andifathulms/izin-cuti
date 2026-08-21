@@ -145,3 +145,20 @@ describe('refusal', () => {
     expect(result.type).toBe('invalid')
   })
 })
+
+describe('node identity does not depend on checkbox state', () => {
+  it('keeps text node indices stable when a box is ticked', () => {
+    const doc = parsed()
+    const cell = doc.checkboxCells[0]!
+    const ticked = parsed(
+      doc.xml.slice(0, cell.insertAt) +
+        '<w:r><w:t>√</w:t></w:r>' +
+        doc.xml.slice(cell.insertAt),
+    )
+    // A checkmark is a w:t like any other. Counting it would shift every node
+    // after it, and a mapping made on a blank template would then point one
+    // node off in a filled one.
+    expect(ticked.textNodes.length).toBe(doc.textNodes.length)
+    expect(ticked.textNodes.map((n) => n.text)).toEqual(doc.textNodes.map((n) => n.text))
+  })
+})
