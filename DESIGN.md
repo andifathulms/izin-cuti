@@ -1,0 +1,160 @@
+# DESIGN — Isi Surat
+
+Authoritative for every visual decision in this repository. `PRD.md` says what the product is; this says what it looks like and why. When code and this document disagree, this document is right.
+
+---
+
+## 1. The house layer
+
+These projects should read as siblings — recognisably from the same hand — without looking like one template recoloured. **What is shared is rhythm and rigour; what is per-app is identity.**
+
+**Shared across every project:**
+
+```
+space    4 8 12 16 24 32 48 64 96 128     4px base
+motion   fast 120ms · state 240ms · orchestrated 500–600ms · ease cubic-bezier(0.2,0,0,1)
+edge     hairline 0.5px · radius 2px only
+```
+
+- **One orchestrated moment per app.** Everything else is state change.
+- **The legend contract.** Every view states what it is showing and what it cannot show.
+- **The citation line.** Small, monospace, always present where a claim is made.
+- **Type floor 16px.** Tabular figures on anything that updates.
+- **Zero runtime network. Offline after first load. Self-hosted fonts.**
+- **Reduced motion gets a complete alternative**, never a degraded one.
+- **No component library.**
+
+**Per-app:** colour, typeface, layout, and the instrument.
+
+## 2. This app's identity
+
+**It looks like a cleaner version of the thing it fills.**
+
+The siblings are atlases and instruments. This is a work tool that produces an official document, and the honest register is the document's own: Roman-numeraled sections, boxed fields, ruled rows, precise numerals, nothing decorative.
+
+Light, calm, dense enough to be efficient. **Someone should be able to use it at their desk in five minutes without a tutorial**, because the layout mirrors the form they already know.
+
+No delight. No personality flourishes. A person filling a leave request wants to be finished.
+
+## 3. Colour — three field states
+
+The semantic core. Every field on the form is in one of three states, and the reader must know which at a glance.
+
+```
+--paper    #F6F5F1    warm off-white
+--ink      #1D1F1C    labels, values, rules
+--rule     #D9D7CF    hairlines, field boxes, section borders
+```
+
+### The three states
+
+```
+--typed     #2B4C6B    slate blue — you entered this
+--derived   #5E7A6B    muted green — computed, not editable
+--unmapped  hatch      diagonal over --paper — the template has this, you have not mapped it
+```
+
+**`--derived` is the important one.** A derived field looks visibly different from a typed one, so nobody wonders why they cannot edit the day count — the colour already said it is computed. Derived fields are never rendered as disabled inputs; they are rendered as *results*.
+
+**`--unmapped` uses a pattern, not a colour**, because it is an absence rather than a value — the same rule the sibling projects apply to unknown data.
+
+### Validation
+
+```
+--attention  #B5762E    amber — a warning, never a block
+```
+
+**Amber, not red.** Validation warns and never prevents; offices have exceptions, and a red error state implies a refusal the app does not make. Amber sits beside the field, with the reason in words.
+
+**No red anywhere in the product.** Nothing here is an error, including a template mismatch — that is a refusal with an explanation, rendered in ink with an amber marker.
+
+## 4. Type
+
+```
+Public Sans       labels, prose, controls — designed for government use, plain and legible
+IBM Plex Mono     NIP, dates, day counts, node indices, fingerprints
+```
+
+Self-hosted via `next/font`.
+
+```
+14  16  18  22  28          1.25 ratio
+```
+
+**Monospace on every number that has to be read digit by digit.** An NIP is eighteen digits and gets checked against a card; proportional figures make that harder than it needs to be. Tabular figures throughout.
+
+Light ground, no dark-mode correction. Body 400, labels 500, section headings 600.
+
+## 5. Layout — two panes, two modes
+
+**Fill mode** is the default and the common case.
+
+```
+left  60%   the form, sectioned exactly as the document is
+right 40%   live preview, scroll-linked to the focused field
+```
+
+Focusing a field scrolls the preview to that part of the document and marks it. **You always see where the thing you are typing lands.**
+
+**Map mode** is entered rarely, once per template.
+
+```
+left  50%   every text node and empty cell, in document order, with surrounding context
+right 50%   the same preview, with mapped targets marked
+```
+
+Context is what makes mapping possible: a bare list of 97 strings is unusable, but *"Jabatan | **Perekayasa Ahli Pertama** | Masa Kerja"* is obvious.
+
+**Mobile:** single column, preview collapsed behind a toggle. Map mode is desktop-only and says so — marking 97 nodes on a phone is not a real workflow.
+
+## 6. Motion
+
+**The orchestrated moment is the preview updating** — the document re-rendering as you type, with the changed region briefly marked so you see the effect land.
+
+Everything else is state change: switching mode, expanding a section, opening a profile.
+
+```
+--dur-fast    120ms
+--dur-state   240ms
+--dur-mark    500ms     the changed-region highlight fading
+```
+
+**Nothing else animates.** No skeletons, no progress theatre, no success celebration on download. This is a work tool.
+
+**Reduced motion:** the preview updates instantly without the highlight. Nothing is lost.
+
+## 7. The download moment
+
+The one place to get the tone right. A person has just produced an official document.
+
+- **Two buttons, clearly unequal:** *Unduh DOCX* is primary; *Cetak PDF* is secondary with the approximation note beside it, not hidden behind a tooltip.
+- **A summary before download** — what was filled, what was derived, what warnings stand. A last chance to notice the wrong year.
+- **No confetti, no toast, no celebration.** The file downloads. That is the whole event.
+
+## 8. Privacy, said plainly
+
+A persistent line, not a footer: **nothing you type leaves this device.** Stated where the user is entering their NIP and home address, because that is where it matters.
+
+The profile panel carries an explicit **export** and **clear all**, both visible rather than buried in settings.
+
+## 9. Accessibility
+
+- Every field has a real label, not a placeholder. Placeholders vanish on focus and are unusable for a form this long.
+- Derived fields are marked `readonly` with an accessible explanation, not `disabled` — disabled fields are skipped by screen readers and their values are part of the document.
+- Validation messages are associated with their field, announced, and non-blocking.
+- Full keyboard path through the form in document order; focus visible at 3px.
+- Type floor 16px; AA contrast on `--paper` for all three field states.
+- The preview has a text alternative — the filled document as readable text, which is also what someone would paste into a message.
+
+## 10. What not to do
+
+- No red anywhere, including on validation.
+- No blocking validation.
+- No derived field rendered as an editable-looking input.
+- No unmapped target rendered as a colour rather than a pattern.
+- No placeholder text standing in for a label.
+- No celebration on download.
+- No PDF button without its approximation note.
+- No mapping UI on mobile.
+- No dark mode.
+- No component library.
