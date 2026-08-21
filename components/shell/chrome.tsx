@@ -1,0 +1,100 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { strings, type Locale } from '@/lib/i18n/strings'
+
+/**
+ * The frame. Roman-numeraled sections and ruled rows belong to the document;
+ * the chrome around them stays quiet enough to disappear.
+ */
+
+export function Header({ locale }: { locale: Locale }) {
+  const t = strings(locale)
+  const pathname = usePathname()
+  const other: Locale = locale === 'id' ? 'en' : 'id'
+
+  const tabs = [
+    { href: `/${locale}/isi`, label: t.navFill },
+    { href: `/${locale}/petakan`, label: t.navMap },
+    { href: `/${locale}/profil`, label: t.navProfile },
+  ]
+
+  return (
+    <header className="no-print border-b border-rule bg-paper">
+      <div className="mx-auto flex max-w-full items-baseline justify-between gap-6 px-6 py-4">
+        <div className="flex items-baseline gap-4">
+          <Link href={`/${locale}/isi`} className="text-lg font-semibold tracking-tight">
+            {t.appName}
+          </Link>
+          <p className="hidden max-w-[52ch] text-sm text-ink/70 md:block">{t.tagline}</p>
+        </div>
+
+        <nav className="flex items-center gap-1" aria-label={t.appName}>
+          {tabs.map((tab) => {
+            const active = pathname?.startsWith(tab.href) ?? false
+            return (
+              <Link
+                key={tab.href}
+                href={tab.href}
+                aria-current={active ? 'page' : undefined}
+                className={[
+                  'rounded border px-3 py-1 text-base transition-colors duration-state ease-house',
+                  active
+                    ? 'border-typed bg-typed/10 text-typed'
+                    : 'border-transparent text-ink/70 hover:border-rule',
+                ].join(' ')}
+              >
+                {tab.label}
+              </Link>
+            )
+          })}
+          <Link
+            href={`/${other}${pathname?.slice(3) ?? '/isi'}`}
+            className="ml-2 rounded border border-rule px-2 py-1 font-mono text-sm uppercase text-ink/60"
+            hrefLang={other}
+          >
+            {other}
+          </Link>
+        </nav>
+      </div>
+    </header>
+  )
+}
+
+/**
+ * Said where the NIP and the home address are being typed, not in a footer.
+ * That is where it matters and where it is believed. DESIGN.md §8.
+ */
+export function PrivacyLine({ locale, className = '' }: { locale: Locale; className?: string }) {
+  const t = strings(locale)
+  return (
+    <p className={`text-sm text-ink/70 ${className}`}>
+      <span className="font-medium text-ink">{t.privacy}</span> {t.privacyWhy}
+    </p>
+  )
+}
+
+/**
+ * The legend contract: every view says what it is showing and what it cannot
+ * show. Here, that the three field states mean three different things.
+ */
+export function StateLegend({ locale }: { locale: Locale }) {
+  const t = strings(locale)
+  return (
+    <ul className="no-print flex flex-wrap items-center gap-4 text-sm text-ink/70">
+      <li className="flex items-center gap-2">
+        <span className="inline-block h-3 w-3 rounded border border-typed bg-typed/20" />
+        {t.fillProfile} / {t.fillRequest}
+      </li>
+      <li className="flex items-center gap-2">
+        <span className="inline-block h-3 w-3 rounded border border-derived bg-derived/20" />
+        {t.fillDerived}
+      </li>
+      <li className="flex items-center gap-2">
+        <span className="unmapped inline-block h-3 w-3 rounded border border-rule" />
+        {t.mapUnmapped}
+      </li>
+    </ul>
+  )
+}

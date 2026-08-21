@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * DESIGN.md is authoritative. Tokens live here and in tailwind.config.ts;
+ * components use the names, never the values.
+ */
+:root {
+  --paper: #f6f5f1;
+  --ink: #1d1f1c;
+  --rule: #d9d7cf;
+  --typed: #2b4c6b;
+  --derived: #5e7a6b;
+  --attention: #b5762e;
+
+  --dur-fast: 120ms;
+  --dur-state: 240ms;
+  --dur-mark: 500ms;
+  --ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+@layer base {
+  html {
+    /* Type floor 16px. A form this long is read, not glanced at. */
+    font-size: 16px;
+  }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-feature-settings: 'tnum' 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Tabular figures on everything that has to be read digit by digit. */
+  .tnum,
+  input,
+  table {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--typed);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-weight: 600;
+  }
+
+  label {
+    font-weight: 500;
+  }
+}
+
+@layer components {
+  /*
+   * An unmapped target is an absence, not a value, so it is a pattern rather
+   * than a colour — the same rule the sibling projects apply to unknown data.
+   */
+  .unmapped {
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 4px,
+      var(--rule) 4px,
+      var(--rule) 5px
+    );
+  }
+
+  /*
+   * The one orchestrated moment: the changed region of the preview, marked
+   * briefly so the effect is seen to land.
+   */
+  .mark-changed {
+    animation: mark var(--dur-mark) var(--ease);
+  }
+
+  @keyframes mark {
+    from {
+      background-color: color-mix(in srgb, var(--typed) 22%, transparent);
+    }
+    to {
+      background-color: transparent;
+    }
+  }
+}
+
+/*
+ * Reduced motion gets a complete alternative, not a degraded one: the preview
+ * updates instantly and the highlight simply does not happen. Nothing is lost.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* The print path is the PDF path, and it is labelled approximate. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .preview-page {
+    box-shadow: none !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+}
