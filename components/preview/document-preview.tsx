@@ -23,10 +23,34 @@ export function DocumentPreview({
   const t = strings(locale)
   const container = useRef<HTMLDivElement>(null)
 
+  /**
+   * Bring the focused value into view — inside this pane and nowhere else.
+   *
+   * Not `scrollIntoView`: that scrolls every scrollable ancestor, the window
+   * included. Focusing a field near the bottom of the form therefore dragged
+   * the whole page back to the top, which is a strange thing for a preview to
+   * do to somebody who is typing.
+   *
+   * Scrolling this one container by hand keeps the effect where it belongs.
+   */
   useEffect(() => {
     if (focusKey === null) return
-    const target = container.current?.querySelector('[data-focused="true"]')
-    target?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    const pane = container.current
+    const target = pane?.querySelector('[data-focused="true"]')
+    if (!pane || !(target instanceof HTMLElement)) return
+
+    const offset =
+      target.getBoundingClientRect().top -
+      pane.getBoundingClientRect().top +
+      pane.scrollTop -
+      pane.clientHeight / 2
+
+    pane.scrollTo({
+      top: Math.max(0, offset),
+      behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        ? 'auto'
+        : 'smooth',
+    })
   }, [focusKey])
 
   return (

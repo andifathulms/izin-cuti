@@ -281,25 +281,27 @@ export function FillMode({ locale }: { locale: Locale }) {
                 )}
               </Section>
 
-              <Section title={t.fillProfile}>
+              <Section title={t.fillProfile} grid>
                 {model.profile.map((field) => (
-                  <TextField
-                    key={field.key}
-                    field={field}
-                    onChange={(value) => setProfileValue(field.key as keyof ProfileValues, value)}
-                    onFocus={setFocus}
-                  />
+                  <div key={field.key} className={SPAN[field.span]}>
+                    <TextField
+                      field={field}
+                      onChange={(value) => setProfileValue(field.key as keyof ProfileValues, value)}
+                      onFocus={setFocus}
+                    />
+                  </div>
                 ))}
               </Section>
 
-              <Section title={t.fillRequest}>
+              <Section title={t.fillRequest} grid>
                 {model.request.map((field) => (
-                  <TextField
-                    key={field.key}
-                    field={field}
-                    onChange={(value) => setRequestValue(field.key as keyof RequestValues, value)}
-                    onFocus={setFocus}
-                  />
+                  <div key={field.key} className={SPAN[field.span]}>
+                    <TextField
+                      field={field}
+                      onChange={(value) => setRequestValue(field.key as keyof RequestValues, value)}
+                      onFocus={setFocus}
+                    />
+                  </div>
                 ))}
               </Section>
 
@@ -326,9 +328,11 @@ export function FillMode({ locale }: { locale: Locale }) {
               )}
 
               {model.derived.length > 0 && (
-                <Section title={t.fillDerived} note={t.fillDerivedNote}>
+                <Section title={t.fillDerived} note={t.fillDerivedNote} grid>
                   {model.derived.map((row) => (
-                    <DerivedField key={row.targetId} locale={locale} row={row} onFocus={setFocus} />
+                    <div key={row.targetId} className="col-span-6 sm:col-span-3">
+                      <DerivedField locale={locale} row={row} onFocus={setFocus} />
+                    </div>
                   ))}
                 </Section>
               )}
@@ -361,19 +365,30 @@ export function FillMode({ locale }: { locale: Locale }) {
 function Section({
   title,
   note,
+  grid = false,
   children,
 }: {
   title: string
   note?: string
+  /** Lay the children out in a six-column row rather than stacking them. */
+  grid?: boolean
   children: React.ReactNode
 }) {
   return (
     <section>
       <h2 className="border-b border-rule pb-1 text-base font-semibold">{title}</h2>
       {note !== undefined && <p className="mt-1 text-sm text-ink/60">{note}</p>}
-      <div className="mt-3 space-y-4">{children}</div>
+      <div className={grid ? 'mt-3 grid grid-cols-6 gap-x-4 gap-y-3' : 'mt-3 space-y-4'}>
+        {children}
+      </div>
     </section>
   )
+}
+
+const SPAN: Record<2 | 3 | 6, string> = {
+  2: 'col-span-6 sm:col-span-2',
+  3: 'col-span-6 sm:col-span-3',
+  6: 'col-span-6',
 }
 
 /** A filename somebody can find again in a downloads folder. */

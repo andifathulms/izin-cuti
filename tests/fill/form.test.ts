@@ -165,3 +165,40 @@ describe('the leave-type selection that feeds validation', () => {
     expect(leaveTypeSelection(noGroups, {})).toEqual({ group: null, chosenLabel: '', count: 1 })
   })
 })
+
+describe('how wide each field sits', () => {
+  it('gives a date a third of a row, so three dates make one row', () => {
+    // Three date pickers stacked down the page is three rows spent on
+    // something the eye reads as one thing.
+    const dates = form().request.filter((field) => field.input === 'date')
+    expect(dates.length).toBeGreaterThan(0)
+    expect(dates.every((field) => field.span === 2)).toBe(true)
+  })
+
+  it('gives an ordinary field half a row', () => {
+    expect(form().profile.find((field) => field.key === 'nama')?.span).toBe(3)
+  })
+
+  it('gives anything with prose in it the whole width', () => {
+    const model = buildForm(
+      {
+        ...mapping,
+        targets: [
+          {
+            type: 'text',
+            id: 'alasan',
+            label: 'Alasan',
+            nodeIndices: [at('Keperluan keluarga')],
+            source: { kind: 'request', key: 'alasan' },
+          },
+        ],
+      },
+      { profile: EMPTY_PROFILE, request: EMPTY_REQUEST },
+      t.fieldLabels,
+      [],
+      {},
+      {},
+    )
+    expect(model.request[0]).toMatchObject({ input: 'textarea', span: 6 })
+  })
+})

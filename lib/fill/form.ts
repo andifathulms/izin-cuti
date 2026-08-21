@@ -25,6 +25,14 @@ export type FormField = {
   readonly label: string
   readonly value: string
   readonly input: InputKind
+  /**
+   * Width in a six-column row, so short fields share a line.
+   *
+   * A date is a third, an ordinary field a half, anything with prose in it the
+   * whole width. Three date pickers stacked down a page is three rows spent on
+   * something the eye reads as one thing.
+   */
+  readonly span: 2 | 3 | 6
   /** Target ids that write this value, so focusing the field marks the preview. */
   readonly targetIds: ReadonlyArray<string>
   readonly warnings: ReadonlyArray<Warning>
@@ -125,14 +133,18 @@ export function buildForm(
     key: string,
     value: string,
     targetIds: ReadonlyArray<string>,
-  ): FormField => ({
-    key,
-    label: labels[key] ?? key,
-    value,
-    input: INPUT_KIND[key] ?? 'text',
-    targetIds,
-    warnings: warnings.filter((warning) => warning.field === key),
-  })
+  ): FormField => {
+    const input = INPUT_KIND[key] ?? 'text'
+    return {
+      key,
+      label: labels[key] ?? key,
+      value,
+      input,
+      span: input === 'textarea' ? 6 : input === 'date' ? 2 : 3,
+      targetIds,
+      warnings: warnings.filter((warning) => warning.field === key),
+    }
+  }
 
   return {
     // Ordered as the value types declare them rather than as the mapping
