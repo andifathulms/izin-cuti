@@ -150,4 +150,26 @@ The interface states, where the user is entering personal data, that nothing lea
 
 ## Current state
 
-M0 — not yet scaffolded. Next: unzip, parse, escape, fill and serialise against a synthetic template, with the round-trip, package and escape suites. **No UI work until all three are green and an output opens cleanly in Word.**
+M0–M5 built. `pnpm test:run` green; `test:escape`, `test:roundtrip` and
+`test:package` green and gating CI.
+
+- **Engine** — `lib/docx` is pure and Node-testable: unzip, parse, escape, fill,
+  serialise, fingerprint. Edits are splices of the original `document.xml`, so
+  nothing untouched is re-serialised.
+- **Map** — node list with context, marking, kinds, single-select groups, and
+  run merging for values Word split. Desktop only.
+- **Fill** — generated form, profile prefill, derived fields as results,
+  inline non-blocking warnings, summary and download.
+- **Preview** — rendered from the parse's own block model, so runs carry node
+  indices and the preview can mark and scroll to the focused field. mammoth was
+  not adopted: it has no node indices and cannot answer "where does what I am
+  typing land".
+- **Profiles** — saved, switchable, exportable, clearable.
+
+**Verified:** a filled output opens with no repair in macOS `textutil`, an
+independent OOXML reader, with `& < > " '` intact. **Not yet verified in Word
+itself** — that is the check that should happen before this is used on a real
+letter.
+
+**Next:** open an output in Word; map the real cuti form end to end; check the
+preview against the printed document.
