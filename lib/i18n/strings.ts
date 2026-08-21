@@ -78,7 +78,6 @@ type Strings = {
   readonly fillProfile: string
   readonly fillRequest: string
   readonly fillDerived: string
-  readonly fillDerivedNote: string
   readonly fillChecklist: string
   readonly fillNoMapping: string
   readonly fillChooseMapping: string
@@ -89,12 +88,7 @@ type Strings = {
   readonly previewEmpty: string
   readonly previewAsText: string
 
-  readonly summary: string
-  readonly summaryFilled: string
-  readonly summaryDerived: string
-  readonly summaryChecked: string
-  readonly summaryWarnings: string
-  readonly summaryNoWarnings: string
+  readonly downloadSection: string
 
   readonly downloadDocx: string
   readonly downloadPdf: string
@@ -204,7 +198,6 @@ const id: Strings = {
   fillProfile: 'Data profil',
   fillRequest: 'Data pengajuan',
   fillDerived: 'Dihitung',
-  fillDerivedNote: 'Nilai berikut dihitung dari isian di atas dan tidak dapat diubah.',
   fillChecklist: 'Pilihan',
   fillNoMapping: 'Belum ada pemetaan untuk dokumen ini.',
   fillChooseMapping: 'Pemetaan',
@@ -216,12 +209,7 @@ const id: Strings = {
   previewEmpty: 'Pratinjau muncul setelah dokumen dipilih.',
   previewAsText: 'Salin sebagai teks',
 
-  summary: 'Ringkasan sebelum unduh',
-  summaryFilled: 'Diisi',
-  summaryDerived: 'Dihitung',
-  summaryChecked: 'Dicentang',
-  summaryWarnings: 'Perlu diperiksa',
-  summaryNoWarnings: 'Tidak ada yang perlu diperiksa.',
+  downloadSection: 'Unduh surat',
 
   downloadDocx: 'Unduh DOCX',
   downloadPdf: 'Unduh PDF',
@@ -356,7 +344,6 @@ const en: Strings = {
   fillProfile: 'Profile',
   fillRequest: 'This request',
   fillDerived: 'Computed',
-  fillDerivedNote: 'These are computed from the fields above and cannot be edited.',
   fillChecklist: 'Selections',
   fillNoMapping: 'No mapping for this document yet.',
   fillChooseMapping: 'Mapping',
@@ -368,12 +355,7 @@ const en: Strings = {
   previewEmpty: 'The preview appears once a document is chosen.',
   previewAsText: 'Copy as text',
 
-  summary: 'Summary before download',
-  summaryFilled: 'Filled',
-  summaryDerived: 'Computed',
-  summaryChecked: 'Ticked',
-  summaryWarnings: 'Worth checking',
-  summaryNoWarnings: 'Nothing to check.',
+  downloadSection: 'Download the letter',
 
   downloadDocx: 'Download DOCX',
   downloadPdf: 'Download PDF',

@@ -43,7 +43,7 @@ export function DownloadPanel({
   const pending = fields.filter((field) => field.unavailable !== null)
 
   return (
-    <section aria-label={t.summary} className="no-print border-t border-rule px-6 py-4">
+    <section aria-label={t.downloadSection} className="no-print border-t border-rule px-6 py-4">
       {(warnings.length > 0 || pending.length > 0) && (
         <ul className="mb-4 space-y-1">
           {warnings.map((warning) => (
