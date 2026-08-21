@@ -8,12 +8,7 @@ import { DocumentPreview } from '@/components/preview/document-preview'
 import { StateLegend } from '@/components/shell/chrome'
 import { DownloadPanel } from '@/components/summary/download-panel'
 import { DriftNotice } from '@/components/summary/drift-notice'
-import {
-  ChoiceGroupField,
-  DerivedField,
-  StandaloneBox,
-  TextField,
-} from '@/components/form/fields'
+import { ChoiceGroupField, StandaloneBox, TextField } from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
 import { DIREKTORAT, direktoratOf, managedKeys } from '@/lib/presets/kedeputian'
 import { formatNip, normaliseNip } from '@/lib/derive/nip'
@@ -340,15 +335,6 @@ export function FillMode({ locale }: { locale: Locale }) {
                 </Section>
               )}
 
-              {model.derived.length > 0 && (
-                <Section title={t.fillDerived} note={t.fillDerivedNote} grid>
-                  {model.derived.map((row) => (
-                    <div key={row.targetId} className="col-span-6 sm:col-span-3">
-                      <DerivedField locale={locale} row={row} onFocus={setFocus} />
-                    </div>
-                  ))}
-                </Section>
-              )}
             </form>
 
             <div className="px-6">
@@ -358,7 +344,6 @@ export function FillMode({ locale }: { locale: Locale }) {
             <DownloadPanel
               locale={locale}
               fields={applied?.type === 'filled' ? applied.fields : []}
-              checkedLabels={applied?.type === 'filled' ? applied.checkedLabels : []}
               warnings={warnings}
               disabled={applied === null || applied.type !== 'filled'}
               onDownload={download}

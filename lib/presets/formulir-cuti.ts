@@ -91,10 +91,10 @@ export const FORMULIR_CUTI_TARGETS: ReadonlyArray<Target> = [
 
   // VI. Alamat selama cuti, and the signature block.
   text('telepon', 'Telepon', [55], { kind: 'profile', key: 'telepon' }),
-  text('alamat-cuti', 'Alamat selama cuti', [56], {
-    kind: 'derived',
-    computation: 'salinan-alamat-cuti',
-  }),
+  // One address, not two. The form asks where you will be during your leave;
+  // asking for a home address as well and then copying one into the other was
+  // two fields for one answer.
+  text('alamat-cuti', 'Alamat selama cuti', [56], { kind: 'profile', key: 'alamat' }),
   text('nama-ttd', 'Nama (tanda tangan)', [60], {
     kind: 'derived',
     computation: 'salinan-nama',

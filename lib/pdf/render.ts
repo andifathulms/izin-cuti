@@ -258,21 +258,27 @@ function columnWidths(
 }
 
 /**
- * A cell's text, with its paragraphs kept apart.
+ * A cell's text, with its paragraphs kept apart — blank ones included.
  *
- * Joined with newlines rather than spaces: a signature block is three
- * paragraphs — jabatan, name, NIP — and running them onto one line turns
- * "Direktur ... Budi Santoso NIP. ..." into a sentence nobody wrote. `wrap`
- * breaks on newlines, so this is all it takes to stack them.
+ * Two things depend on this. A signature block is three paragraphs — jabatan,
+ * name, NIP — and running them onto one line turns them into a sentence nobody
+ * wrote. And the room to actually sign is *two empty paragraphs* that Word puts
+ * between the jabatan and the name: dropping them as "blank" removed the space
+ * the signature goes in.
+ *
+ * Blank lines at the top and bottom of a cell are trimmed, since those are
+ * padding rather than room for anything.
  */
 function cellText(blocks: ReadonlyArray<PreviewBlock>): string {
-  return blocks
-    .flatMap((block) =>
-      block.type === 'paragraph'
-        ? [block.runs.map((run) => run.text).join('').replace(/[ \t]+/g, ' ').trim()]
-        : block.rows.flatMap((row) => row.cells.map((cell) => cellText(cell.blocks))),
-    )
-    .filter((line) => line !== '')
-    .join('\n')
-    .trim()
+  const lines = blocks.flatMap((block) =>
+    block.type === 'paragraph'
+      ? [block.runs.map((run) => run.text).join('').replace(/[ \t]+/g, ' ').trim()]
+      : block.rows.flatMap((row) => row.cells.map((cell) => cellText(cell.blocks))),
+  )
+
+  let first = 0
+  let last = lines.length - 1
+  while (first <= last && lines[first] === '') first++
+  while (last >= first && lines[last] === '') last--
+  return lines.slice(first, last + 1).join('\n')
 }

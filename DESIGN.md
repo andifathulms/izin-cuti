@@ -54,7 +54,7 @@ The semantic core. Every field on the form is in one of three states, and the re
 --unmapped  hatch      diagonal over --paper — the template has this, you have not mapped it
 ```
 
-**`--derived` is the important one.** A derived field looks visibly different from a typed one, so nobody wonders why they cannot edit the day count — the colour already said it is computed. Derived fields are never rendered as disabled inputs; they are rendered as *results*.
+**`--derived` is the important one.** A derived field looks visibly different from a typed one, so nobody wonders why they cannot edit the day count — the colour already said it is computed. Derived fields are never rendered as disabled inputs; they are rendered as *results* — **in the preview, where they land in the document**, rather than as a second list beside the form. A computed value shown twice is a value somebody has to reconcile.
 
 **`--unmapped` uses a pattern, not a colour**, because it is an absence rather than a value — the same rule the sibling projects apply to unknown data.
 
@@ -90,11 +90,15 @@ Light ground, no dark-mode correction. Body 400, labels 500, section headings 60
 **Fill mode** is the default and the common case.
 
 ```
-left  60%   the form, sectioned exactly as the document is
-right 40%   live preview, scroll-linked to the focused field
+left  50%   the form, sectioned exactly as the document is
+right 50%   live preview, scroll-linked to the focused field
 ```
 
-Focusing a field scrolls the preview to that part of the document and marks it. **You always see where the thing you are typing lands.**
+Equal halves. The preview is not a thumbnail — it is where the derived values are read and where the fill is checked, so it gets the same room as the form.
+
+Fields are laid out in a six-column row: a date takes a third, an ordinary field a half, anything with prose the full width. Three date pickers stacked down the page is three rows spent on what the eye reads as one thing.
+
+Focusing a field scrolls the preview to that part of the document and marks it — **the preview pane only.** Never the page: a preview that drags the whole window while somebody is typing is worse than one that does not scroll at all. **You always see where the thing you are typing lands.**
 
 **Map mode** is entered rarely, once per template.
 
@@ -127,13 +131,15 @@ Everything else is state change: switching mode, expanding a section, opening a 
 
 The one place to get the tone right. A person has just produced an official document.
 
-- **Two buttons, clearly unequal:** *Unduh DOCX* is primary; *Cetak PDF* is secondary with the approximation note beside it, not hidden behind a tooltip.
-- **A summary before download** — what was filled, what was derived, what warnings stand. A last chance to notice the wrong year.
+- **Three actions, clearly unequal:** *Unduh DOCX* is primary; *Unduh PDF* and *Cetak* are secondary, with the approximation note beside them, not hidden behind a tooltip.
+- **A last chance to notice the wrong year** — the warnings that stand, and any computed field still waiting on an input, immediately above the buttons.
+
+  Not a summary of every filled value. That list duplicated the preview, which shows the same values in the document's own layout and is the better last look. What the preview cannot show is a warning, so that is what is left here.
 - **No confetti, no toast, no celebration.** The file downloads. That is the whole event.
 
 ## 8. Privacy, said plainly
 
-A persistent line, not a footer: **nothing you type leaves this device.** Stated where the user is entering their NIP and home address, because that is where it matters.
+A persistent line, not a footer: **nothing you type leaves this device.** One sentence, at the foot of the column where the NIP and the address are being typed, because that is where it matters. One sentence and not three — a paragraph above the form is read once and never again.
 
 The profile panel carries an explicit **export** and **clear all**, both visible rather than buried in settings.
 

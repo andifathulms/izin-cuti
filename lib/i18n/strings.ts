@@ -261,7 +261,7 @@ const id: Strings = {
     jabatan: 'Jabatan',
     unitKerja: 'Unit kerja',
     masaKerja: 'Masa kerja',
-    alamat: 'Alamat rumah',
+    alamat: 'Alamat selama cuti',
     telepon: 'Telepon',
     tempatSurat: 'Tempat penulisan surat',
     atasanNama: 'Nama atasan langsung',
@@ -409,7 +409,7 @@ const en: Strings = {
 
   fieldLabels: {
     ...id.fieldLabels,
-    alamat: 'Home address',
+    alamat: 'Address during leave',
     telepon: 'Telephone',
     tempatSurat: 'Place the letter is written',
     atasanJabatan: 'Atasan langsung — jabatan',

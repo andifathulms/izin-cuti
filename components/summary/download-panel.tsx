@@ -5,18 +5,24 @@ import type { Warning } from '@/lib/validate/checks'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
 /**
- * The download moment. A person has just produced an official document, so:
+ * The download moment. A person has just produced an official document.
  *
- * a summary first — what was filled, what was computed, what warnings stand,
- * a last chance to notice the wrong year; two buttons, clearly unequal, with
- * the PDF's approximation note beside it rather than behind a tooltip; and no
- * confetti, no toast, no celebration. The file downloads. That is the event.
- * DESIGN.md §7.
+ * What was once a three-column summary of every filled, computed and ticked
+ * value is gone: the preview beside the form already shows all of it, in the
+ * document's own layout, which is a better last look than a list of the same
+ * values in a different order.
+ *
+ * What survives is the part the preview cannot do — **the warnings**. That is
+ * the "last chance to notice the wrong year" DESIGN.md §7 asks for, and it is
+ * the only reason a summary was there. Amber marks it, ink explains it, and
+ * nothing here can stop a download.
+ *
+ * Three actions, clearly unequal, with the approximation note beside the two
+ * that produce a PDF. No confetti, no toast. The file downloads.
  */
 export function DownloadPanel({
   locale,
   fields,
-  checkedLabels,
   warnings,
   disabled,
   onDownload,
@@ -25,7 +31,6 @@ export function DownloadPanel({
 }: {
   locale: Locale
   fields: ReadonlyArray<FilledField>
-  checkedLabels: ReadonlyArray<string>
   warnings: ReadonlyArray<Warning>
   disabled: boolean
   onDownload: () => void
@@ -33,62 +38,36 @@ export function DownloadPanel({
   onPrint: () => void
 }) {
   const t = strings(locale)
-  const typed = fields.filter((field) => field.kind !== 'derived')
-  const derived = fields.filter((field) => field.kind === 'derived')
+  // A derived field still waiting on an input means a blank space in the
+  // document. Worth saying once, here, rather than letting it be discovered.
+  const pending = fields.filter((field) => field.unavailable !== null)
 
   return (
-    <section aria-label={t.summary} className="no-print border-t border-rule px-4 py-4">
-      <h2 className="text-base font-semibold">{t.summary}</h2>
-
-      <div className="mt-3 grid gap-4 md:grid-cols-3">
-        <SummaryList title={`${t.summaryFilled} (${typed.length})`}>
-          {typed.map((field) => (
-            <li key={field.id} className="flex justify-between gap-3">
-              <span className="text-ink/70">{field.label}</span>
-              <span className="text-right font-medium text-typed">{field.value || '—'}</span>
+    <section aria-label={t.summary} className="no-print border-t border-rule px-6 py-4">
+      {(warnings.length > 0 || pending.length > 0) && (
+        <ul className="mb-4 space-y-1">
+          {warnings.map((warning) => (
+            <li key={warning.id} className="flex items-baseline gap-2 text-sm">
+              <span aria-hidden className="text-attention">
+                ▲
+              </span>
+              <span>{warning.message}</span>
             </li>
           ))}
-        </SummaryList>
-
-        <SummaryList title={`${t.summaryDerived} (${derived.length})`}>
-          {derived.map((field) => (
-            <li key={field.id} className="flex justify-between gap-3">
-              <span className="text-ink/70">{field.label}</span>
-              <span className="text-right font-mono font-medium text-derived">
-                {field.unavailable === null ? field.value || '—' : `— ${field.unavailable}`}
+          {pending.map((field) => (
+            <li key={field.id} className="flex items-baseline gap-2 text-sm">
+              <span aria-hidden className="text-attention">
+                ▲
+              </span>
+              <span>
+                {field.label} — {field.unavailable}
               </span>
             </li>
           ))}
-        </SummaryList>
+        </ul>
+      )}
 
-        <SummaryList title={`${t.summaryChecked} (${checkedLabels.length})`}>
-          {checkedLabels.map((label) => (
-            <li key={label} className="text-typed">
-              √ {label}
-            </li>
-          ))}
-        </SummaryList>
-      </div>
-
-      <div className="mt-4">
-        <h3 className="text-sm font-medium">{t.summaryWarnings}</h3>
-        {warnings.length === 0 ? (
-          <p className="text-sm text-ink/60">{t.summaryNoWarnings}</p>
-        ) : (
-          <ul className="mt-1 space-y-1">
-            {warnings.map((warning) => (
-              <li key={warning.id} className="flex items-baseline gap-2 text-sm">
-                <span aria-hidden className="text-attention">
-                  ▲
-                </span>
-                <span>{warning.message}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="mt-6 flex flex-wrap items-start gap-4">
+      <div className="flex flex-wrap items-start gap-4">
         <button
           type="button"
           onClick={onDownload}
@@ -124,14 +103,5 @@ export function DownloadPanel({
         <p className="font-mono text-sm text-ink/60">{t.docxAuthoritative}</p>
       </div>
     </section>
-  )
-}
-
-function SummaryList({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <h3 className="text-sm font-medium">{title}</h3>
-      <ul className="mt-1 space-y-1 text-sm">{children}</ul>
-    </div>
   )
 }

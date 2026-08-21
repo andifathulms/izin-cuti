@@ -418,8 +418,8 @@ export const FORMULIR_CUTI_MAPPING: Mapping = {
         56
       ],
       "source": {
-        "kind": "derived",
-        "computation": "salinan-alamat-cuti"
+        "kind": "profile",
+        "key": "alamat"
       }
     },
     {
