@@ -75,23 +75,30 @@ export function FillMode({ locale }: { locale: Locale }) {
     [mapping, checkboxChoice],
   )
 
+  // The chosen leave type travels with the request here, so the end-date
+  // bounds know whether the twelve-day allowance applies.
+  const requestWithType = useMemo(
+    () => ({ ...request, jenisCuti: leaveType?.chosenLabel ?? request.jenisCuti }),
+    [request, leaveType],
+  )
+
   const warnings = useMemo(
     () =>
       validate({
         profile: profileValues,
         // The chosen leave type feeds the checks that depend on it, without
         // being a field anybody typed.
-        request: { ...request, jenisCuti: leaveType?.chosenLabel ?? request.jenisCuti },
+        request: requestWithType,
         jenisCutiTerpilih: leaveType?.count ?? 1,
       }),
-    [profileValues, request, leaveType],
+    [profileValues, requestWithType, leaveType],
   )
 
   const model = useMemo(() => {
     if (mapping === null) return null
     return buildForm(
       mapping,
-      { profile: profileValues, request },
+      { profile: profileValues, request: requestWithType },
       t.fieldLabels,
       warnings,
       checkboxChoice,
@@ -101,7 +108,7 @@ export function FillMode({ locale }: { locale: Locale }) {
   }, [
     mapping,
     profileValues,
-    request,
+    requestWithType,
     t.fieldLabels,
     warnings,
     checkboxChoice,

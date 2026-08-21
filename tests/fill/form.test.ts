@@ -202,3 +202,35 @@ describe('how wide each field sits', () => {
     expect(model.request[0]).toMatchObject({ input: 'textarea', span: 6 })
   })
 })
+
+describe('bounding the end date', () => {
+  const bounded = (request: Partial<typeof EMPTY_REQUEST>) =>
+    form({ ...EMPTY_REQUEST, ...request }).request.find((field) => field.key === 'sampai')
+
+  it('cannot start before the start date', () => {
+    expect(bounded({ mulai: '2026-08-24' })?.min).toBe('2026-08-24')
+  })
+
+  it('stops at the twelfth working day', () => {
+    expect(bounded({ mulai: '2026-08-24' })?.max).toBe('2026-09-08')
+  })
+
+  it('has no bounds at all until a start date is given', () => {
+    expect(bounded({})?.min).toBeUndefined()
+    expect(bounded({})?.max).toBeUndefined()
+  })
+
+  it('drops the upper bound for a leave type the allowance does not cover', () => {
+    // Cuti besar runs to months. Greying out its dates would be a limit that
+    // is simply wrong.
+    const field = bounded({ mulai: '2026-08-24', jenisCuti: 'Cuti Besar' })
+    expect(field?.min).toBe('2026-08-24')
+    expect(field?.max).toBeUndefined()
+  })
+
+  it('leaves other date fields unbounded', () => {
+    const mulai = form().request.find((f) => f.key === 'mulai')
+    expect(mulai?.min).toBeUndefined()
+    expect(mulai?.max).toBeUndefined()
+  })
+})

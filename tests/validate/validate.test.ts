@@ -160,3 +160,43 @@ describe('the shape of validation itself', () => {
     expect(warnings.every((w) => w.field.length > 0)).toBe(true)
   })
 })
+
+describe('the twelve-day annual allowance', () => {
+  const long = { mulai: '2026-08-24', sampai: '2026-09-14' } // 16 working days
+
+  it('notices leave longer than cuti tahunan allows', () => {
+    const warnings = validate(input({ ...long, jenisCuti: 'Cuti Tahunan' }))
+    const warning = warnings.find((w) => w.id === 'melebihi-jatah-tahunan')
+    expect(warning?.message).toContain('16 hari kerja')
+    expect(warning?.message).toContain('12 hari kerja')
+    expect(warning?.field).toBe('sampai')
+  })
+
+  it('applies before a type has been chosen, since tahunan is the common case', () => {
+    expect(ids(input(long))).toContain('melebihi-jatah-tahunan')
+  })
+
+  it('says nothing about cuti besar, which is measured in months', () => {
+    // A warning that is wrong is one people learn to click past.
+    expect(ids(input({ ...long, jenisCuti: 'Cuti Besar' }))).not.toContain(
+      'melebihi-jatah-tahunan',
+    )
+    expect(ids(input({ ...long, jenisCuti: 'Cuti Sakit' }))).not.toContain(
+      'melebihi-jatah-tahunan',
+    )
+  })
+
+  it('says nothing about a leave that fits', () => {
+    expect(ids(input({ mulai: '2026-08-24', sampai: '2026-09-08' }))).not.toContain(
+      'melebihi-jatah-tahunan',
+    )
+  })
+
+  it('still warns, because the picker cannot bound a date typed by hand', () => {
+    // The end-date input is bounded, but a date pasted in or typed before the
+    // leave type was chosen can still land outside it.
+    expect(ids(input({ ...long, jenisCuti: 'Cuti Tahunan' }))).toContain(
+      'melebihi-jatah-tahunan',
+    )
+  })
+})

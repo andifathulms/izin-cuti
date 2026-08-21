@@ -6,7 +6,8 @@ import {
 } from '../derive/compute'
 import { derivation, EMPTY_PROFILE, EMPTY_REQUEST } from '../derive/compute'
 import { checkboxGroups, textTargets, type CheckboxTarget, type Mapping } from '../mapping/schema'
-import type { Warning } from '../validate/checks'
+import { annualLimitApplies, MAX_CUTI_TAHUNAN_DAYS, type Warning } from '../validate/checks'
+import { lastDateWithinWorkingDays } from '../derive/date'
 
 /**
  * The form, generated from the mapping.
@@ -33,6 +34,16 @@ export type FormField = {
    * something the eye reads as one thing.
    */
   readonly span: 2 | 3 | 6
+  /**
+   * Bounds for a date input, so the picker greys out what cannot be chosen.
+   *
+   * An end date cannot precede its start, and cuti tahunan cannot run past its
+   * twelfth working day. A date you cannot reach is a kinder limit than a
+   * warning after the fact — though the warning stays, because a request typed
+   * before the type was chosen can still land outside the range.
+   */
+  readonly min?: string
+  readonly max?: string
   /** Target ids that write this value, so focusing the field marks the preview. */
   readonly targetIds: ReadonlyArray<string>
   readonly warnings: ReadonlyArray<Warning>
@@ -143,6 +154,7 @@ export function buildForm(
       span: input === 'textarea' ? 6 : input === 'date' ? 2 : 3,
       targetIds,
       warnings: warnings.filter((warning) => warning.field === key),
+      ...dateBounds(key, inputs.request),
     }
   }
 
@@ -166,6 +178,20 @@ export function buildForm(
       .filter((target): target is CheckboxTarget => target.type === 'checkbox' && target.group === null)
       .map((target) => ({ target, checked: checkboxState[target.id] === true })),
   }
+}
+
+function dateBounds(
+  key: string,
+  request: RequestValues,
+): { min?: string; max?: string } {
+  if (key !== 'sampai') return {}
+  if (request.mulai.trim() === '') return {}
+
+  const limit = annualLimitApplies(request.jenisCuti)
+    ? lastDateWithinWorkingDays(request.mulai, MAX_CUTI_TAHUNAN_DAYS)
+    : null
+
+  return limit === null ? { min: request.mulai } : { min: request.mulai, max: limit }
 }
 
 function ordered(

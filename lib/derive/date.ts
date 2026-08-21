@@ -140,6 +140,48 @@ export function workingDaysInclusive(start: string, end: string): DayCount {
   return { type: 'counted', days }
 }
 
+/** `YYYY-MM-DD`, which is what a date input speaks. */
+export function formatIso(date: ParsedDate): string {
+  return [
+    String(date.year).padStart(4, '0'),
+    String(date.month).padStart(2, '0'),
+    String(date.day).padStart(2, '0'),
+  ].join('-')
+}
+
+/**
+ * The last date a leave can run to without exceeding a number of working days.
+ *
+ * Used to bound the end-date picker: pick a start, and everything past the
+ * twelfth working day is simply not offered. A limit you cannot reach is
+ * kinder than a warning after the fact, and this one is arithmetic rather than
+ * a guess — it counts the same working days the day count does.
+ *
+ * Null when the start is not a date, or when the allowance is not a positive
+ * number of days.
+ */
+export function lastDateWithinWorkingDays(start: string, maxWorkingDays: number): string | null {
+  const from = parseIsoDate(start)
+  if (from === null || maxWorkingDays < 1) return null
+
+  let day = toDayNumber(from)
+  let counted = 0
+  let last = day
+
+  // A start on a weekend has no working days behind it yet, so walk until the
+  // allowance is used up rather than assuming the first day counts.
+  for (let step = 0; step < 366 * 2; step++) {
+    const date = fromDayNumber(day)
+    if (!isWeekend(date)) {
+      counted++
+      last = day
+      if (counted >= maxWorkingDays) return formatIso(fromDayNumber(last))
+    }
+    day++
+  }
+  return formatIso(fromDayNumber(last))
+}
+
 export function listDates(start: string, end: string): ReadonlyArray<ParsedDate> {
   const from = parseIsoDate(start)
   const to = parseIsoDate(end)

@@ -66,12 +66,15 @@ Checks the app can run:
 - Letter date precedes the leave start.
 - Requested days match the date span.
 - Requested days do not exceed the remaining balance.
+- Cuti tahunan does not exceed twelve working days. Applied to cuti tahunan and to a request with no type chosen; **not** to cuti besar, sakit or melahirkan, which have their own entitlements and are measured in months. A warning that is wrong is one people learn to click past.
 - Leave dates are working days.
 - NIP is eighteen digits.
 - Exactly one leave type selected.
 - Required fields for the selected type are present.
 
 **Validation warns; it never blocks.** Offices have exceptions, and a tool that refuses to produce a document because it disagrees with a human is a tool that gets abandoned.
+
+**A bound is not a block.** Where a limit is arithmetic rather than judgement, the control carries it: pick a start date and the end-date picker will not offer anything past the twelfth working day. That is not a refusal — it is a range, and the warning still stands behind it for a date typed by hand or chosen before the leave type was.
 
 ## 7. Privacy — structural, not policy
 

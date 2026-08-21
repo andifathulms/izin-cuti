@@ -6,6 +6,8 @@ import {
   formatLongDate,
   fromDayNumber,
   isLeapYear,
+  isWeekend,
+  lastDateWithinWorkingDays,
   parseIsoDate,
   toDayNumber,
   workingDaysInclusive,
@@ -190,5 +192,39 @@ describe('derived fields', () => {
       type: 'value',
       text: '20 Juli 2026 s/d 22 Juli 2026',
     })
+  })
+})
+
+describe('the last date a leave can run to', () => {
+  it('gives the twelfth working day from a Monday', () => {
+    // Mon 24 Aug 2026 + 12 working days lands on Wed 9 Sep — two weekends in.
+    expect(lastDateWithinWorkingDays('2026-08-24', 12)).toBe('2026-09-08')
+  })
+
+  it('gives the same day when only one day is allowed', () => {
+    expect(lastDateWithinWorkingDays('2026-08-24', 1)).toBe('2026-08-24')
+  })
+
+  it('skips forward when the start is a weekend', () => {
+    // Saturday has no working day in it, so one day of leave from a Saturday
+    // ends on the Monday.
+    expect(lastDateWithinWorkingDays('2026-08-22', 1)).toBe('2026-08-24')
+  })
+
+  it('never lands on a weekend, because the last day counted is a working one', () => {
+    for (const start of ['2026-08-24', '2026-08-22', '2026-12-28']) {
+      const last = lastDateWithinWorkingDays(start, 12)!
+      expect(isWeekend(parseIsoDate(last)!), `${start} → ${last}`).toBe(false)
+    }
+  })
+
+  it('agrees with the working-day count it bounds', () => {
+    const last = lastDateWithinWorkingDays('2026-08-24', 12)!
+    expect(workingDaysInclusive('2026-08-24', last)).toEqual({ type: 'counted', days: 12 })
+  })
+
+  it('refuses a start that is not a date, or an allowance of nothing', () => {
+    expect(lastDateWithinWorkingDays('', 12)).toBeNull()
+    expect(lastDateWithinWorkingDays('2026-08-24', 0)).toBeNull()
   })
 })

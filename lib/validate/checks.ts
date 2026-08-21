@@ -26,9 +26,26 @@ export type ValidationInput = {
   readonly jenisCutiTerpilih: number
 }
 
+/**
+ * Cuti tahunan is twelve working days a year.
+ *
+ * Applied to cuti tahunan and to a request with no type chosen yet, and not to
+ * the others: cuti besar, sakit and melahirkan have their own entitlements and
+ * are measured in months. Warning that a three-month cuti besar is too long
+ * would be wrong, and a warning that is wrong is one people learn to ignore.
+ */
+export const MAX_CUTI_TAHUNAN_DAYS = 12
+
+/** Whether the twelve-day allowance applies to the type chosen. */
+export function annualLimitApplies(jenisCuti: string): boolean {
+  const chosen = jenisCuti.trim()
+  return chosen === '' || /tahunan/i.test(chosen)
+}
+
 export function validate(input: ValidationInput): ReadonlyArray<Warning> {
   return [
     ...checkNip(input),
+    ...checkAnnualLimit(input),
     ...checkLetterDate(input),
     ...checkRange(input),
     ...checkWorkingDays(input),
@@ -116,6 +133,19 @@ function checkWorkingDays({ request }: ValidationInput): Warning[] {
     })
   }
   return warnings
+}
+
+function checkAnnualLimit({ request }: ValidationInput): Warning[] {
+  if (!annualLimitApplies(request.jenisCuti)) return []
+  const days = workingDaysInclusive(request.mulai, request.sampai)
+  if (days.type !== 'counted' || days.days <= MAX_CUTI_TAHUNAN_DAYS) return []
+  return [
+    {
+      id: 'melebihi-jatah-tahunan',
+      field: 'sampai',
+      message: `Cuti yang diambil ${days.days} hari kerja. Cuti tahunan paling banyak ${MAX_CUTI_TAHUNAN_DAYS} hari kerja dalam setahun.`,
+    },
+  ]
 }
 
 function checkBalance({ request }: ValidationInput): Warning[] {

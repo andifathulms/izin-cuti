@@ -63,6 +63,8 @@ export function TextField({
           {...shared}
           type={field.input === 'number' ? 'number' : isNip ? 'text' : field.input}
           inputMode={isNip ? 'numeric' : undefined}
+          min={field.min}
+          max={field.max}
         />
       )}
 
