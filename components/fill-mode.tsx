@@ -21,6 +21,7 @@ import { applyMapping } from '@/lib/mapping/apply'
 import { buildPreview, resolutionFromFill } from '@/lib/preview/model'
 import { validate } from '@/lib/validate/checks'
 import { serialiseDocx } from '@/lib/docx/serialise'
+import { renderPdf } from '@/lib/pdf/render'
 import type { ProfileValues, RequestValues } from '@/lib/derive/compute'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
@@ -144,20 +145,32 @@ export function FillMode({ locale }: { locale: Locale }) {
     )
   }, [document, mapping, applied, model, focusedTargetId])
 
-  const download = () => {
-    if (template.type !== 'loaded' || applied === null || applied.type !== 'filled') return
-    const bytes = serialiseDocx(template.package, applied.xml)
-    // Copied into its own buffer: fflate may hand back a view onto a larger
-    // one, and Blob would otherwise be given the whole thing.
-    const blob = new Blob([bytes.slice().buffer as ArrayBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    })
+  const save = (bytes: Uint8Array, type: string, extension: string) => {
+    const blob = new Blob([bytes.slice().buffer as ArrayBuffer], { type })
     const url = URL.createObjectURL(blob)
     const anchor = window.document.createElement('a')
     anchor.href = url
-    anchor.download = fileName(mapping?.name ?? 'surat', profileValues, request)
+    anchor.download = fileName(mapping?.name ?? 'surat', profileValues, request, extension)
     anchor.click()
     URL.revokeObjectURL(url)
+  }
+
+  const downloadPdf = () => {
+    if (preview === null) return
+    save(
+      renderPdf(preview, { title: mapping?.name ?? 'Surat' }),
+      'application/pdf',
+      'pdf',
+    )
+  }
+
+  const download = () => {
+    if (template.type !== 'loaded' || applied === null || applied.type !== 'filled') return
+    save(
+      serialiseDocx(template.package, applied.xml),
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'docx',
+    )
   }
 
   if (document === null) {
@@ -349,6 +362,7 @@ export function FillMode({ locale }: { locale: Locale }) {
               warnings={warnings}
               disabled={applied === null || applied.type !== 'filled'}
               onDownload={download}
+              onDownloadPdf={downloadPdf}
               onPrint={() => window.print()}
             />
           </div>
@@ -392,7 +406,12 @@ const SPAN: Record<2 | 3 | 6, string> = {
 }
 
 /** A filename somebody can find again in a downloads folder. */
-function fileName(mappingName: string, profile: ProfileValues, request: RequestValues): string {
+function fileName(
+  mappingName: string,
+  profile: ProfileValues,
+  request: RequestValues,
+  extension: string,
+): string {
   const parts = [mappingName, profile.nama, request.mulai].filter((part) => part.trim() !== '')
-  return `${parts.join(' - ').replace(/[\\/:*?"<>|]/g, '-')}.docx`
+  return `${parts.join(' - ').replace(/[\\/:*?"<>|]/g, '-')}.${extension}`
 }

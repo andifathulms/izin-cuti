@@ -53,7 +53,7 @@ These are genuinely different target types and the mapping tool must surface bot
 
 **DOCX is the deliverable.** It is what the office expects, it stays editable, and Word supplies the fonts.
 
-**PDF is print-from-preview, and is labelled approximate.** Converting a docx to PDF with real fidelity needs a rendering engine; that is not achievable in a browser. The app renders an HTML preview for checking the fill and for printing, and **states plainly that the docx is the authoritative output** while the PDF is a convenience copy whose layout may differ.
+**PDF is generated from the preview, and is labelled approximate.** Converting a docx to PDF with real fidelity needs a rendering engine; that is not achievable in a browser. The app renders an HTML preview for checking the fill, and produces a PDF from the same block model — vector text, the three standard fonts, no rasterising, laid out to one page where it fits. It **states plainly that the docx is the authoritative output** while the PDF is a convenience copy whose layout may differ. Printing from the browser remains available and produces the same content by a different route.
 
 Promising pixel-faithful PDF would be a lie, and the person finding out would be the one whose form got rejected.
 

@@ -97,6 +97,7 @@ type Strings = {
   readonly summaryNoWarnings: string
 
   readonly downloadDocx: string
+  readonly downloadPdf: string
   readonly printPdf: string
   readonly docxAuthoritative: string
   readonly pdfApproximate: string
@@ -223,10 +224,11 @@ const id: Strings = {
   summaryNoWarnings: 'Tidak ada yang perlu diperiksa.',
 
   downloadDocx: 'Unduh DOCX',
-  printPdf: 'Cetak PDF',
+  downloadPdf: 'Unduh PDF',
+  printPdf: 'Cetak',
   docxAuthoritative: 'DOCX adalah keluaran yang berlaku.',
   pdfApproximate:
-    'PDF dicetak dari pratinjau. Tata letaknya bisa berbeda dari dokumen aslinya.',
+    'PDF disusun dari pratinjau, bukan dari dokumen aslinya, sehingga tata letaknya bisa berbeda. Isinya sama.',
 
   driftTitle: 'Dokumen ini tidak cocok dengan pemetaan yang tersimpan',
   driftExplain:
@@ -374,9 +376,11 @@ const en: Strings = {
   summaryNoWarnings: 'Nothing to check.',
 
   downloadDocx: 'Download DOCX',
-  printPdf: 'Print PDF',
+  downloadPdf: 'Download PDF',
+  printPdf: 'Print',
   docxAuthoritative: 'The DOCX is the authoritative output.',
-  pdfApproximate: 'The PDF is printed from the preview. Its layout may differ from the document.',
+  pdfApproximate:
+    'The PDF is laid out from the preview rather than from the document, so its layout may differ. The content is the same.',
 
   driftTitle: 'This document does not match the saved mapping',
   driftExplain:

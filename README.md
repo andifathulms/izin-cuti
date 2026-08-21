@@ -48,8 +48,11 @@ fonts, images, styles, relationships — is copied through byte for byte.
    rather than a policy — and it is said where you are typing your NIP.
 4. **Only `word/document.xml` is modified.** Asserted by test.
 5. **DOCX is authoritative; PDF is approximate.** Faithful docx-to-PDF needs a
-   rendering engine and cannot be done in a browser. The app says so wherever
-   the two appear together.
+   rendering engine and cannot be done in a browser. The PDF here is generated
+   from the same block model the preview renders — real vector text in the
+   standard PDF fonts, nothing embedded, nothing rasterised, shrunk to one page
+   where it fits. It reproduces content, table structure and reading order, not
+   Word's exact line breaks. The app says so wherever the two appear together.
 
 ## Privacy
 

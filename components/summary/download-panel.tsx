@@ -20,6 +20,7 @@ export function DownloadPanel({
   warnings,
   disabled,
   onDownload,
+  onDownloadPdf,
   onPrint,
 }: {
   locale: Locale
@@ -28,6 +29,7 @@ export function DownloadPanel({
   warnings: ReadonlyArray<Warning>
   disabled: boolean
   onDownload: () => void
+  onDownloadPdf: () => void
   onPrint: () => void
 }) {
   const t = strings(locale)
@@ -97,15 +99,25 @@ export function DownloadPanel({
         </button>
 
         <div className="flex max-w-[46ch] flex-col gap-1">
-          <button
-            type="button"
-            onClick={onPrint}
-            disabled={disabled}
-            className="self-start rounded border border-rule px-4 py-2 text-base disabled:opacity-40"
-          >
-            {t.printPdf}
-          </button>
-          {/* Beside the button, not hidden behind it. */}
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={onDownloadPdf}
+              disabled={disabled}
+              className="rounded border border-rule px-4 py-2 text-base disabled:opacity-40"
+            >
+              {t.downloadPdf}
+            </button>
+            <button
+              type="button"
+              onClick={onPrint}
+              disabled={disabled}
+              className="rounded border border-rule px-4 py-2 text-base disabled:opacity-40"
+            >
+              {t.printPdf}
+            </button>
+          </div>
+          {/* Beside the buttons, not hidden behind them. */}
           <p className="text-sm text-ink/70">{t.pdfApproximate}</p>
         </div>
 
