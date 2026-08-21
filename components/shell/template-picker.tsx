@@ -7,9 +7,13 @@ import { strings, type Locale } from '@/lib/i18n/strings'
 import { formatLongDate } from '@/lib/derive/date'
 
 /**
- * Choosing the document. The file is read into memory and never sent anywhere,
- * and that is said right here rather than in a footer — this is the moment a
- * person hands over a letter with their address in it.
+ * Choosing the document.
+ *
+ * No longer on the fill screen. This app fills one form and opens it by
+ * itself, so a picker, a file name, a node count and a remember-this checkbox
+ * were four pieces of furniture in front of somebody who just wants to ask for
+ * three days off. It lives on the profile page now — the escape hatch for a
+ * reissued form, not the front door.
  */
 export function TemplatePicker({ locale }: { locale: Locale }) {
   const t = strings(locale)
@@ -17,7 +21,7 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
   const input = useRef<HTMLInputElement>(null)
 
   return (
-    <div className="no-print border-b border-rule px-6 py-4">
+    <div className="no-print px-6 py-2">
       <div className="flex flex-wrap items-center gap-4">
         <button
           type="button"
@@ -117,4 +121,17 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
       <PrivacyLine locale={locale} className="mt-3 max-w-[80ch]" />
     </div>
   )
+}
+
+/**
+ * The privacy line the fill screen keeps: one sentence, quiet, at the foot of
+ * the column where the NIP and the home address are actually typed.
+ *
+ * Not removed — DESIGN.md §8 asks for a persistent line exactly there, and
+ * that is the one place the claim is worth making. Only shortened, because
+ * three sentences above the form is a paragraph nobody reads twice.
+ */
+export function PrivacyFootnote({ locale }: { locale: Locale }) {
+  const t = strings(locale)
+  return <p className="no-print pt-2 text-sm text-ink/50">{t.privacyShort}</p>
 }

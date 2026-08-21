@@ -3,6 +3,7 @@
 import { useRef, useState } from 'react'
 import { useApp } from '@/components/app-state'
 import { PrivacyLine } from '@/components/shell/chrome'
+import { TemplatePicker } from '@/components/shell/template-picker'
 import { EMPTY_PROFILE, type ProfileValues } from '@/lib/derive/compute'
 import { formatNip, normaliseNip } from '@/lib/derive/nip'
 import { clearAll, exportAll, importAll } from '@/lib/mapping/storage'
@@ -175,6 +176,16 @@ export function ProfileMode({ locale }: { locale: Locale }) {
               />
             </label>
           ))}
+        </div>
+      </section>
+
+      {/* The document. Not on the fill screen, because this app fills one form
+          and opens it itself — this is the escape hatch for the day the office
+          reissues it. */}
+      <section className="mt-8">
+        <h2 className="border-b border-rule pb-1 text-base font-semibold">{t.documentSource}</h2>
+        <div className="-mx-6 mt-2">
+          <TemplatePicker locale={locale} />
         </div>
       </section>
 

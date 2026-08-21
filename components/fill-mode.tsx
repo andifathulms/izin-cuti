@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useApp } from '@/components/app-state'
-import { TemplatePicker } from '@/components/shell/template-picker'
+import { PrivacyFootnote } from '@/components/shell/template-picker'
 import { DocumentPreview } from '@/components/preview/document-preview'
 import { StateLegend } from '@/components/shell/chrome'
 import { DownloadPanel } from '@/components/summary/download-panel'
@@ -162,30 +162,20 @@ export function FillMode({ locale }: { locale: Locale }) {
 
   if (document === null) {
     return (
-      <div>
-        <TemplatePicker locale={locale} />
-        <div className="px-6 py-12">
-          <h1 className="text-xl font-semibold">{t.noTemplate}</h1>
-          <p className="mt-2 text-base text-ink/70">{t.noTemplateHint}</p>
-        </div>
+      <div className="px-6 py-12">
+        <h1 className="text-xl font-semibold">{t.noTemplate}</h1>
+        <p className="mt-2 text-base text-ink/70">{t.noTemplateHint}</p>
       </div>
     )
   }
 
   if (applied !== null && applied.type === 'refused-drift') {
-    return (
-      <div>
-        <TemplatePicker locale={locale} />
-        <DriftNotice locale={locale} differences={applied.differences} />
-      </div>
-    )
+    return <DriftNotice locale={locale} differences={applied.differences} />
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col">
-      <TemplatePicker locale={locale} />
-
-      <div className="no-print flex flex-wrap items-center gap-4 border-b border-rule px-6 py-3">
+    <div className="flex h-[calc(100vh-5rem)] flex-col">
+      <div className="no-print flex flex-wrap items-center gap-4 border-b border-rule px-6 py-2">
         {/* One form means one mapping, and a select with one option in it is
             noise. It reappears the moment there is a second. */}
         {mappings.length > 1 && (
@@ -225,7 +215,7 @@ export function FillMode({ locale }: { locale: Locale }) {
           </p>
         </div>
       ) : (
-        <div className="grid min-h-0 flex-1 lg:grid-cols-[3fr_2fr]">
+        <div className="grid min-h-0 flex-1 lg:grid-cols-2">
           <div className="min-h-0 overflow-auto border-r border-rule">
             <form className="space-y-8 px-6 py-6" onSubmit={(event) => event.preventDefault()}>
               <Section title={t.fillDirektorat} note={t.fillDirektoratHint}>
@@ -343,6 +333,10 @@ export function FillMode({ locale }: { locale: Locale }) {
                 </Section>
               )}
             </form>
+
+            <div className="px-6">
+              <PrivacyFootnote locale={locale} />
+            </div>
 
             <DownloadPanel
               locale={locale}

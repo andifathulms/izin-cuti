@@ -23,6 +23,8 @@ type Strings = {
   readonly navProfile: string
   readonly privacy: string
   readonly privacyWhy: string
+  readonly privacyShort: string
+  readonly documentSource: string
 
   readonly chooseTemplate: string
   readonly chooseTemplateHint: string
@@ -134,6 +136,9 @@ const id: Strings = {
   privacy: 'Tidak ada yang Anda ketik meninggalkan perangkat ini.',
   privacyWhy:
     'Tidak ada server. Dokumen dibaca ke memori, diisi, lalu diunduh secara lokal. Profil dan pemetaan disimpan di penyimpanan lokal peramban.',
+  privacyShort:
+    'Tidak ada yang Anda ketik meninggalkan perangkat ini — tidak ada server sama sekali.',
+  documentSource: 'Dokumen',
 
   chooseTemplate: 'Pilih berkas .docx',
   chooseTemplateHint: 'Berkas tetap di perangkat Anda. Tidak ada yang diunggah.',
@@ -283,6 +288,8 @@ const en: Strings = {
   privacy: 'Nothing you type leaves this device.',
   privacyWhy:
     'There is no server. The document is read into memory, filled, and downloaded locally. Profiles and mappings live in this browser’s local storage.',
+  privacyShort: 'Nothing you type leaves this device — there is no server at all.',
+  documentSource: 'Document',
 
   chooseTemplate: 'Choose a .docx file',
   chooseTemplateHint: 'The file stays on your device. Nothing is uploaded.',
