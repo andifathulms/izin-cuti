@@ -85,6 +85,19 @@ export type Derivation = {
   /** Shown beside the result, so nobody wonders where the number came from. */
   readonly label: string
   readonly explanation: string
+  /**
+   * The inputs this reads.
+   *
+   * Declared rather than implied, because the form is generated from the
+   * mapping: a value that only ever reaches the document through a derived
+   * field would otherwise never be asked for at all. That is not hypothetical —
+   * the leave dates feed four derived targets and nothing else, so the form had
+   * no date pickers and the day count could never be computed.
+   */
+  readonly needs: {
+    readonly profile: ReadonlyArray<keyof ProfileValues>
+    readonly request: ReadonlyArray<keyof RequestValues>
+  }
   readonly compute: (inputs: DerivationInputs) => DerivedValue
 }
 
@@ -96,6 +109,7 @@ const missing = (what: string): DerivedValue => ({
 const REGISTRY: Record<DerivationId, Derivation> = {
   'lama-cuti-hari-kerja': {
     id: 'lama-cuti-hari-kerja',
+    needs: { profile: [], request: ['mulai', 'sampai'] },
     label: 'Lama cuti (hari kerja)',
     explanation:
       'Dihitung dari tanggal mulai sampai tanggal selesai, Sabtu dan Minggu tidak dihitung. Hari libur nasional tidak diketahui aplikasi ini.',
@@ -103,12 +117,14 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'lama-cuti-hari-kalender': {
     id: 'lama-cuti-hari-kalender',
+    needs: { profile: [], request: ['mulai', 'sampai'] },
     label: 'Lama cuti (hari kalender)',
     explanation: 'Jumlah hari dari tanggal mulai sampai tanggal selesai, termasuk keduanya.',
     compute: ({ request }) => count(calendarDaysInclusive(request.mulai, request.sampai)),
   },
   'lama-cuti-terbilang': {
     id: 'lama-cuti-terbilang',
+    needs: { profile: [], request: ['mulai', 'sampai'] },
     label: 'Lama cuti terbilang',
     explanation: 'Jumlah hari kerja, ditulis dengan huruf.',
     compute: ({ request }) => {
@@ -119,6 +135,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'satuan-waktu': {
     id: 'satuan-waktu',
+    needs: { profile: [], request: ['mulai', 'sampai'] },
     label: 'Satuan waktu',
     explanation:
       'Formulir menyediakan hari / bulan / tahun. Yang terpilih ditentukan dari panjang cuti.',
@@ -132,6 +149,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'sisa-cuti-setelah': {
     id: 'sisa-cuti-setelah',
+    needs: { profile: [], request: ['mulai', 'sampai', 'sisaCutiSebelum'] },
     label: 'Sisa cuti setelah pengajuan',
     explanation: 'Sisa cuti sebelum pengajuan dikurangi lama cuti yang diambil.',
     compute: ({ request }) => {
@@ -146,24 +164,28 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'tanggal-surat-panjang': {
     id: 'tanggal-surat-panjang',
+    needs: { profile: [], request: ['tanggalSurat'] },
     label: 'Tanggal surat',
     explanation: 'Tanggal surat dalam format panjang, misalnya 20 Juli 2026.',
     compute: ({ request }) => longDate(request.tanggalSurat, 'tanggal surat'),
   },
   'tanggal-mulai-panjang': {
     id: 'tanggal-mulai-panjang',
+    needs: { profile: [], request: ['mulai'] },
     label: 'Tanggal mulai',
     explanation: 'Tanggal mulai cuti dalam format panjang.',
     compute: ({ request }) => longDate(request.mulai, 'tanggal mulai'),
   },
   'tanggal-selesai-panjang': {
     id: 'tanggal-selesai-panjang',
+    needs: { profile: [], request: ['sampai'] },
     label: 'Tanggal selesai',
     explanation: 'Tanggal selesai cuti dalam format panjang.',
     compute: ({ request }) => longDate(request.sampai, 'tanggal selesai'),
   },
   'rentang-tanggal': {
     id: 'rentang-tanggal',
+    needs: { profile: [], request: ['mulai', 'sampai'] },
     label: 'Rentang tanggal',
     explanation: 'Tanggal mulai sampai dengan tanggal selesai, keduanya format panjang.',
     compute: ({ request }) => {
@@ -175,6 +197,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'hari-mulai': {
     id: 'hari-mulai',
+    needs: { profile: [], request: ['mulai'] },
     label: 'Hari mulai',
     explanation: 'Nama hari dari tanggal mulai cuti.',
     compute: ({ request }) => {
@@ -184,18 +207,21 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'salinan-nama': {
     id: 'salinan-nama',
+    needs: { profile: ['nama'], request: [] },
     label: 'Nama (salinan)',
     explanation: 'Nama yang sama, diulang di bagian lain formulir.',
     compute: ({ profile }) => copy(profile.nama, 'nama'),
   },
   'salinan-nip': {
     id: 'salinan-nip',
+    needs: { profile: ['nip'], request: [] },
     label: 'NIP (salinan)',
     explanation: 'NIP yang sama, diulang di bagian lain formulir.',
     compute: ({ profile }) => copy(profile.nip, 'NIP'),
   },
   'masa-kerja-dari-nip': {
     id: 'masa-kerja-dari-nip',
+    needs: { profile: ['nip'], request: ['tanggalSurat'] },
     label: 'Masa kerja',
     explanation:
       'Dihitung dari TMT yang tersimpan di dalam NIP (digit ke-9 sampai ke-14) sampai tanggal surat. Tidak perlu diketik, sehingga tidak bisa tertinggal setahun.',
@@ -209,6 +235,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'nip-berawalan': {
     id: 'nip-berawalan',
+    needs: { profile: ['nip'], request: [] },
     label: 'NIP dengan awalan "NIP."',
     explanation: 'NIP yang sama, ditulis dengan awalan NIP. seperti pada blok tanda tangan.',
     compute: ({ profile }) =>
@@ -218,6 +245,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'salinan-nip-atasan': {
     id: 'salinan-nip-atasan',
+    needs: { profile: ['atasanNip'], request: [] },
     label: 'NIP atasan dengan awalan "NIP."',
     explanation: 'NIP atasan langsung, ditulis dengan awalan NIP.',
     compute: ({ profile }) =>
@@ -227,6 +255,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'salinan-nip-pejabat': {
     id: 'salinan-nip-pejabat',
+    needs: { profile: ['pejabatNip'], request: [] },
     label: 'NIP pejabat dengan awalan "NIP."',
     explanation: 'NIP pejabat yang berwenang, ditulis dengan awalan NIP.',
     compute: ({ profile }) =>
@@ -236,6 +265,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'tanggal-surat-dengan-tempat': {
     id: 'tanggal-surat-dengan-tempat',
+    needs: { profile: ['tempatSurat'], request: ['tanggalSurat'] },
     label: 'Tempat dan tanggal surat',
     explanation: 'Tempat penulisan surat diikuti tanggalnya, misalnya "Nusantara, 21 Agustus 2026".',
     compute: ({ profile, request }) => {
@@ -247,6 +277,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'lama-cuti-dengan-satuan': {
     id: 'lama-cuti-dengan-satuan',
+    needs: { profile: [], request: ['mulai', 'sampai'] },
     label: 'Lama cuti dengan satuan',
     explanation:
       'Jumlah hari kerja diikuti satuannya, misalnya "3 hari". Menggantikan pilihan hari/bulan/tahun yang biasanya dicoret.',
@@ -260,6 +291,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'sisa-cuti-kalimat': {
     id: 'sisa-cuti-kalimat',
+    needs: { profile: [], request: ['mulai', 'sampai', 'sisaCutiSebelum'] },
     label: 'Kalimat sisa cuti',
     explanation:
       'Kalimat "Sisa cuti selanjutnya N hari kerja", dengan N dihitung dari sisa cuti dikurangi lama cuti yang diambil.',
@@ -271,6 +303,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
   },
   'salinan-alamat-cuti': {
     id: 'salinan-alamat-cuti',
+    needs: { profile: ['alamat'], request: ['alamatCuti'] },
     label: 'Alamat selama cuti (salinan)',
     explanation: 'Alamat selama menjalankan cuti, atau alamat rumah bila dikosongkan.',
     compute: ({ profile, request }) => {

@@ -230,6 +230,24 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(hydrate, [hydrate])
 
+  /**
+   * The letter is almost always written today, so today is the default.
+   *
+   * Set after mount rather than in the initial state: this page is prerendered
+   * at build time, and a date baked in then would be both wrong and a hydration
+   * mismatch. `lib/derive` still has no clock — the clock lives here, at the
+   * edge, and the date travels inward as an ordinary value.
+   */
+  useEffect(() => {
+    const now = new Date()
+    const today = [
+      now.getFullYear(),
+      String(now.getMonth() + 1).padStart(2, '0'),
+      String(now.getDate()).padStart(2, '0'),
+    ].join('-')
+    dispatch({ type: 'request-value-changed', key: 'tanggalSurat', value: today })
+  }, [])
+
   const readTemplate = useCallback(
     (fileName: string, bytes: Uint8Array, rememberedAt: string | null) => {
       const read = readDocx(bytes)

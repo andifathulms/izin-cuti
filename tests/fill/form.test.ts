@@ -76,7 +76,22 @@ describe('the generated form', () => {
   it('asks only for what the mapping actually uses', () => {
     const model = form()
     expect(model.profile.map((field) => field.key)).toEqual(['nama'])
-    expect(model.request.map((field) => field.key)).toEqual(['mulai'])
+  })
+
+  it('asks for what a derived field needs, or it could never be computed', () => {
+    // 'lama-cuti-hari-kerja' reads both dates. Only 'mulai' is written into the
+    // document directly; without this the form would show a day count and offer
+    // no way to give it an end date.
+    const model = form()
+    expect(model.request.map((field) => field.key)).toEqual(['mulai', 'sampai'])
+    expect(model.request.every((field) => field.input === 'date')).toBe(true)
+  })
+
+  it('orders fields as the value types declare them, not as the mapping mentions them', () => {
+    // So the dates sit together and the form reads the same way every time,
+    // whatever order somebody happened to map the nodes in.
+    const model = form()
+    expect(model.request.map((field) => field.key)).toEqual(['mulai', 'sampai'])
   })
 
   it('asks once for a value the document repeats', () => {

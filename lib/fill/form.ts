@@ -4,7 +4,7 @@ import {
   type ProfileValues,
   type RequestValues,
 } from '../derive/compute'
-import { derivation } from '../derive/compute'
+import { derivation, EMPTY_PROFILE, EMPTY_REQUEST } from '../derive/compute'
 import { checkboxGroups, textTargets, type CheckboxTarget, type Mapping } from '../mapping/schema'
 import type { Warning } from '../validate/checks'
 
@@ -94,14 +94,21 @@ export function buildForm(
         push(requestKeys, source.key, target.id)
         break
       case 'derived': {
+        const computation = derivation(source.computation)
         const computed = computeDerived(source.computation, inputs)
         derived.push({
           targetId: target.id,
           label: target.label,
-          explanation: derivation(source.computation).explanation,
+          explanation: computation.explanation,
           value: computed.type === 'value' ? computed.text : '',
           unavailable: computed.type === 'value' ? null : computed.reason,
         })
+        // A derived field's inputs still have to be asked for somewhere. The
+        // leave dates reach the document only through derived targets, so
+        // without this the form would show a computed day count and no way to
+        // give it any days.
+        for (const key of computation.needs.profile) push(profileKeys, key, target.id)
+        for (const key of computation.needs.request) push(requestKeys, key, target.id)
         break
       }
       default: {
@@ -125,10 +132,13 @@ export function buildForm(
   })
 
   return {
-    profile: [...profileKeys]
+    // Ordered as the value types declare them rather than as the mapping
+    // happens to mention them, so the form reads the same way every time and
+    // the dates sit together.
+    profile: ordered(profileKeys, Object.keys(EMPTY_PROFILE))
       .filter(([key]) => !managed.has(key))
       .map(([key, ids]) => field(key, inputs.profile[key as keyof ProfileValues] ?? '', ids)),
-    request: [...requestKeys].map(([key, ids]) =>
+    request: ordered(requestKeys, Object.keys(EMPTY_REQUEST)).map(([key, ids]) =>
       field(key, inputs.request[key as keyof RequestValues] ?? '', ids),
     ),
     derived,
@@ -141,6 +151,20 @@ export function buildForm(
       .filter((target): target is CheckboxTarget => target.type === 'checkbox' && target.group === null)
       .map((target) => ({ target, checked: checkboxState[target.id] === true })),
   }
+}
+
+function ordered(
+  map: Map<string, string[]>,
+  canonical: ReadonlyArray<string>,
+): Array<[string, string[]]> {
+  return [...map].sort(
+    ([a], [b]) => indexOrLast(canonical, a) - indexOrLast(canonical, b),
+  )
+}
+
+function indexOrLast(canonical: ReadonlyArray<string>, key: string): number {
+  const index = canonical.indexOf(key)
+  return index === -1 ? canonical.length : index
 }
 
 function push(map: Map<string, string[]>, key: string, targetId: string): void {
