@@ -90,7 +90,7 @@ The cost is stated where it is offered rather than hidden: **a remembered templa
 - **No approval workflow, no submission, no routing.** Those need state and a server.
 - **No digital signature.** TTE via BSrE requires a server and credentials; there is no client-side path.
 - **No nomor surat minting.** A sequential number shared across users is shared state. **The number is an input**, assigned by whoever assigns it.
-- **No bundled government templates.** The user supplies their own. This keeps the app generic and keeps official documents out of a public repository.
+- **No bundled *filled* templates, and no template the app depends on.** One blank form ships as a convenience — the standard *Formulir Permintaan dan Pemberian Cuti*, blanked by the app's own engine, carrying nobody's data — with a preset mapping so a common case works without mapping ninety-six nodes first. The app remains generic: the bundled form is one mapping among many, fingerprinted like any other, and a different office form is supplied and mapped by whoever owns it.
 - **No OCR, no scanned documents, no PDF templates in v1.**
 - **No editing the template in Word to blank it.** A Word re-save restructures runs, and a mapping made against the original stops fitting. The blank copy is produced by the same fill engine that fills it.
 - **No accounts, no server, no runtime network.**

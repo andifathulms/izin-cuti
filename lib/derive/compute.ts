@@ -1,4 +1,5 @@
 import { calendarDaysInclusive, formatDayName, formatLongDate, workingDaysInclusive } from './date'
+import { formatMasaKerja, masaKerja, parseNip } from './nip'
 import { terbilang } from './terbilang'
 
 /**
@@ -29,6 +30,13 @@ export const DERIVATIONS = [
   'salinan-nama',
   'salinan-nip',
   'salinan-alamat-cuti',
+  'masa-kerja-dari-nip',
+  'nip-berawalan',
+  'salinan-nip-atasan',
+  'salinan-nip-pejabat',
+  'tanggal-surat-dengan-tempat',
+  'lama-cuti-dengan-satuan',
+  'sisa-cuti-kalimat',
 ] as const
 
 export type DerivationId = (typeof DERIVATIONS)[number]
@@ -53,10 +61,14 @@ export type ProfileValues = {
   readonly masaKerja: string
   readonly alamat: string
   readonly telepon: string
+  /** Where the letter is written — "Nusantara". Stable per person, so profile. */
+  readonly tempatSurat: string
   readonly atasanNama: string
   readonly atasanNip: string
+  readonly atasanJabatan: string
   readonly pejabatNama: string
   readonly pejabatNip: string
+  readonly pejabatJabatan: string
 }
 
 export type DerivationInputs = {
@@ -182,6 +194,81 @@ const REGISTRY: Record<DerivationId, Derivation> = {
     explanation: 'NIP yang sama, diulang di bagian lain formulir.',
     compute: ({ profile }) => copy(profile.nip, 'NIP'),
   },
+  'masa-kerja-dari-nip': {
+    id: 'masa-kerja-dari-nip',
+    label: 'Masa kerja',
+    explanation:
+      'Dihitung dari TMT yang tersimpan di dalam NIP (digit ke-9 sampai ke-14) sampai tanggal surat. Tidak perlu diketik, sehingga tidak bisa tertinggal setahun.',
+    compute: ({ profile, request }) => {
+      const served = masaKerja(profile.nip, request.tanggalSurat)
+      if (served === null) {
+        return parseNip(profile.nip) === null ? missing('NIP') : missing('tanggal surat')
+      }
+      return { type: 'value', text: formatMasaKerja(served) }
+    },
+  },
+  'nip-berawalan': {
+    id: 'nip-berawalan',
+    label: 'NIP dengan awalan "NIP."',
+    explanation: 'NIP yang sama, ditulis dengan awalan NIP. seperti pada blok tanda tangan.',
+    compute: ({ profile }) =>
+      profile.nip.trim() === ''
+        ? missing('NIP')
+        : { type: 'value', text: `NIP. ${profile.nip.trim()}` },
+  },
+  'salinan-nip-atasan': {
+    id: 'salinan-nip-atasan',
+    label: 'NIP atasan dengan awalan "NIP."',
+    explanation: 'NIP atasan langsung, ditulis dengan awalan NIP.',
+    compute: ({ profile }) =>
+      profile.atasanNip.trim() === ''
+        ? missing('NIP atasan')
+        : { type: 'value', text: `NIP. ${profile.atasanNip.trim()}` },
+  },
+  'salinan-nip-pejabat': {
+    id: 'salinan-nip-pejabat',
+    label: 'NIP pejabat dengan awalan "NIP."',
+    explanation: 'NIP pejabat yang berwenang, ditulis dengan awalan NIP.',
+    compute: ({ profile }) =>
+      profile.pejabatNip.trim() === ''
+        ? missing('NIP pejabat')
+        : { type: 'value', text: `NIP. ${profile.pejabatNip.trim()}` },
+  },
+  'tanggal-surat-dengan-tempat': {
+    id: 'tanggal-surat-dengan-tempat',
+    label: 'Tempat dan tanggal surat',
+    explanation: 'Tempat penulisan surat diikuti tanggalnya, misalnya "Nusantara, 21 Agustus 2026".',
+    compute: ({ profile, request }) => {
+      const date = formatLongDate(request.tanggalSurat)
+      if (date === null) return missing('tanggal surat')
+      const place = profile.tempatSurat.trim()
+      return { type: 'value', text: place === '' ? date : `${place}, ${date}` }
+    },
+  },
+  'lama-cuti-dengan-satuan': {
+    id: 'lama-cuti-dengan-satuan',
+    label: 'Lama cuti dengan satuan',
+    explanation:
+      'Jumlah hari kerja diikuti satuannya, misalnya "3 hari". Menggantikan pilihan hari/bulan/tahun yang biasanya dicoret.',
+    compute: (inputs) => {
+      const days = workingDaysInclusive(inputs.request.mulai, inputs.request.sampai)
+      if (days.type !== 'counted') return missing('tanggal cuti')
+      const unit = REGISTRY['satuan-waktu'].compute(inputs)
+      if (unit.type !== 'value') return unit
+      return { type: 'value', text: `${days.days} ${unit.text}` }
+    },
+  },
+  'sisa-cuti-kalimat': {
+    id: 'sisa-cuti-kalimat',
+    label: 'Kalimat sisa cuti',
+    explanation:
+      'Kalimat "Sisa cuti selanjutnya N hari kerja", dengan N dihitung dari sisa cuti dikurangi lama cuti yang diambil.',
+    compute: (inputs) => {
+      const after = REGISTRY['sisa-cuti-setelah'].compute(inputs)
+      if (after.type !== 'value') return after
+      return { type: 'value', text: `Sisa cuti selanjutnya ${after.text} hari kerja` }
+    },
+  },
   'salinan-alamat-cuti': {
     id: 'salinan-alamat-cuti',
     label: 'Alamat selama cuti (salinan)',
@@ -228,10 +315,13 @@ export const EMPTY_PROFILE: ProfileValues = {
   masaKerja: '',
   alamat: '',
   telepon: '',
+  tempatSurat: '',
   atasanNama: '',
   atasanNip: '',
+  atasanJabatan: '',
   pejabatNama: '',
   pejabatNip: '',
+  pejabatJabatan: '',
 }
 
 export const EMPTY_REQUEST: RequestValues = {

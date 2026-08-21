@@ -13,7 +13,7 @@ import { formatLongDate } from '@/lib/derive/date'
  */
 export function TemplatePicker({ locale }: { locale: Locale }) {
   const t = strings(locale)
-  const { template, openTemplate, clearTemplate, setRemembered } = useApp()
+  const { template, openTemplate, openBundledForm, clearTemplate, setRemembered } = useApp()
   const input = useRef<HTMLInputElement>(null)
 
   return (
@@ -37,6 +37,16 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
             event.target.value = ''
           }}
         />
+
+        {template.type === 'none' && (
+          <button
+            type="button"
+            onClick={openBundledForm}
+            className="rounded border border-rule px-4 py-2 text-base transition-colors duration-state ease-house hover:border-typed hover:text-typed"
+          >
+            {t.useBundled}
+          </button>
+        )}
 
         {template.type === 'loaded' && (
           <p className="text-base">
@@ -68,6 +78,10 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
           </p>
         )}
       </div>
+
+      {template.type === 'none' && (
+        <p className="mt-2 max-w-[80ch] text-sm text-ink/70">{t.useBundledWhy}</p>
+      )}
 
       {template.type === 'loaded' && (
         <div className="mt-3 max-w-[80ch]">

@@ -32,6 +32,8 @@ type Strings = {
   readonly textNodes: string
   readonly checkboxCells: string
   readonly notADocx: string
+  readonly useBundled: string
+  readonly useBundledWhy: string
   readonly remember: string
   readonly rememberWhy: string
   readonly rememberedOn: string
@@ -138,6 +140,9 @@ const id: Strings = {
   textNodes: 'simpul teks',
   checkboxCells: 'kotak centang',
   notADocx: 'Berkas ini tidak bisa dibaca sebagai .docx.',
+  useBundled: 'Gunakan formulir cuti bawaan',
+  useBundledWhy:
+    'Formulir Permintaan dan Pemberian Cuti versi kosong, sudah dipetakan. Bila formulir kantor Anda berbeda, pilih berkas Anda sendiri lalu petakan sekali.',
   remember: 'Ingat dokumen ini di perangkat ini',
   rememberWhy:
     'Dokumen disimpan di peramban ini saja, dan tetap tidak dikirim ke mana pun. Gunakan salinan kosong — dokumen asli berisi data pribadi seseorang.',
@@ -241,10 +246,13 @@ const id: Strings = {
     masaKerja: 'Masa kerja',
     alamat: 'Alamat rumah',
     telepon: 'Telepon',
+    tempatSurat: 'Tempat penulisan surat',
     atasanNama: 'Nama atasan langsung',
     atasanNip: 'NIP atasan langsung',
+    atasanJabatan: 'Jabatan atasan langsung',
     pejabatNama: 'Nama pejabat yang berwenang',
     pejabatNip: 'NIP pejabat yang berwenang',
+    pejabatJabatan: 'Jabatan pejabat yang berwenang',
     tanggalSurat: 'Tanggal surat',
     mulai: 'Mulai tanggal',
     sampai: 'Sampai dengan',
@@ -275,6 +283,9 @@ const en: Strings = {
   textNodes: 'text nodes',
   checkboxCells: 'checkbox cells',
   notADocx: 'This file could not be read as a .docx.',
+  useBundled: 'Use the bundled cuti form',
+  useBundledWhy:
+    'A blank Formulir Permintaan dan Pemberian Cuti, already mapped. If your office’s form differs, choose your own file and map it once.',
   remember: 'Remember this document on this device',
   rememberWhy:
     'Kept in this browser only, and still sent nowhere. Use a blank copy — the original carries somebody’s personal data.',
@@ -373,6 +384,9 @@ const en: Strings = {
     ...id.fieldLabels,
     alamat: 'Home address',
     telepon: 'Telephone',
+    tempatSurat: 'Place the letter is written',
+    atasanJabatan: 'Atasan langsung — jabatan',
+    pejabatJabatan: 'Pejabat berwenang — jabatan',
     tanggalSurat: 'Letter date',
     mulai: 'From',
     sampai: 'To',

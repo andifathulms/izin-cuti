@@ -27,6 +27,10 @@ import {
   loadRememberedTemplate,
   rememberTemplate,
 } from '@/lib/mapping/template-store'
+import {
+  FORMULIR_CUTI_DOCX_BASE64,
+  FORMULIR_CUTI_MAPPING,
+} from '@/lib/presets/formulir-cuti.generated'
 
 /**
  * One place holds the document, the mapping and the values, so map mode and
@@ -181,6 +185,7 @@ export type AppState = State & {
   readonly store: Store | null
   readonly openTemplate: (file: File) => Promise<void>
   readonly clearTemplate: () => void
+  readonly openBundledForm: () => void
   readonly setRemembered: (remembered: boolean) => Promise<void>
   readonly persistMapping: (mapping: Mapping) => void
   readonly removeMapping: (id: string) => void
@@ -260,11 +265,30 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     }
   }, [readTemplate])
 
+  /**
+   * The bundled blank form and the mapping fingerprinted against it.
+   *
+   * Decoded from a string in the bundle rather than fetched. A same-origin
+   * fetch is still a fetch, and this app makes none at runtime.
+   */
+  const openBundledForm = useCallback(() => {
+    const binary = atob(FORMULIR_CUTI_DOCX_BASE64)
+    const bytes = new Uint8Array(binary.length)
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i)
+    if (!readTemplate(`${FORMULIR_CUTI_MAPPING.name}.docx`, bytes, null)) return
+    dispatch({
+      type: 'mappings-changed',
+      mappings: saveMapping(store, FORMULIR_CUTI_MAPPING),
+      activeMappingId: FORMULIR_CUTI_MAPPING.id,
+    })
+  }, [readTemplate, store])
+
   const value: AppState = useMemo(
     () => ({
       ...state,
       store,
       openTemplate,
+      openBundledForm,
       clearTemplate: () => {
         void forgetTemplate()
         dispatch({ type: 'template-cleared' })
@@ -320,7 +344,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setFocus: (targetId) => dispatch({ type: 'focus-changed', targetId }),
       refreshStorage: hydrate,
     }),
-    [state, store, openTemplate, hydrate],
+    [state, store, openTemplate, openBundledForm, hydrate],
   )
 
   return <Context.Provider value={value}>{children}</Context.Provider>

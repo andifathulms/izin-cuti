@@ -75,8 +75,25 @@ self-hosted.
 
 No approval workflow, no submission, no routing. No digital signature. **No
 nomor surat generation** — a shared sequential number is shared state, so the
-number is an input. No bundled government templates: you supply your own, which
-keeps the app generic and keeps official documents out of a public repository.
+number is an input.
+
+## The bundled form
+
+A blank *Formulir Permintaan dan Pemberian Cuti* ships with a preset mapping,
+so the common case works without mapping anything: choose **Gunakan formulir
+cuti bawaan**, fill your profile once, and a request costs a reason, a balance,
+two dates and a leave type.
+
+It was produced by the app's own engine from a filled original that is
+gitignored and never committed — `pnpm blank` replaces every mapped value with
+its field name and changes not a byte of structure. It carries nobody's
+personal data, and the suite asserts that against the exact values the original
+held. **No filled form ever enters this repository.**
+
+Masa kerja is not one of the fields, because it does not have to be: an
+eighteen-digit NIP encodes the TMT in digits 9–14, so masa kerja is computed
+from the NIP and the letter date. A computed value cannot be a year out of
+date, which is the failure this whole tool exists to prevent.
 
 ## Development
 
@@ -92,6 +109,7 @@ pnpm test:drift      # fingerprint detection, both directions
 
 pnpm typecheck
 pnpm lint
+pnpm blank           # blank a filled form → presets/ + the generated preset
 pnpm build           # static export to ./out
 pnpm preview         # serve ./out under the production basePath
 ```

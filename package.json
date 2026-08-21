@@ -14,7 +14,9 @@
     "test:escape": "vitest run tests/escape",
     "test:drift": "vitest run tests/drift",
     "typecheck": "tsc --noEmit",
-    "lint": "next lint"
+    "lint": "next lint",
+    "blank": "tsx scripts/blank.mts",
+    "inspect": "tsx scripts/inspect.mts"
   },
   "dependencies": {
     "fflate": "^0.8.2",
@@ -32,7 +34,8 @@
     "postcss": "^8.4.39",
     "tailwindcss": "^3.4.6",
     "typescript": "^5.5.3",
-    "vitest": "^2.0.3"
+    "vitest": "^2.0.3",
+    "tsx": "^4.16.2"
   },
   "packageManager": "pnpm@9.15.9"
 }

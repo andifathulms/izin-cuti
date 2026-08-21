@@ -5,3 +5,11 @@ out/
 next-env.d.ts
 .DS_Store
 coverage/
+
+# Your own filled template. Never commit a document with real data in it —
+# blank it with `pnpm blank` first and commit the blanked copy instead.
+/template.docx
+/*-terisi.docx
+
+# Names real people, so it never ships. Used only to prove the blanking worked.
+/scripts/blank-check.json
