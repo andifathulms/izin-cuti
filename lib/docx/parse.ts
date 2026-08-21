@@ -1,6 +1,6 @@
 import { unescapeXmlText } from './escape'
 import { hashString } from './hash'
-import { attr, firstChild, parseXml, walk, type XmlElement, type XmlNode } from './xml'
+import { attr, firstChild, parseXml, walk, type XmlElement } from './xml'
 
 /**
  * Read `word/document.xml` into the two things the mapper needs: every text
@@ -151,7 +151,7 @@ export function parseDocument(xml: string): ParseResult {
       textNodes: published(state.textNodes),
       checkboxCells: state.checkboxCells,
       blocks,
-      structuralHash: structuralHash(tree.root),
+      structuralHash: structuralHash(blocks),
     },
   }
 }
@@ -421,18 +421,40 @@ function hashContext(context: NodeContext): string {
 }
 
 /**
- * The tag structure with every scrap of text removed. Two documents with the
- * same structural hash have the same skeleton; a template that gained a row,
- * lost a cell or was re-laid-out does not.
+ * The document's skeleton: tables, rows, cells and paragraph shapes, with every
+ * scrap of text removed. Two documents with the same structural hash have the
+ * same bones; a template that gained a row or lost a cell does not.
+ *
+ * A checkbox cell contributes only the fact that it is a checkbox cell. Its
+ * contents are its state — ticking a box adds a run, and a hash that counted
+ * that would refuse a template the moment somebody used it.
  */
-function structuralHash(root: XmlElement): string {
+function structuralHash(blocks: ReadonlyArray<Block>): string {
   const parts: string[] = []
-  const visit = (node: XmlNode): void => {
-    if (node.type !== 'element') return
-    parts.push(node.name)
-    for (const child of node.children) visit(child)
-    parts.push('/')
+  const visitBlocks = (list: ReadonlyArray<Block>): void => {
+    for (const block of list) {
+      if (block.type === 'paragraph') {
+        parts.push(`p${block.runs.length}${block.alignment[0]}`)
+        continue
+      }
+      parts.push('tbl[')
+      for (const row of block.rows) {
+        parts.push('tr[')
+        for (const cell of row.cells) {
+          if (cell.checkboxIndex !== null) {
+            parts.push('box')
+            continue
+          }
+          parts.push(`tc${cell.widthTwips ?? '?'}(`)
+          visitBlocks(cell.blocks)
+          parts.push(')')
+        }
+        parts.push(']')
+      }
+      parts.push(']')
+    }
   }
-  visit(root)
+  visitBlocks(blocks)
   return hashString(parts.join(' '))
 }
+
