@@ -22,14 +22,19 @@ import {
   type ProfileValues,
   type RequestValues,
 } from '@/lib/derive/compute'
+import {
+  forgetTemplate,
+  loadRememberedTemplate,
+  rememberTemplate,
+} from '@/lib/mapping/template-store'
 
 /**
  * One place holds the document, the mapping and the values, so map mode and
  * fill mode are two views of the same session rather than two apps.
  *
- * The document itself is never persisted. Bytes of somebody's letter have no
- * business in local storage; what persists is a mapping and a profile, and
- * only because a person asked for them to.
+ * The document is persisted only when somebody asks for it to be, and only
+ * ever a blank copy — see `template-store.ts`. Bytes of a letter with a real
+ * NIP in it are not something to keep by default.
  */
 
 export type TemplateState =
@@ -40,6 +45,10 @@ export type TemplateState =
       readonly fileName: string
       readonly package: DocxPackage
       readonly document: ParsedDocument
+      /** The bytes as read, so the template can be remembered without a re-read. */
+      readonly bytes: Uint8Array
+      /** ISO date this document was remembered on, or null if it was not. */
+      readonly rememberedAt: string | null
     }
 
 type State = {
@@ -57,7 +66,15 @@ type State = {
 }
 
 type Action =
-  | { type: 'template-loaded'; fileName: string; package: DocxPackage; document: ParsedDocument }
+  | {
+      type: 'template-loaded'
+      fileName: string
+      package: DocxPackage
+      document: ParsedDocument
+      bytes: Uint8Array
+      rememberedAt: string | null
+    }
+  | { type: 'template-remembered'; rememberedAt: string | null }
   | { type: 'template-unreadable'; fileName: string; reason: string }
   | { type: 'template-cleared' }
   | { type: 'hydrated'; mappings: ReadonlyArray<Mapping>; profiles: ReadonlyArray<Profile>; activeProfileId: string | null; storageAvailable: boolean }
@@ -95,8 +112,14 @@ function reduce(state: State, action: Action): State {
           fileName: action.fileName,
           package: action.package,
           document: action.document,
+          bytes: action.bytes,
+          rememberedAt: action.rememberedAt,
         },
       }
+    case 'template-remembered':
+      return state.template.type === 'loaded'
+        ? { ...state, template: { ...state.template, rememberedAt: action.rememberedAt } }
+        : state
     case 'template-unreadable':
       return {
         ...state,
@@ -158,6 +181,7 @@ export type AppState = State & {
   readonly store: Store | null
   readonly openTemplate: (file: File) => Promise<void>
   readonly clearTemplate: () => void
+  readonly setRemembered: (remembered: boolean) => Promise<void>
   readonly persistMapping: (mapping: Mapping) => void
   readonly removeMapping: (id: string) => void
   readonly selectMapping: (id: string | null) => void
@@ -190,32 +214,76 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(hydrate, [hydrate])
 
-  const openTemplate = useCallback(async (file: File) => {
-    const bytes = new Uint8Array(await file.arrayBuffer())
-    const read = readDocx(bytes)
-    if (read.type !== 'read') {
-      dispatch({ type: 'template-unreadable', fileName: file.name, reason: read.reason })
-      return
-    }
-    const parsed = parseDocument(documentXml(read.package))
-    if (parsed.type !== 'parsed') {
-      dispatch({ type: 'template-unreadable', fileName: file.name, reason: parsed.reason })
-      return
-    }
-    dispatch({
-      type: 'template-loaded',
-      fileName: file.name,
-      package: read.package,
-      document: parsed.document,
+  const readTemplate = useCallback(
+    (fileName: string, bytes: Uint8Array, rememberedAt: string | null) => {
+      const read = readDocx(bytes)
+      if (read.type !== 'read') {
+        dispatch({ type: 'template-unreadable', fileName, reason: read.reason })
+        return false
+      }
+      const parsed = parseDocument(documentXml(read.package))
+      if (parsed.type !== 'parsed') {
+        dispatch({ type: 'template-unreadable', fileName, reason: parsed.reason })
+        return false
+      }
+      dispatch({
+        type: 'template-loaded',
+        fileName,
+        package: read.package,
+        document: parsed.document,
+        bytes,
+        rememberedAt,
+      })
+      return true
+    },
+    [],
+  )
+
+  const openTemplate = useCallback(
+    async (file: File) => {
+      readTemplate(file.name, new Uint8Array(await file.arrayBuffer()), null)
+    },
+    [readTemplate],
+  )
+
+  // A remembered template opens the session already loaded. It is read through
+  // exactly the same path as a picked file, so a remembered document that has
+  // somehow become unreadable says so rather than half-loading.
+  useEffect(() => {
+    let cancelled = false
+    void loadRememberedTemplate().then((remembered) => {
+      if (cancelled || remembered === null) return
+      readTemplate(remembered.fileName, remembered.bytes, remembered.rememberedAt)
     })
-  }, [])
+    return () => {
+      cancelled = true
+    }
+  }, [readTemplate])
 
   const value: AppState = useMemo(
     () => ({
       ...state,
       store,
       openTemplate,
-      clearTemplate: () => dispatch({ type: 'template-cleared' }),
+      clearTemplate: () => {
+        void forgetTemplate()
+        dispatch({ type: 'template-cleared' })
+      },
+      setRemembered: async (remembered) => {
+        if (state.template.type !== 'loaded') return
+        if (!remembered) {
+          await forgetTemplate()
+          dispatch({ type: 'template-remembered', rememberedAt: null })
+          return
+        }
+        const rememberedAt = new Date().toISOString().slice(0, 10)
+        await rememberTemplate({
+          fileName: state.template.fileName,
+          bytes: state.template.bytes,
+          rememberedAt,
+        })
+        dispatch({ type: 'template-remembered', rememberedAt })
+      },
       persistMapping: (mapping) =>
         dispatch({
           type: 'mappings-changed',

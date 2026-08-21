@@ -5,6 +5,7 @@ import { useApp } from '@/components/app-state'
 import { PrivacyLine } from '@/components/shell/chrome'
 import { EMPTY_PROFILE, type ProfileValues } from '@/lib/derive/compute'
 import { clearAll, exportAll, importAll } from '@/lib/mapping/storage'
+import { forgetTemplate } from '@/lib/mapping/template-store'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
 /**
@@ -69,6 +70,8 @@ export function ProfileMode({ locale }: { locale: Locale }) {
   const doClear = () => {
     if (!window.confirm(t.profileClearConfirm)) return
     clearAll(store)
+    // Clear all means all of it, including a remembered template.
+    void forgetTemplate()
     refreshStorage()
     selectProfile(null)
     setNotice(t.profileClearAll)

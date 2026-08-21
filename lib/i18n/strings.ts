@@ -32,6 +32,10 @@ type Strings = {
   readonly textNodes: string
   readonly checkboxCells: string
   readonly notADocx: string
+  readonly remember: string
+  readonly rememberWhy: string
+  readonly rememberedOn: string
+  readonly rememberStale: string
 
   readonly mapDesktopOnly: string
   readonly mapIntro: string
@@ -133,6 +137,12 @@ const id: Strings = {
   textNodes: 'simpul teks',
   checkboxCells: 'kotak centang',
   notADocx: 'Berkas ini tidak bisa dibaca sebagai .docx.',
+  remember: 'Ingat dokumen ini di perangkat ini',
+  rememberWhy:
+    'Dokumen disimpan di peramban ini saja, dan tetap tidak dikirim ke mana pun. Gunakan salinan kosong — dokumen asli berisi data pribadi seseorang.',
+  rememberedOn: 'Diingat pada',
+  rememberStale:
+    'Dokumen yang diingat tidak ikut berubah. Bila kantor menerbitkan formulir baru, pilih ulang berkasnya — pemeriksaan pemetaan tidak bisa mengetahuinya sendiri.',
 
   mapDesktopOnly:
     'Mode petakan hanya tersedia di layar lebar. Menandai puluhan simpul di ponsel bukan alur kerja yang nyata.',
@@ -263,6 +273,12 @@ const en: Strings = {
   textNodes: 'text nodes',
   checkboxCells: 'checkbox cells',
   notADocx: 'This file could not be read as a .docx.',
+  remember: 'Remember this document on this device',
+  rememberWhy:
+    'Kept in this browser only, and still sent nowhere. Use a blank copy — the original carries somebody’s personal data.',
+  rememberedOn: 'Remembered on',
+  rememberStale:
+    'A remembered document never changes. If your office reissues the form, pick the file again — the mapping check cannot notice this on its own.',
 
   mapDesktopOnly:
     'Map mode needs a wide screen. Marking dozens of nodes on a phone is not a real workflow.',

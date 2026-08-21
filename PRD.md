@@ -79,7 +79,11 @@ Name, NIP, home address, phone number, reason for leave. **Nothing is uploaded, 
 
 This is true because there is no server, not because of a policy — and it is stated plainly.
 
-**Profiles are saved to the device** in local storage, with an explicit export and clear-all. Nothing else persists.
+**Profiles and mappings are saved to the device** in local storage, with an explicit export and clear-all.
+
+**The template may be remembered too, if asked.** It is the same document every time, so re-picking it each session is friction with no benefit — but the office form arrives with a real person's real data in it (§1), so what should be kept is a *blank copy*. The app produces one losslessly: every mapped value becomes its field name and not a byte of structure changes. Remembering is opt-in, lives in IndexedDB rather than local storage (a 5 MB docx does not fit in a string quota), shows the date it was remembered, and is cleared by clear-all.
+
+The cost is stated where it is offered rather than hidden: **a remembered template never changes.** If the office reissues the form you would keep filling the old one, and the fingerprint cannot help — the remembered document is exactly what it was fingerprinted against.
 
 ## 8. Non-goals
 
@@ -88,6 +92,7 @@ This is true because there is no server, not because of a policy — and it is s
 - **No nomor surat minting.** A sequential number shared across users is shared state. **The number is an input**, assigned by whoever assigns it.
 - **No bundled government templates.** The user supplies their own. This keeps the app generic and keeps official documents out of a public repository.
 - **No OCR, no scanned documents, no PDF templates in v1.**
+- **No editing the template in Word to blank it.** A Word re-save restructures runs, and a mapping made against the original stops fitting. The blank copy is produced by the same fill engine that fills it.
 - **No accounts, no server, no runtime network.**
 
 ## 9. The drift problem

@@ -58,7 +58,15 @@ stored remotely, transmitted, or measured. The document is read into memory,
 filled, and downloaded locally.
 
 Profiles and mappings live in this browser's local storage, with an explicit
-export and clear-all on the profile page. The document itself is never stored.
+export and clear-all on the profile page.
+
+The template is not stored unless you ask it to be. Because your office form
+arrives with a real person's real data in it, map mode can produce a **blank
+copy** — every mapped value replaced by its field name, not a byte of
+structure changed — and that is what is safe to keep. Blanking it in Word
+instead would restructure the text runs and break the mapping. Once
+remembered, the app shows the date, and reminds you that a remembered
+template never updates when your office reissues the form.
 
 No analytics. No error reporting. No third-party script of any kind. Fonts are
 self-hosted.

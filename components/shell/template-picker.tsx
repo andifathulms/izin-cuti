@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { useApp } from '@/components/app-state'
 import { PrivacyLine } from '@/components/shell/chrome'
 import { strings, type Locale } from '@/lib/i18n/strings'
+import { formatLongDate } from '@/lib/derive/date'
 
 /**
  * Choosing the document. The file is read into memory and never sent anywhere,
@@ -12,7 +13,7 @@ import { strings, type Locale } from '@/lib/i18n/strings'
  */
 export function TemplatePicker({ locale }: { locale: Locale }) {
   const t = strings(locale)
-  const { template, openTemplate, clearTemplate } = useApp()
+  const { template, openTemplate, clearTemplate, setRemembered } = useApp()
   const input = useRef<HTMLInputElement>(null)
 
   return (
@@ -67,6 +68,37 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
           </p>
         )}
       </div>
+
+      {template.type === 'loaded' && (
+        <div className="mt-3 max-w-[80ch]">
+          <label className="flex items-center gap-2 text-base">
+            <input
+              type="checkbox"
+              checked={template.rememberedAt !== null}
+              onChange={(event) => void setRemembered(event.target.checked)}
+              className="accent-[color:var(--typed)]"
+            />
+            {t.remember}
+          </label>
+          <p className="mt-1 text-sm text-ink/70">{t.rememberWhy}</p>
+
+          {template.rememberedAt !== null && (
+            <p className="mt-1 flex items-baseline gap-2 text-sm">
+              <span aria-hidden className="text-attention">
+                ▲
+              </span>
+              <span>
+                {/* The date stays on screen, because a remembered template
+                    never changes and nothing else can tell you that. */}
+                <span className="font-mono">
+                  {t.rememberedOn} {formatLongDate(template.rememberedAt) ?? template.rememberedAt}
+                </span>{' '}
+                {t.rememberStale}
+              </span>
+            </p>
+          )}
+        </div>
+      )}
 
       <PrivacyLine locale={locale} className="mt-3 max-w-[80ch]" />
     </div>
