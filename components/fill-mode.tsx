@@ -215,8 +215,8 @@ export function FillMode({ locale }: { locale: Locale }) {
           </p>
         </div>
       ) : (
-        <div className="grid min-h-0 flex-1 lg:grid-cols-2">
-          <div className="min-h-0 overflow-auto border-r border-rule">
+        <div className="print-area grid min-h-0 flex-1 lg:grid-cols-2">
+          <div className="no-print min-h-0 overflow-auto border-r border-rule">
             <form className="space-y-8 px-6 py-6" onSubmit={(event) => event.preventDefault()}>
               <Section title={t.fillDirektorat} note={t.fillDirektoratHint}>
                 <label className="block">
@@ -353,7 +353,7 @@ export function FillMode({ locale }: { locale: Locale }) {
             />
           </div>
 
-          <div className={`min-h-0 ${previewOpen ? '' : 'hidden lg:block'}`}>
+          <div className={`print-area min-h-0 ${previewOpen ? '' : 'hidden lg:block'}`}>
             <DocumentPreview locale={locale} model={preview} focusKey={focusedTargetId} />
           </div>
         </div>

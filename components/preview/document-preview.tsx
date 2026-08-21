@@ -54,7 +54,7 @@ export function DocumentPreview({
   }, [focusKey])
 
   return (
-    <section aria-label={t.preview} className="flex h-full min-h-0 flex-col">
+    <section aria-label={t.preview} className="print-area flex h-full min-h-0 flex-col">
       <div className="no-print flex items-baseline justify-between gap-4 border-b border-rule px-4 py-3">
         <h2 className="text-base font-semibold">{t.preview}</h2>
         {/* The legend contract: what this shows, and what it cannot. */}
@@ -63,7 +63,7 @@ export function DocumentPreview({
         </p>
       </div>
 
-      <div ref={container} className="min-h-0 flex-1 overflow-auto px-4 py-6">
+      <div ref={container} className="print-area min-h-0 flex-1 overflow-auto px-4 py-6">
         {model === null ? (
           <p className="text-base text-ink/60">{t.previewEmpty}</p>
         ) : (

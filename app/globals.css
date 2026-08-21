@@ -139,10 +139,34 @@
     line-height: 1.25;
   }
 
-  /* Only the preview prints. Everything else is the app around it. */
-  main > div > div:first-child,
-  form {
+  /* Only the preview prints. Marked explicitly rather than by position —
+     a structural selector stopped matching the moment the layout changed,
+     and printed a half-width column with the table clipped inside it. */
+  .no-print {
     display: none !important;
+  }
+
+  /* Nothing may clip or constrain the page. The screen layout is two fixed
+     height panes that scroll; on paper there is one column and it is as long
+     as it needs to be. */
+  html,
+  body,
+  main,
+  .print-area,
+  .print-area * {
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .print-area {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    grid-template-columns: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border: 0 !important;
   }
 
   .preview-page {
@@ -164,7 +188,16 @@
 
   .preview-page table {
     margin: 0.35em 0 !important;
+    width: 100% !important;
+    table-layout: auto !important;
     page-break-inside: auto;
+  }
+
+  /* The column widths come from the document in twips; on paper the page
+     decides, or a 2400-twip cell would hold the table to a third of the
+     width it has. */
+  .preview-page td {
+    width: auto !important;
   }
 
   /* A ruled row split across a page boundary is unreadable. */
