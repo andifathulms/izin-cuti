@@ -63,6 +63,15 @@ function open(): Promise<IDBDatabase | null> {
   })
 }
 
+/**
+ * A read resolves with the request's result; a write waits for the transaction
+ * to *commit*.
+ *
+ * The difference matters here. `onsuccess` on a put fires while the transaction
+ * is still open, so resolving there would report a template remembered before
+ * it had actually landed — and the moment somebody ticks that box is exactly
+ * the moment they might close the tab.
+ */
 function transact<T>(
   mode: IDBTransactionMode,
   run: (store: IDBObjectStore) => IDBRequest<T>,
@@ -74,10 +83,18 @@ function transact<T>(
           resolve(null)
           return
         }
+        let result: T | null = null
         try {
-          const request = run(db.transaction(STORE, mode).objectStore(STORE))
-          request.onsuccess = () => resolve(request.result)
+          const transaction = db.transaction(STORE, mode)
+          const request = run(transaction.objectStore(STORE))
+          request.onsuccess = () => {
+            result = request.result
+            if (mode === 'readonly') resolve(result)
+          }
           request.onerror = () => resolve(null)
+          transaction.oncomplete = () => resolve(result)
+          transaction.onabort = () => resolve(null)
+          transaction.onerror = () => resolve(null)
         } catch {
           resolve(null)
         }

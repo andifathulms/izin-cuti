@@ -132,7 +132,8 @@ const id: Strings = {
   chooseTemplate: 'Pilih berkas .docx',
   chooseTemplateHint: 'Berkas tetap di perangkat Anda. Tidak ada yang diunggah.',
   noTemplate: 'Belum ada dokumen',
-  noTemplateHint: 'Pilih berkas .docx milik Anda untuk mulai.',
+  noTemplateHint:
+    'Pilih berkas .docx milik Anda untuk mulai. Setelah terbuka, Anda bisa meminta aplikasi mengingatnya di perangkat ini, sehingga langkah ini cukup sekali.',
   templateLoaded: 'Dokumen dibaca',
   textNodes: 'simpul teks',
   checkboxCells: 'kotak centang',
@@ -268,7 +269,8 @@ const en: Strings = {
   chooseTemplate: 'Choose a .docx file',
   chooseTemplateHint: 'The file stays on your device. Nothing is uploaded.',
   noTemplate: 'No document yet',
-  noTemplateHint: 'Choose your own .docx file to begin.',
+  noTemplateHint:
+    'Choose your own .docx file to begin. Once it is open you can ask the app to remember it on this device, so this step happens only once.',
   templateLoaded: 'Document read',
   textNodes: 'text nodes',
   checkboxCells: 'checkbox cells',
