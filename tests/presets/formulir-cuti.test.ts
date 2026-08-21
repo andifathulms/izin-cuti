@@ -131,7 +131,7 @@ describe('filling it', () => {
     const texts = textOf(filled.document)
 
     expect(texts).toContain('Siti Rahmawati')
-    expect(texts).toContain('198705122010012003')
+    expect(texts).toContain('19870512 201001 2 003')
     expect(texts).toContain('Analis Kebijakan Ahli Muda')
     expect(texts).toContain('Bagian Umum & Kepegawaian')
     expect(after.textNodes.length).toBe(filled.document.textNodes.length)
@@ -172,9 +172,11 @@ describe('filling it', () => {
 
   it('prefixes the NIPs in the signature blocks', () => {
     const fields = fill().fields
-    expect(fields.find((field) => field.id === 'nip-ttd')?.value).toBe('NIP. 198705122010012003')
+    expect(fields.find((field) => field.id === 'nip-ttd')?.value).toBe(
+      'NIP. 19870512 201001 2 003',
+    )
     expect(fields.find((field) => field.id === 'atasan-nip')?.value).toBe(
-      'NIP. 197001011995031001',
+      'NIP. 19700101 199503 1 001',
     )
   })
 

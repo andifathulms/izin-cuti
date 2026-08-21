@@ -16,6 +16,7 @@ import {
 } from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
 import { DIREKTORAT, direktoratOf, managedKeys } from '@/lib/presets/kedeputian'
+import { formatNip, normaliseNip } from '@/lib/derive/nip'
 import { applyMapping } from '@/lib/mapping/apply'
 import { buildPreview, resolutionFromFill } from '@/lib/preview/model'
 import { validate } from '@/lib/validate/checks'
@@ -268,11 +269,12 @@ export function FillMode({ locale }: { locale: Locale }) {
                           <input
                             type="text"
                             inputMode="numeric"
-                            value={profileValues.atasanNip}
+                            value={formatNip(profileValues.atasanNip)}
                             onChange={(event) => {
                               // One person signs both blocks, so one entry.
-                              setProfileValue('atasanNip', event.target.value)
-                              setProfileValue('pejabatNip', event.target.value)
+                              const digits = normaliseNip(event.target.value)
+                              setProfileValue('atasanNip', digits)
+                              setProfileValue('pejabatNip', digits)
                             }}
                             onFocus={() => setFocus('atasan-nip')}
                             onBlur={() => setFocus(null)}
@@ -282,7 +284,7 @@ export function FillMode({ locale }: { locale: Locale }) {
                       </>
                     ) : (
                       <p className="font-mono text-base text-derived">
-                        NIP. {chosenDirektorat.direkturNip}
+                        NIP. {formatNip(chosenDirektorat.direkturNip)}
                       </p>
                     )}
                   </div>

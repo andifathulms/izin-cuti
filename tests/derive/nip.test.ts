@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatMasaKerja, masaKerja, parseNip } from '@/lib/derive/nip'
+import { formatMasaKerja, formatNip, masaKerja, normaliseNip, parseNip } from '@/lib/derive/nip'
 import { computeDerived, EMPTY_PROFILE, EMPTY_REQUEST } from '@/lib/derive/compute'
 
 /**
@@ -104,7 +104,7 @@ describe('as a derived field', () => {
   it('writes the NIP with the prefix the signature block uses', () => {
     expect(
       computeDerived('nip-berawalan', inputs('199001012025061003', '2026-08-21')),
-    ).toEqual({ type: 'value', text: 'NIP. 199001012025061003' })
+    ).toEqual({ type: 'value', text: 'NIP. 19900101 202506 1 003' })
   })
 
   it('does the same for the atasan', () => {
@@ -113,6 +113,55 @@ describe('as a derived field', () => {
         profile: { ...EMPTY_PROFILE, atasanNip: '198001012009011008' },
         request: EMPTY_REQUEST,
       }),
-    ).toEqual({ type: 'value', text: 'NIP. 198001012009011008' })
+    ).toEqual({ type: 'value', text: 'NIP. 19800101 200901 1 008' })
+  })
+})
+
+describe('writing a NIP', () => {
+  it('groups it the way it is written on a card', () => {
+    expect(formatNip('199001012025061003')).toBe('19900101 202506 1 003')
+  })
+
+  it('regroups one that was typed with the wrong spacing', () => {
+    expect(formatNip('1990 0101 2025 0610 03')).toBe('19900101 202506 1 003')
+  })
+
+  it('leaves a half-typed value looking half-typed', () => {
+    // Forcing an incomplete value into the shape of a NIP would suggest it is
+    // one. It is not, and the NIP-length warning has something to say about it.
+    expect(formatNip('19900101')).toBe('19900101')
+    expect(formatNip('')).toBe('')
+  })
+
+  it('stores digits only, however it was typed', () => {
+    expect(normaliseNip('19900101 202506 1 003')).toBe('199001012025061003')
+    expect(normaliseNip('1990-0101/2025 06 1 003')).toBe('199001012025061003')
+  })
+
+  it('does not let a NIP grow past eighteen digits', () => {
+    expect(normaliseNip('1990010120250610039999')).toBe('199001012025061003')
+  })
+
+  it('round-trips through the form and back', () => {
+    const typed = '19900101 202506 1 003'
+    expect(formatNip(normaliseNip(typed))).toBe(typed)
+  })
+
+  it('writes the grouped form into the document', () => {
+    expect(
+      computeDerived('nip-berformat', {
+        profile: { ...EMPTY_PROFILE, nip: '199001012025061003' },
+        request: EMPTY_REQUEST,
+      }),
+    ).toEqual({ type: 'value', text: '19900101 202506 1 003' })
+  })
+
+  it('groups the prefixed signature-block form too', () => {
+    expect(
+      computeDerived('nip-berawalan', {
+        profile: { ...EMPTY_PROFILE, nip: '199001012025061003' },
+        request: EMPTY_REQUEST,
+      }),
+    ).toEqual({ type: 'value', text: 'NIP. 19900101 202506 1 003' })
   })
 })

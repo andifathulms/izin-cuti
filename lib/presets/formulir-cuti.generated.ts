@@ -285,8 +285,8 @@ export const FORMULIR_CUTI_MAPPING: Mapping = {
         13
       ],
       "source": {
-        "kind": "profile",
-        "key": "nip"
+        "kind": "derived",
+        "computation": "nip-berformat"
       }
     },
     {

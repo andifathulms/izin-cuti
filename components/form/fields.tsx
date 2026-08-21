@@ -1,6 +1,7 @@
 'use client'
 
 import type { ChoiceGroup, DerivedRow, FormField } from '@/lib/fill/form'
+import { formatNip, normaliseNip } from '@/lib/derive/nip'
 import type { CheckboxTarget } from '@/lib/mapping/schema'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
@@ -26,17 +27,24 @@ export function TextField({
   const warningId = `${id}-warning`
   const hasWarning = field.warnings.length > 0
 
+  // A NIP is shown in its four groups and stored as eighteen digits. Grouped
+  // is how it appears on the card somebody is copying from, and eighteen
+  // digits in an unbroken run have to be counted with a finger.
+  const isNip = field.input === 'nip'
+  const shown = isNip ? formatNip(field.value) : field.value
+
   const shared = {
     id,
-    value: field.value,
+    value: shown,
     'aria-describedby': hasWarning ? warningId : undefined,
-    onChange: (event: { target: { value: string } }) => onChange(event.target.value),
+    onChange: (event: { target: { value: string } }) =>
+      onChange(isNip ? normaliseNip(event.target.value) : event.target.value),
     onFocus: () => onFocus(field.targetIds[0] ?? null),
     onBlur: () => onFocus(null),
     className: [
       'mt-1 w-full rounded border bg-white px-2 py-1 text-base text-typed',
       hasWarning ? 'border-attention' : 'border-rule',
-      field.input === 'number' || field.input === 'date' ? 'font-mono' : '',
+      field.input === 'number' || field.input === 'date' || isNip ? 'font-mono' : '',
     ].join(' '),
   }
 
@@ -51,7 +59,11 @@ export function TextField({
       {field.input === 'textarea' ? (
         <textarea {...shared} rows={2} />
       ) : (
-        <input {...shared} type={field.input === 'number' ? 'number' : field.input} />
+        <input
+          {...shared}
+          type={field.input === 'number' ? 'number' : isNip ? 'text' : field.input}
+          inputMode={isNip ? 'numeric' : undefined}
+        />
       )}
 
       {hasWarning && (

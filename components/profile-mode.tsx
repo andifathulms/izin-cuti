@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { useApp } from '@/components/app-state'
 import { PrivacyLine } from '@/components/shell/chrome'
 import { EMPTY_PROFILE, type ProfileValues } from '@/lib/derive/compute'
+import { formatNip, normaliseNip } from '@/lib/derive/nip'
 import { clearAll, exportAll, importAll } from '@/lib/mapping/storage'
 import { forgetTemplate } from '@/lib/mapping/template-store'
 import Link from 'next/link'
@@ -153,8 +154,20 @@ export function ProfileMode({ locale }: { locale: Locale }) {
               <span className="block text-sm font-medium">{t.fieldLabels[key] ?? key}</span>
               <input
                 type="text"
-                value={profileValues[key]}
-                onChange={(event) => setProfileValue(key, event.target.value)}
+                inputMode={key.toLowerCase().includes('nip') ? 'numeric' : undefined}
+                value={
+                  key.toLowerCase().includes('nip')
+                    ? formatNip(profileValues[key])
+                    : profileValues[key]
+                }
+                onChange={(event) =>
+                  setProfileValue(
+                    key,
+                    key.toLowerCase().includes('nip')
+                      ? normaliseNip(event.target.value)
+                      : event.target.value,
+                  )
+                }
                 className={[
                   'mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base text-typed',
                   key.toLowerCase().includes('nip') ? 'font-mono' : '',

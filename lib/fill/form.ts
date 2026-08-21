@@ -18,7 +18,7 @@ import type { Warning } from '../validate/checks'
  * Built here rather than in a component. Nothing is computed in a component.
  */
 
-export type InputKind = 'text' | 'date' | 'number' | 'textarea'
+export type InputKind = 'text' | 'date' | 'number' | 'textarea' | 'nip'
 
 export type FormField = {
   readonly key: string
@@ -57,6 +57,9 @@ export type FormModel = {
  * address get room to breathe. Everything else is a line of text.
  */
 const INPUT_KIND: Readonly<Record<string, InputKind>> = {
+  nip: 'nip',
+  atasanNip: 'nip',
+  pejabatNip: 'nip',
   tanggalSurat: 'date',
   mulai: 'date',
   sampai: 'date',

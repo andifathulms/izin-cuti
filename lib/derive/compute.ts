@@ -1,5 +1,5 @@
 import { calendarDaysInclusive, formatDayName, formatLongDate, workingDaysInclusive } from './date'
-import { formatMasaKerja, masaKerja, parseNip } from './nip'
+import { formatMasaKerja, formatNip, masaKerja, parseNip } from './nip'
 import { terbilang } from './terbilang'
 
 /**
@@ -29,6 +29,7 @@ export const DERIVATIONS = [
   'hari-mulai',
   'salinan-nama',
   'salinan-nip',
+  'nip-berformat',
   'salinan-alamat-cuti',
   'masa-kerja-dari-nip',
   'nip-berawalan',
@@ -219,6 +220,17 @@ const REGISTRY: Record<DerivationId, Derivation> = {
     explanation: 'NIP yang sama, diulang di bagian lain formulir.',
     compute: ({ profile }) => copy(profile.nip, 'NIP'),
   },
+  'nip-berformat': {
+    id: 'nip-berformat',
+    needs: { profile: ['nip'], request: [] },
+    label: 'NIP (berspasi)',
+    explanation:
+      'NIP ditulis berkelompok — 8 digit tanggal lahir, 6 digit TMT, 1 digit jenis kelamin, 3 digit urut — agar mudah dicocokkan dengan kartu.',
+    compute: ({ profile }) =>
+      profile.nip.trim() === ''
+        ? missing('NIP')
+        : { type: 'value', text: formatNip(profile.nip) },
+  },
   'masa-kerja-dari-nip': {
     id: 'masa-kerja-dari-nip',
     needs: { profile: ['nip'], request: ['tanggalSurat'] },
@@ -241,7 +253,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
     compute: ({ profile }) =>
       profile.nip.trim() === ''
         ? missing('NIP')
-        : { type: 'value', text: `NIP. ${profile.nip.trim()}` },
+        : { type: 'value', text: `NIP. ${formatNip(profile.nip)}` },
   },
   'salinan-nip-atasan': {
     id: 'salinan-nip-atasan',
@@ -251,7 +263,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
     compute: ({ profile }) =>
       profile.atasanNip.trim() === ''
         ? missing('NIP atasan')
-        : { type: 'value', text: `NIP. ${profile.atasanNip.trim()}` },
+        : { type: 'value', text: `NIP. ${formatNip(profile.atasanNip)}` },
   },
   'salinan-nip-pejabat': {
     id: 'salinan-nip-pejabat',
@@ -261,7 +273,7 @@ const REGISTRY: Record<DerivationId, Derivation> = {
     compute: ({ profile }) =>
       profile.pejabatNip.trim() === ''
         ? missing('NIP pejabat')
-        : { type: 'value', text: `NIP. ${profile.pejabatNip.trim()}` },
+        : { type: 'value', text: `NIP. ${formatNip(profile.pejabatNip)}` },
   },
   'tanggal-surat-dengan-tempat': {
     id: 'tanggal-surat-dengan-tempat',

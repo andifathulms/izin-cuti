@@ -57,6 +57,32 @@ export function parseNip(value: string): Nip | null {
   }
 }
 
+/**
+ * "19981029 202506 1 003" — the four fields, spaced apart.
+ *
+ * How a NIP is written on a card and how it is checked against one: eight
+ * digits, six, one, three. Eighteen digits in an unbroken run have to be
+ * counted with a finger.
+ *
+ * Anything that is not a NIP is returned untouched rather than forced into the
+ * shape of one — a half-typed value should look half-typed.
+ */
+export function formatNip(value: string): string {
+  const digits = value.replace(/\D/g, '')
+  if (digits.length !== 18) return value
+  return [
+    digits.slice(0, 8),
+    digits.slice(8, 14),
+    digits.slice(14, 15),
+    digits.slice(15, 18),
+  ].join(' ')
+}
+
+/** The digits alone, which is how a NIP is stored. */
+export function normaliseNip(value: string): string {
+  return value.replace(/\D/g, '').slice(0, 18)
+}
+
 export type MasaKerja = { readonly years: number; readonly months: number }
 
 /**

@@ -50,7 +50,8 @@ export const FORMULIR_CUTI_TARGETS: ReadonlyArray<Target> = [
 
   // I. Data pegawai.
   text('nama', 'Nama', [11], { kind: 'profile', key: 'nama' }),
-  text('nip', 'NIP', [13], { kind: 'profile', key: 'nip' }),
+  // Grouped rather than eighteen digits in a row: it is checked against a card.
+  text('nip', 'NIP', [13], { kind: 'derived', computation: 'nip-berformat' }),
   text('jabatan', 'Jabatan', [15], { kind: 'profile', key: 'jabatan' }),
   // Never typed: the TMT is inside the NIP, so this cannot go stale.
   text('masa-kerja', 'Masa kerja', [17], {
