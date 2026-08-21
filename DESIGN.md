@@ -131,7 +131,8 @@ Everything else is state change: switching mode, expanding a section, opening a 
 
 The one place to get the tone right. A person has just produced an official document.
 
-- **Three actions, clearly unequal:** *Unduh DOCX* is primary; *Unduh PDF* and *Cetak* are secondary, with the approximation note beside them, not hidden behind a tooltip.
+- **Three actions, clearly unequal:** *Unduh DOCX* is primary; *Pratinjau PDF* and *Cetak* are secondary, with the approximation note beside them, not hidden behind a tooltip.
+- **The PDF is looked at before it is downloaded.** *Pratinjau PDF* opens the real file in the browser's own reader, at the size it prints, with the download inside it. Downloading a PDF unseen is how the wrong year reaches an atasan — and it is offered at all only because the file is built in the tab and never uploaded.
 - **A last chance to notice the wrong year** — the warnings that stand, and any computed field still waiting on an input, immediately above the buttons.
 
   Not a summary of every filled value. That list duplicated the preview, which shows the same values in the document's own layout and is the better last look. What the preview cannot show is a warning, so that is what is left here.

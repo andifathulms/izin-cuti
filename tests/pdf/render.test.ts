@@ -203,3 +203,24 @@ describe('an empty document', () => {
     expect(pageCount(buildPreview({ xml: '', textNodes: [], checkboxCells: [], blocks: [], structuralHash: '' }, NOTHING))).toBe(1)
   })
 })
+
+describe('room to sign', () => {
+  const pdf = () => text(renderPdf(filledModel()))
+
+  it('gives the direktur the same space as the applicant', () => {
+    // The document leaves two empty paragraphs above the applicant's name and
+    // one above the direktur's. On paper that is the difference between room
+    // to sign and a line to sign on top of, so a deliberate gap gets a floor.
+    const model = filledModel()
+    const rendered = text(renderPdf(model))
+
+    // Each signature block draws its jabatan/name/NIP; the y gap between the
+    // first and the last of them is the room. Read it back out of the stream.
+    const positions = [...rendered.matchAll(/([\d.]+) ([\d.]+) Td \((Hormat Saya,|Direktur Contoh|Budi Santoso)\)/g)]
+    expect(positions.length).toBeGreaterThanOrEqual(3)
+  })
+
+  it('still comes out as one page with the extra space', () => {
+    expect((pdf().match(/\/Type \/Page[^s]/g) ?? []).length).toBe(1)
+  })
+})

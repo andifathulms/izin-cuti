@@ -26,7 +26,7 @@ export function DownloadPanel({
   warnings,
   disabled,
   onDownload,
-  onDownloadPdf,
+  onPreviewPdf,
   onPrint,
 }: {
   locale: Locale
@@ -34,7 +34,7 @@ export function DownloadPanel({
   warnings: ReadonlyArray<Warning>
   disabled: boolean
   onDownload: () => void
-  onDownloadPdf: () => void
+  onPreviewPdf: () => void
   onPrint: () => void
 }) {
   const t = strings(locale)
@@ -79,13 +79,15 @@ export function DownloadPanel({
 
         <div className="flex max-w-[46ch] flex-col gap-1">
           <div className="flex gap-2">
+            {/* Look at it, then download from there. Downloading a PDF
+                unseen is how the wrong year reaches an atasan. */}
             <button
               type="button"
-              onClick={onDownloadPdf}
+              onClick={onPreviewPdf}
               disabled={disabled}
               className="rounded border border-rule px-4 py-2 text-base disabled:opacity-40"
             >
-              {t.downloadPdf}
+              {t.previewPdf}
             </button>
             <button
               type="button"

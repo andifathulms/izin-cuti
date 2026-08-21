@@ -92,6 +92,8 @@ type Strings = {
 
   readonly downloadDocx: string
   readonly downloadPdf: string
+  readonly previewPdf: string
+  readonly close: string
   readonly printPdf: string
   readonly docxAuthoritative: string
   readonly pdfApproximate: string
@@ -213,6 +215,8 @@ const id: Strings = {
 
   downloadDocx: 'Unduh DOCX',
   downloadPdf: 'Unduh PDF',
+  previewPdf: 'Pratinjau PDF',
+  close: 'Tutup',
   printPdf: 'Cetak',
   docxAuthoritative: 'DOCX adalah keluaran yang berlaku.',
   pdfApproximate:
@@ -359,6 +363,8 @@ const en: Strings = {
 
   downloadDocx: 'Download DOCX',
   downloadPdf: 'Download PDF',
+  previewPdf: 'Preview PDF',
+  close: 'Close',
   printPdf: 'Print',
   docxAuthoritative: 'The DOCX is the authoritative output.',
   pdfApproximate:

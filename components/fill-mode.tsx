@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useApp } from '@/components/app-state'
 import { PrivacyFootnote } from '@/components/shell/template-picker'
@@ -8,6 +8,7 @@ import { DocumentPreview } from '@/components/preview/document-preview'
 import { StateLegend } from '@/components/shell/chrome'
 import { DownloadPanel } from '@/components/summary/download-panel'
 import { DriftNotice } from '@/components/summary/drift-notice'
+import { PdfPreview } from '@/components/summary/pdf-preview'
 import { ChoiceGroupField, StandaloneBox, TextField } from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
 import { DIREKTORAT, direktoratOf, managedKeys } from '@/lib/presets/kedeputian'
@@ -50,6 +51,7 @@ export function FillMode({ locale }: { locale: Locale }) {
   } = app
 
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null)
   const document = template.type === 'loaded' ? template.document : null
   const mapping = mappings.find((candidate) => candidate.id === activeMappingId) ?? null
 
@@ -150,14 +152,41 @@ export function FillMode({ locale }: { locale: Locale }) {
     URL.revokeObjectURL(url)
   }
 
+  const pdfBytes = () =>
+    preview === null ? null : renderPdf(preview, { title: mapping?.name ?? 'Surat' })
+
   const downloadPdf = () => {
-    if (preview === null) return
-    save(
-      renderPdf(preview, { title: mapping?.name ?? 'Surat' }),
-      'application/pdf',
-      'pdf',
-    )
+    const bytes = pdfBytes()
+    if (bytes !== null) save(bytes, 'application/pdf', 'pdf')
   }
+
+  /**
+   * Build the PDF and show it, in this tab, from a blob. Nothing is uploaded
+   * to be previewed — which is the only reason a PDF preview can be offered
+   * here at all.
+   */
+  const openPdfPreview = () => {
+    const bytes = pdfBytes()
+    if (bytes === null) return
+    const blob = new Blob([bytes.slice().buffer as ArrayBuffer], { type: 'application/pdf' })
+    setPdfUrl((previous) => {
+      if (previous !== null) URL.revokeObjectURL(previous)
+      return URL.createObjectURL(blob)
+    })
+  }
+
+  const closePdfPreview = useCallback(() => {
+    setPdfUrl((previous) => {
+      if (previous !== null) URL.revokeObjectURL(previous)
+      return null
+    })
+  }, [])
+
+  // A blob URL holds its bytes until it is revoked, and those bytes are
+  // somebody's filled letter.
+  useEffect(() => () => {
+    if (pdfUrl !== null) URL.revokeObjectURL(pdfUrl)
+  }, [pdfUrl])
 
   const download = () => {
     if (template.type !== 'loaded' || applied === null || applied.type !== 'filled') return
@@ -347,7 +376,7 @@ export function FillMode({ locale }: { locale: Locale }) {
               warnings={warnings}
               disabled={applied === null || applied.type !== 'filled'}
               onDownload={download}
-              onDownloadPdf={downloadPdf}
+              onPreviewPdf={openPdfPreview}
               onPrint={() => window.print()}
             />
           </div>
@@ -356,6 +385,15 @@ export function FillMode({ locale }: { locale: Locale }) {
             <DocumentPreview locale={locale} model={preview} focusKey={focusedTargetId} />
           </div>
         </div>
+      )}
+
+      {pdfUrl !== null && (
+        <PdfPreview
+          locale={locale}
+          url={pdfUrl}
+          onDownload={downloadPdf}
+          onClose={closePdfPreview}
+        />
       )}
     </div>
   )

@@ -27,6 +27,20 @@ const LINE_GAP = 1.22
 const CELL_PAD = 2.5
 const BORDER = 0.6
 
+/**
+ * A blank line inside a table cell is somebody's signature space.
+ *
+ * The document does not give every block the same amount: section VI leaves
+ * two empty paragraphs above the applicant's name, sections VII and VIII leave
+ * one above the direktur's. On paper that is the difference between room to
+ * sign and a line to sign on top of.
+ *
+ * So a gap, wherever it is deliberate, gets at least this many lines. Applied
+ * to the largest gap in the cell rather than to each one, because the space
+ * belongs above the name, not scattered through the block.
+ */
+const MIN_SIGNATURE_LINES = 3
+
 export type RenderOptions = {
   readonly title?: string
   /** Shrink to fit a single page where possible. */
@@ -172,11 +186,13 @@ function drawTable(
       lines:
         cell.box !== null
           ? []
-          : wrap(
-              cellText(cell.blocks),
-              Math.max(8, (widths[i] ?? width) - CELL_PAD * 2),
-              cursor.size,
-              'regular',
+          : openSignatureGap(
+              wrap(
+                cellText(cell.blocks),
+                Math.max(8, (widths[i] ?? width) - CELL_PAD * 2),
+                cursor.size,
+                'regular',
+              ),
             ),
     }))
 
@@ -225,6 +241,29 @@ function drawTable(
   }
 
   cursor.y -= lineHeight * 0.3
+}
+
+/** Widen the largest run of blank lines to leave room for a signature. */
+function openSignatureGap(lines: ReadonlyArray<string>): string[] {
+  let bestStart = -1
+  let bestLength = 0
+  let start = -1
+
+  for (let i = 0; i <= lines.length; i++) {
+    if (i < lines.length && lines[i] === '') {
+      if (start === -1) start = i
+      continue
+    }
+    if (start !== -1 && i - start > bestLength) {
+      bestStart = start
+      bestLength = i - start
+    }
+    start = -1
+  }
+
+  if (bestStart === -1 || bestLength >= MIN_SIGNATURE_LINES) return [...lines]
+  const extra = Array.from({ length: MIN_SIGNATURE_LINES - bestLength }, () => '')
+  return [...lines.slice(0, bestStart), ...extra, ...lines.slice(bestStart)]
 }
 
 function rectangle(cursor: Cursor, x: number, y: number, w: number, h: number): void {
