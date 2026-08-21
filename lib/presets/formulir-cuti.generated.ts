@@ -14,28 +14,28 @@ export const FORMULIR_CUTI_MAPPING: Mapping = {
     "version": 1,
     "textNodeCount": 96,
     "checkboxCellCount": 26,
-    "structuralHash": "a370fc868aa3fe61",
+    "structuralHash": "3ee50f3e0efa908f",
     "targets": [
       {
         "id": "tempat-tanggal",
         "label": "Tempat dan tanggal surat",
         "kind": "text",
         "index": 1,
-        "contextHash": "c6c2a884fdcf9035"
+        "contextHash": "692f32165049299b"
       },
       {
         "id": "tujuan-jabatan",
         "label": "Ditujukan kepada (jabatan)",
         "kind": "text",
         "index": 4,
-        "contextHash": "d0c138c7f75a7190"
+        "contextHash": "092cd57d28a0db05"
       },
       {
         "id": "tujuan-tempat",
         "label": "Ditujukan kepada (tempat)",
         "kind": "text",
         "index": 7,
-        "contextHash": "40d2ffd135f575e7"
+        "contextHash": "da8116ef59f36756"
       },
       {
         "id": "nama",

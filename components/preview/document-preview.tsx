@@ -98,12 +98,16 @@ const RUN_STATE: Record<RunState, string> = {
 }
 
 function Run({ run }: { run: PreviewRun }) {
-  if (run.state === 'plain') return <>{run.text}</>
+  // Tabs and breaks come through as real characters; HTML would collapse them,
+  // so the run that carries them keeps its whitespace.
+  const whitespace = /[\t\n]/.test(run.text) ? 'whitespace-pre-wrap' : ''
+  if (run.state === 'plain') return <span className={whitespace}>{run.text}</span>
   return (
     <span
       data-focused={run.focused ? 'true' : undefined}
       className={[
         RUN_STATE[run.state],
+        whitespace,
         // The orchestrated moment. Reduced motion skips it entirely and loses
         // nothing — the value is already there.
         run.focused ? 'mark-changed' : '',

@@ -200,7 +200,21 @@ function readParagraph(paragraph: XmlElement, state: State, rowLabel: string): B
     const formatting = rPr === null ? '' : state.xml.slice(rPr.start, rPr.end)
 
     for (const t of run.children) {
-      if (t.type !== 'element' || t.name !== 'w:t') continue
+      if (t.type !== 'element') continue
+
+      // A tab and a line break carry no text of their own, but they are why
+      // "Yth" and the jabatan beside it are not run together. Dropping them
+      // made the preview disagree with the document over spacing, which is
+      // exactly what a preview must not do. They are laid out, not mapped, so
+      // they carry no node index.
+      if (t.name === 'w:tab' || t.name === 'w:br' || t.name === 'w:cr') {
+        const whitespace = t.name === 'w:tab' ? '\t' : '\n'
+        runs.push({ text: whitespace, textNodeIndex: null })
+        pieces.push(whitespace)
+        continue
+      }
+
+      if (t.name !== 'w:t') continue
       const raw = t.selfClosing ? '' : state.xml.slice(t.innerStart, t.innerEnd)
       const text = unescapeXmlText(raw)
       if (state.insideCheckboxCell) {

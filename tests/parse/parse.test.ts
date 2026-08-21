@@ -162,3 +162,34 @@ describe('node identity does not depend on checkbox state', () => {
     expect(ticked.textNodes.map((n) => n.text)).toEqual(doc.textNodes.map((n) => n.text))
   })
 })
+
+describe('layout characters that are not text nodes', () => {
+  it('keeps a tab, which is the gap between a label and its value', () => {
+    // "Yth<w:tab/>Direktur ..." — dropping the tab ran the two together in the
+    // preview while the document showed them apart, which is precisely the
+    // disagreement a preview must not have.
+    const xml = syntheticDocumentXml().replace(
+      '<w:t>Hormat saya,</w:t>',
+      '<w:t>Yth</w:t><w:tab/><w:t>Direktur</w:t>',
+    )
+    const doc = parsed(xml)
+    const paragraph = doc.blocks.find(
+      (block) => block.type === 'paragraph' && block.runs.some((run) => run.text === 'Yth'),
+    )
+    if (paragraph?.type !== 'paragraph') throw new Error('expected a paragraph')
+    expect(paragraph.runs.map((run) => run.text).join('')).toBe('Yth\tDirektur')
+  })
+
+  it('gives a tab no node index, because nobody maps a tab', () => {
+    const xml = syntheticDocumentXml().replace(
+      '<w:t>Hormat saya,</w:t>',
+      '<w:t>Yth</w:t><w:tab/><w:t>Direktur</w:t>',
+    )
+    const doc = parsed(xml)
+    const paragraph = doc.blocks.find(
+      (block) => block.type === 'paragraph' && block.runs.some((run) => run.text === 'Yth'),
+    )
+    if (paragraph?.type !== 'paragraph') throw new Error('expected a paragraph')
+    expect(paragraph.runs.find((run) => run.text === '\t')?.textNodeIndex).toBeNull()
+  })
+})
