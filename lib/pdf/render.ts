@@ -187,11 +187,18 @@ function drawTable(
         cell.box !== null
           ? []
           : openSignatureGap(
-              wrap(
-                cellText(cell.blocks),
-                Math.max(8, (widths[i] ?? width) - CELL_PAD * 2),
-                cursor.size,
-                'regular',
+              cellLines(cell.blocks).flatMap((line) =>
+                wrap(
+                  line.text,
+                  Math.max(8, (widths[i] ?? width) - CELL_PAD * 2),
+                  cursor.size,
+                  'regular',
+                ).map((text, part) => ({
+                  text,
+                  alignment: line.alignment,
+                  // Only the first line of a wrapped paragraph is indented.
+                  indent: part === 0 ? line.indent : 0,
+                })),
               ),
             ),
     }))
@@ -224,14 +231,20 @@ function drawTable(
         }
       } else {
         cell.lines.forEach((line, lineIndex) => {
-          cursor.ops.push({
-            type: 'text',
-            x: cellX + CELL_PAD,
-            y: top - CELL_PAD - lineHeight * (lineIndex + 1) + lineHeight * 0.25,
-            size: cursor.size,
-            font: 'regular',
-            text: line,
-          })
+          // Alignment comes from the paragraph, so a centred signature block
+          // is centred here too rather than pinned to the left edge of a cell
+          // that is three times wider than the name in it.
+          const indent =
+            line.alignment === 'left' ? measure(' '.repeat(line.indent), cursor.size, 'regular') : 0
+          drawLine(
+            cursor,
+            line.text,
+            cellX + CELL_PAD + indent,
+            top - CELL_PAD - lineHeight * (lineIndex + 1) + lineHeight * 0.25,
+            cellWidth - CELL_PAD * 2 - indent,
+            line.alignment,
+            'regular',
+          )
         })
       }
       cellX += cellWidth
@@ -244,13 +257,13 @@ function drawTable(
 }
 
 /** Widen the largest run of blank lines to leave room for a signature. */
-function openSignatureGap(lines: ReadonlyArray<string>): string[] {
+function openSignatureGap(lines: ReadonlyArray<CellLine>): CellLine[] {
   let bestStart = -1
   let bestLength = 0
   let start = -1
 
   for (let i = 0; i <= lines.length; i++) {
-    if (i < lines.length && lines[i] === '') {
+    if (i < lines.length && lines[i]?.text === '') {
       if (start === -1) start = i
       continue
     }
@@ -262,7 +275,11 @@ function openSignatureGap(lines: ReadonlyArray<string>): string[] {
   }
 
   if (bestStart === -1 || bestLength >= MIN_SIGNATURE_LINES) return [...lines]
-  const extra = Array.from({ length: MIN_SIGNATURE_LINES - bestLength }, () => '')
+  const extra: CellLine[] = Array.from({ length: MIN_SIGNATURE_LINES - bestLength }, () => ({
+    text: '',
+    alignment: 'left' as const,
+    indent: 0,
+  }))
   return [...lines.slice(0, bestStart), ...extra, ...lines.slice(bestStart)]
 }
 
@@ -296,8 +313,23 @@ function columnWidths(
   return totals.map((value) => (value / sum) * available)
 }
 
+type CellLine = {
+  readonly text: string
+  readonly alignment: 'left' | 'center' | 'right' | 'both'
+  /**
+   * Leading spaces the document put there.
+   *
+   * Section VII positions the direktur's name with a run of spaces rather than
+   * by centring the paragraph, as section VIII does. Trimming them left the
+   * name hard against the cell edge in one block and centred in the other, for
+   * two blocks that are meant to look identical. Arial and Helvetica share
+   * their metrics, so the same count of spaces reproduces the same indent.
+   */
+  readonly indent: number
+}
+
 /**
- * A cell's text, with its paragraphs kept apart — blank ones included.
+ * A cell's lines, with its paragraphs kept apart — blank ones included.
  *
  * Two things depend on this. A signature block is three paragraphs — jabatan,
  * name, NIP — and running them onto one line turns them into a sentence nobody
@@ -308,16 +340,26 @@ function columnWidths(
  * Blank lines at the top and bottom of a cell are trimmed, since those are
  * padding rather than room for anything.
  */
-function cellText(blocks: ReadonlyArray<PreviewBlock>): string {
-  const lines = blocks.flatMap((block) =>
+function lineOf(raw: string, alignment: CellLine['alignment']): CellLine {
+  const withoutTabs = raw.replace(/\t/g, ' ')
+  const leading = /^ */.exec(withoutTabs)?.[0].length ?? 0
+  return {
+    text: withoutTabs.replace(/ {2,}/g, ' ').trim(),
+    alignment,
+    indent: leading,
+  }
+}
+
+function cellLines(blocks: ReadonlyArray<PreviewBlock>): CellLine[] {
+  const lines = blocks.flatMap((block): CellLine[] =>
     block.type === 'paragraph'
-      ? [block.runs.map((run) => run.text).join('').replace(/[ \t]+/g, ' ').trim()]
-      : block.rows.flatMap((row) => row.cells.map((cell) => cellText(cell.blocks))),
+      ? [lineOf(block.runs.map((run) => run.text).join(''), block.alignment)]
+      : block.rows.flatMap((row) => row.cells.flatMap((cell) => cellLines(cell.blocks))),
   )
 
   let first = 0
   let last = lines.length - 1
-  while (first <= last && lines[first] === '') first++
-  while (last >= first && lines[last] === '') last--
-  return lines.slice(first, last + 1).join('\n')
+  while (first <= last && lines[first]?.text === '') first++
+  while (last >= first && lines[last]?.text === '') last--
+  return lines.slice(first, last + 1)
 }
