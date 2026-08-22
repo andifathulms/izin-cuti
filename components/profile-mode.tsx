@@ -47,7 +47,10 @@ export function ProfileMode({ locale }: { locale: Locale }) {
       name: label,
       values: profileValues,
     })
-    setNotice(t.profileSave)
+    // Not the button's own label echoed back: "Simpan profil" sitting beside
+    // the button it came from is indistinguishable from the button, and it
+    // never leaves, so the next save appears to do nothing at all.
+    setNotice(t.profileSaved)
   }
 
   const doExport = () => {
@@ -81,7 +84,7 @@ export function ProfileMode({ locale }: { locale: Locale }) {
     void forgetTemplate()
     refreshStorage()
     selectProfile(null)
-    setNotice(t.profileClearAll)
+    setNotice(t.profileCleared)
   }
 
   return (

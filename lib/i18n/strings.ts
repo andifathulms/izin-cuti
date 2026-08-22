@@ -126,6 +126,9 @@ type Strings = {
   readonly profileNew: string
   readonly profileName: string
   readonly profileSave: string
+  /** The confirmations. Never the button's own label echoed back. */
+  readonly profileSaved: string
+  readonly profileCleared: string
   readonly profileUse: string
   readonly profileDelete: string
   readonly profileExport: string
@@ -264,6 +267,8 @@ const id: Strings = {
   profileNew: 'Profil baru',
   profileName: 'Nama profil',
   profileSave: 'Simpan profil',
+  profileSaved: 'Profil tersimpan.',
+  profileCleared: 'Semua profil, pemetaan dan dokumen yang diingat telah dihapus.',
   profileUse: 'Pakai',
   profileDelete: 'Hapus',
   profileExport: 'Ekspor semua',
@@ -423,6 +428,8 @@ const en: Strings = {
   profileNew: 'New profile',
   profileName: 'Profile name',
   profileSave: 'Save profile',
+  profileSaved: 'Profile saved.',
+  profileCleared: 'Every profile, mapping and remembered document has been deleted.',
   profileUse: 'Use',
   profileDelete: 'Delete',
   profileExport: 'Export everything',
