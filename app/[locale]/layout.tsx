@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { AppStateProvider } from '@/components/app-state'
 import { Header } from '@/components/shell/chrome'
+import { HtmlLang } from '@/components/shell/html-lang'
 import { isLocale, LOCALES } from '@/lib/i18n/strings'
 
 export function generateStaticParams() {
@@ -27,7 +28,8 @@ export default function LocaleLayout({
        * other, neither matching the header — and every line added to the
        * header made both guesses wronger.
        */}
-      <div className="app-shell flex h-screen flex-col">
+      <div lang={params.locale} className="app-shell flex h-screen flex-col">
+        <HtmlLang locale={params.locale} />
         <Header locale={params.locale} />
         <main className="min-h-0 flex-1 overflow-auto">{children}</main>
       </div>
