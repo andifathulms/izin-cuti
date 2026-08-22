@@ -33,6 +33,8 @@ type Strings = {
   readonly documentSource: string
 
   readonly chooseTemplate: string
+  readonly clearTemplate: string
+  readonly clearChoice: string
   readonly chooseTemplateHint: string
   readonly noTemplate: string
   readonly noTemplateHint: string
@@ -160,6 +162,8 @@ const id: Strings = {
   documentSource: 'Dokumen',
 
   chooseTemplate: 'Pilih berkas .docx',
+  clearTemplate: 'Tutup dokumen ini',
+  clearChoice: 'Kosongkan pilihan',
   chooseTemplateHint: 'Berkas tetap di perangkat Anda. Tidak ada yang diunggah.',
   noTemplate: 'Belum ada dokumen',
   noTemplateHint:
@@ -330,6 +334,8 @@ const en: Strings = {
   documentSource: 'Document',
 
   chooseTemplate: 'Choose a .docx file',
+  clearTemplate: 'Close this document',
+  clearChoice: 'Clear the selection',
   chooseTemplateHint: 'The file stays on your device. Nothing is uploaded.',
   noTemplate: 'No document yet',
   noTemplateHint:

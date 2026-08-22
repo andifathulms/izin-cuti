@@ -59,12 +59,14 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
               {template.document.textNodes.length} {t.textNodes} ·{' '}
               {template.document.checkboxCells.length} {t.checkboxCells}
             </span>{' '}
+            {/* Was a bare `×`, announced as "times, button". Unloading the
+                document is not a dismissal, so it gets a word. */}
             <button
               type="button"
               onClick={clearTemplate}
               className="ml-2 text-sm text-ink-muted underline"
             >
-              ×
+              {t.clearTemplate}
             </button>
           </p>
         )}

@@ -118,11 +118,13 @@ export function DerivedField({
 }
 
 export function ChoiceGroupField({
+  locale,
   group,
   hideLegend = false,
   onChoose,
   onFocus,
 }: {
+  locale: Locale
   group: ChoiceGroup
   /**
    * The section heading is already this group's name. Hidden from sight, kept
@@ -152,12 +154,14 @@ export function ChoiceGroupField({
           </label>
         ))}
         {group.chosen !== null && (
+          // Was a bare `×`, announced as "times, button" and sitting under a
+          // list of radios where it is the only way back to none chosen.
           <button
             type="button"
             onClick={() => onChoose(null)}
             className="text-sm text-ink-muted underline"
           >
-            ×
+            {strings(locale).clearChoice}
           </button>
         )}
       </div>

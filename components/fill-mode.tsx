@@ -394,6 +394,7 @@ export function FillMode({ locale }: { locale: Locale }) {
                   {model.groups.map((group) => (
                     <ChoiceGroupField
                       key={group.group}
+                      locale={locale}
                       group={group}
                       hideLegend={model.groups.length === 1 && model.standalone.length === 0}
                       onChoose={(targetId) => setChoice(group.group, targetId)}
