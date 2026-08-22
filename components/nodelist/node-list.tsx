@@ -131,9 +131,22 @@ function NodeRow({
   const mapped = entry.mappedTo
 
   return (
+    /*
+     * Marking the node in the preview was mouse-only: onMouseEnter and
+     * onMouseLeave on a plain div, and nothing else. Tabbing through the node
+     * list marked nothing, so the entire point of the two-pane map view — see
+     * where this node lives in the document — was unavailable without a
+     * pointer. WCAG 2.1.1.
+     *
+     * onFocus and onBlur bubble in React, so focusing any control inside the
+     * row does what hovering the row does. No tabindex, no role: the controls
+     * are already focusable and the div stays a div.
+     */
     <div
       onMouseEnter={() => actions.onFocus(mapped?.id ?? null)}
       onMouseLeave={() => actions.onFocus(null)}
+      onFocus={() => actions.onFocus(mapped?.id ?? null)}
+      onBlur={() => actions.onFocus(null)}
     >
       <div className="flex items-baseline gap-3">
         <span className="font-mono text-sm text-ink-subtle">

@@ -108,10 +108,17 @@ export function DerivedField({
 }) {
   const t = strings(locale)
   return (
+    /*
+     * Same mouse-only defect as the node list had. This component is not
+     * rendered anywhere today — derived values live in the preview now — but
+     * it should not be waiting to ship broken the day it is wired up.
+     */
     <div
       className="border-l-2 border-derived pl-3"
       onMouseEnter={() => onFocus(row.targetId)}
       onMouseLeave={() => onFocus(null)}
+      onFocus={() => onFocus(row.targetId)}
+      onBlur={() => onFocus(null)}
     >
       <p className="text-sm font-medium">{row.label}</p>
       <p className="font-mono text-lg text-derived">
