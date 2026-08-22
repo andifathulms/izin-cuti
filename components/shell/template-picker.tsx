@@ -19,11 +19,13 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
   const t = strings(locale)
   const { template, openTemplate, openBundledForm, clearTemplate, setRemembered } = useApp()
   const input = useRef<HTMLInputElement>(null)
+  const choose = useRef<HTMLButtonElement>(null)
 
   return (
     <div className="no-print px-6 py-2">
       <div className="flex flex-wrap items-center gap-4">
         <button
+          ref={choose}
           type="button"
           onClick={() => input.current?.click()}
           className="rounded border border-typed bg-typed/10 px-4 py-2 text-base font-medium text-typed transition-colors duration-state ease-house hover:bg-typed/15"
@@ -60,10 +62,17 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
               {template.document.checkboxCells.length} {t.checkboxCells}
             </span>{' '}
             {/* Was a bare `×`, announced as "times, button". Unloading the
-                document is not a dismissal, so it gets a word. */}
+                document is not a dismissal, so it gets a word.
+
+                Clearing unmounts this button under its own focus, so focus is
+                handed to the picker that replaces it — the next thing anybody
+                would want. WCAG 2.4.3. */}
             <button
               type="button"
-              onClick={clearTemplate}
+              onClick={() => {
+                clearTemplate()
+                choose.current?.focus()
+              }}
               className="ml-2 text-sm text-ink-muted underline"
             >
               {t.clearTemplate}

@@ -1,5 +1,7 @@
 'use client'
 
+import { useRef } from 'react'
+
 import type { ChoiceGroup, DerivedRow, FormField } from '@/lib/fill/form'
 import { formatNip, normaliseNip } from '@/lib/derive/nip'
 import type { CheckboxTarget } from '@/lib/mapping/schema'
@@ -144,6 +146,7 @@ export function ChoiceGroupField({
   onChoose: (targetId: string | null) => void
   onFocus: (targetId: string | null) => void
 }) {
+  const clear = useRef<HTMLButtonElement>(null)
   return (
     <fieldset>
       <legend className={hideLegend ? 'sr-only' : 'text-sm font-medium'}>{group.group}</legend>
@@ -165,9 +168,22 @@ export function ChoiceGroupField({
         {group.chosen !== null && (
           // Was a bare `×`, announced as "times, button" and sitting under a
           // list of radios where it is the only way back to none chosen.
+          //
+          // It is rendered only while something is chosen, so clearing
+          // unmounts it under the focus it holds and focus falls to <body> —
+          // from the middle of the form back to the top of the page. Focus
+          // moves to the first radio in the group instead, which is where
+          // somebody who just cleared a choice is about to look. WCAG 2.4.3.
           <button
+            ref={clear}
             type="button"
-            onClick={() => onChoose(null)}
+            onClick={() => {
+              const first = clear.current
+                ?.closest('fieldset')
+                ?.querySelector<HTMLInputElement>('input[type="radio"]')
+              onChoose(null)
+              first?.focus()
+            }}
             className="text-sm text-ink-muted underline"
           >
             {strings(locale).clearChoice}
