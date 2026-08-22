@@ -17,9 +17,15 @@ const publicSans = Public_Sans({
   variable: '--font-public-sans',
 })
 
+/*
+ * One weight, because one weight is used. `font-mono` appears 23 times across
+ * the components and never once beside `font-medium` or `font-semibold`, so
+ * weight 500 was being preloaded on every route — 9.8 kB on the critical path
+ * — and rendered nowhere.
+ */
 const plexMono = IBM_Plex_Mono({
   subsets: ['latin'],
-  weight: ['400', '500'],
+  weight: ['400'],
   display: 'swap',
   variable: '--font-plex-mono',
 })

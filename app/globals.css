@@ -108,6 +108,19 @@
     font-weight: 500;
   }
 
+  /*
+   * A value is body text, not a label. Tailwind's preflight sets
+   * `font-weight: inherit` on form controls, so an input wrapped in a <label>
+   * was silently inheriting 500 — which is how two mono NIP fields were
+   * rendering IBM Plex Mono 500, the weight nothing asks for by name.
+   * DESIGN.md §4: body 400, labels 500. Utility classes still win.
+   */
+  input,
+  select,
+  textarea {
+    font-weight: 400;
+  }
+
   /* The radios and checkboxes are native and rendered at the browser's
      default ~13px, which is under the target-size floor. Nothing else about
      them changes. */
