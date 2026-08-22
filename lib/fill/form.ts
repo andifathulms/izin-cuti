@@ -88,6 +88,19 @@ const INPUT_KIND: Readonly<Record<string, InputKind>> = {
   alamatCuti: 'textarea',
 }
 
+/**
+ * How a field is entered and how wide it sits.
+ *
+ * Exported because the profile page lays out the same fourteen fields and had
+ * been deciding both for itself — the width by hand, and whether a field was a
+ * NIP by testing whether its key contained the substring "nip". One rule, one
+ * definition, read by both screens rather than approximated by one of them.
+ */
+export function fieldLayout(key: string): { readonly input: InputKind; readonly span: 2 | 3 | 6 } {
+  const input = INPUT_KIND[key] ?? 'text'
+  return { input, span: input === 'textarea' ? 6 : input === 'date' ? 2 : 3 }
+}
+
 export function buildForm(
   mapping: Mapping,
   inputs: DerivationInputs,
@@ -145,13 +158,13 @@ export function buildForm(
     value: string,
     targetIds: ReadonlyArray<string>,
   ): FormField => {
-    const input = INPUT_KIND[key] ?? 'text'
+    const { input, span } = fieldLayout(key)
     return {
       key,
       label: labels[key] ?? key,
       value,
       input,
-      span: input === 'textarea' ? 6 : input === 'date' ? 2 : 3,
+      span,
       targetIds,
       warnings: warnings.filter((warning) => warning.field === key),
       ...dateBounds(key, inputs.request),

@@ -9,7 +9,7 @@ import { FlowLine } from '@/components/shell/chrome'
 import { DownloadPanel } from '@/components/summary/download-panel'
 import { DriftNotice } from '@/components/summary/drift-notice'
 import { PdfPreview } from '@/components/summary/pdf-preview'
-import { ChoiceGroupField, StandaloneBox, TextField } from '@/components/form/fields'
+import { ChoiceGroupField, SPAN, StandaloneBox, TextField } from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
 import { DIREKTORAT, direktoratOf, managedKeys } from '@/lib/presets/kedeputian'
 import { formatNip, normaliseNip } from '@/lib/derive/nip'
@@ -486,12 +486,6 @@ function Section({
       </div>
     </section>
   )
-}
-
-const SPAN: Record<2 | 3 | 6, string> = {
-  2: 'col-span-6 sm:col-span-2',
-  3: 'col-span-6 sm:col-span-3',
-  6: 'col-span-6',
 }
 
 /** A filename somebody can find again in a downloads folder. */

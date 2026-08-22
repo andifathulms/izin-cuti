@@ -5,6 +5,15 @@ import { formatNip, normaliseNip } from '@/lib/derive/nip'
 import type { CheckboxTarget } from '@/lib/mapping/schema'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
+/** Six-column row: a date takes a third, an ordinary field a half, prose the
+ *  full width. DESIGN.md §5. Shared, so both screens lay the same fields out
+ *  the same way. */
+export const SPAN: Record<2 | 3 | 6, string> = {
+  2: 'col-span-6 sm:col-span-2',
+  3: 'col-span-6 sm:col-span-3',
+  6: 'col-span-6',
+}
+
 /**
  * The three field states, which are the semantic core of this app.
  *

@@ -6,6 +6,8 @@ import { PrivacyLine } from '@/components/shell/chrome'
 import { TemplatePicker } from '@/components/shell/template-picker'
 import { EMPTY_PROFILE, type ProfileValues } from '@/lib/derive/compute'
 import { formatNip, normaliseNip } from '@/lib/derive/nip'
+import { fieldLayout } from '@/lib/fill/form'
+import { SPAN } from '@/components/form/fields'
 import { clearAll, exportAll, importAll } from '@/lib/mapping/storage'
 import { forgetTemplate } from '@/lib/mapping/template-store'
 import Link from 'next/link'
@@ -156,33 +158,39 @@ export function ProfileMode({ locale }: { locale: Locale }) {
 
       <section className="mt-8">
         <h2 className="border-b border-rule pb-1 text-base font-semibold">{t.fillProfile}</h2>
-        <div className="mt-3 grid gap-4 md:grid-cols-2">
-          {(Object.keys(EMPTY_PROFILE) as Array<keyof ProfileValues>).map((key) => (
-            <label key={key} className="block">
-              <span className="block text-sm font-medium">{t.fieldLabels[key] ?? key}</span>
-              <input
-                type="text"
-                inputMode={key.toLowerCase().includes('nip') ? 'numeric' : undefined}
-                value={
-                  key.toLowerCase().includes('nip')
-                    ? formatNip(profileValues[key])
-                    : profileValues[key]
-                }
-                onChange={(event) =>
-                  setProfileValue(
-                    key,
-                    key.toLowerCase().includes('nip')
-                      ? normaliseNip(event.target.value)
-                      : event.target.value,
-                  )
-                }
-                className={[
-                  'mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base text-typed',
-                  key.toLowerCase().includes('nip') ? 'font-mono' : '',
-                ].join(' ')}
-              />
-            </label>
-          ))}
+        {/*
+         * The same fourteen fields as the fill screen, laid out the same way.
+         * This grid was md:grid-cols-2 with every field the same width, so the
+         * shape learned on one screen did not transfer to the other — and it
+         * decided what a NIP was by testing the key for the substring "nip"
+         * rather than asking the one place that knows. Both now come from
+         * fieldLayout().
+         */}
+        <div className="mt-3 grid grid-cols-6 gap-x-4 gap-y-3">
+          {(Object.keys(EMPTY_PROFILE) as Array<keyof ProfileValues>).map((key) => {
+            const { input, span } = fieldLayout(key)
+            const isNip = input === 'nip'
+            return (
+              <label key={key} className={`block ${SPAN[span]}`}>
+                <span className="block text-sm font-medium">{t.fieldLabels[key] ?? key}</span>
+                <input
+                  type="text"
+                  inputMode={isNip ? 'numeric' : undefined}
+                  value={isNip ? formatNip(profileValues[key]) : profileValues[key]}
+                  onChange={(event) =>
+                    setProfileValue(
+                      key,
+                      isNip ? normaliseNip(event.target.value) : event.target.value,
+                    )
+                  }
+                  className={[
+                    'mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base text-typed',
+                    isNip ? 'font-mono' : '',
+                  ].join(' ')}
+                />
+              </label>
+            )
+          })}
         </div>
       </section>
 
