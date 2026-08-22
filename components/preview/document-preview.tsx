@@ -80,7 +80,7 @@ export function DocumentPreview({
         {model === null ? (
           <p className="text-base text-ink-muted">{t.previewEmpty}</p>
         ) : (
-          <article className="preview-page mx-auto max-w-[80ch] border border-rule bg-white px-8 py-10 text-base leading-6">
+          <article className="preview-page mx-auto max-w-[80ch] border border-rule bg-white px-8 py-12 text-base leading-6">
             <Blocks blocks={model.blocks} locale={locale} />
           </article>
         )}
@@ -208,7 +208,12 @@ function Table({
                   <span
                     data-focused={cell.box.focused ? 'true' : undefined}
                     className={[
-                      'flex h-5 w-5 items-center justify-center border border-rule font-mono',
+                      // 24px, which is --control-min: the same square as the
+                      // form's own checkbox, so the box you tick and the box
+                      // you check it in are the same size. It was h-5 w-5 —
+                      // 20px is not on the 4px scale, `spacing` is replaced
+                      // rather than extended, and the class was never emitted.
+                      'flex h-6 w-6 items-center justify-center border border-rule font-mono',
                       cell.box.state === 'unmapped' ? 'unmapped' : '',
                       cell.box.focused ? 'mark-changed' : '',
                       cell.box.checked ? 'text-typed' : 'text-transparent',

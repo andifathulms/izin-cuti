@@ -159,7 +159,7 @@ export function MapMode({ locale }: { locale: Locale }) {
                 type="text"
                 value={draft.name}
                 onChange={(event) => setDraft(renameDraft(draft, event.target.value))}
-                className="w-64 rounded border border-rule bg-white px-2 py-1 text-base"
+                className="w-[32ch] rounded border border-rule bg-white px-2 py-1 text-base"
               />
             </label>
             <span className="font-mono text-sm text-ink-muted">

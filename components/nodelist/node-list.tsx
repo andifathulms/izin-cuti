@@ -90,7 +90,7 @@ export function NodeList({
               type="search"
               value={search}
               onChange={(event) => onSearch(event.target.value)}
-              className="w-48 rounded border border-rule bg-white px-2 py-1 text-base"
+              className="w-[24ch] rounded border border-rule bg-white px-2 py-1 text-base"
             />
           </label>
         </div>
