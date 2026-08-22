@@ -199,11 +199,14 @@ export function ProfileMode({ locale }: { locale: Locale }) {
           <ul className="mt-2 divide-y divide-rule">
             {mappings.map((mapping) => (
               <li key={mapping.id} className="flex items-center gap-3 py-2">
+                {/* Was `37 · 97/14`: three unlabelled integers, a slash and a
+                    middot, in the list where you decide what to delete. */}
                 <span className="flex-1 text-base">
                   {mapping.name}{' '}
                   <span className="font-mono text-sm text-ink-muted">
-                    {mapping.targets.length} · {mapping.fingerprint.textNodeCount}/
-                    {mapping.fingerprint.checkboxCellCount}
+                    {mapping.targets.length} {t.targets} ·{' '}
+                    {mapping.fingerprint.textNodeCount} {t.textNodes} ·{' '}
+                    {mapping.fingerprint.checkboxCellCount} {t.checkboxCells}
                   </span>
                 </span>
                 <button

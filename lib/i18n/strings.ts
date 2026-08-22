@@ -40,6 +40,7 @@ type Strings = {
   readonly openingFormHint: string
   readonly notADocxHint: string
   readonly templateLoaded: string
+  readonly targets: string
   readonly textNodes: string
   readonly checkboxCells: string
   readonly notADocx: string
@@ -165,6 +166,7 @@ const id: Strings = {
   notADocxHint:
     'Pilih berkas .docx lain di halaman Profil, atau muat ulang halaman ini untuk kembali ke formulir bawaan.',
   templateLoaded: 'Dokumen dibaca',
+  targets: 'sasaran',
   textNodes: 'simpul teks',
   checkboxCells: 'kotak centang',
   notADocx: 'Berkas ini tidak bisa dibaca sebagai .docx.',
@@ -312,6 +314,7 @@ const en: Strings = {
   privacyWhy:
     'There is no server. The document is read into memory, filled, and downloaded locally. Profiles and mappings live in this browser’s local storage.',
   privacyShort: 'Nothing you type leaves this device — there is no server at all.',
+  targets: 'targets',
   flowFill: 'Fill the fields',
   flowCheck: 'Check the preview',
   previewHeading: 'Letter preview',
