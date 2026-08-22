@@ -179,7 +179,11 @@ export function MapMode({ locale }: { locale: Locale }) {
             >
               {t.mapBlankCopy}
             </button>
-            {saved !== null && <span className="text-sm text-ink-muted">{saved}</span>}
+            {saved !== null && (
+              <span role="status" className="text-sm text-ink-muted">
+                {saved}
+              </span>
+            )}
           </div>
 
           <p className="no-print max-w-[90ch] border-b border-rule px-6 py-2 text-sm text-ink-muted">

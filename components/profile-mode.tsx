@@ -260,7 +260,15 @@ export function ProfileMode({ locale }: { locale: Locale }) {
               event.target.value = ''
             }}
           />
-          {notice !== null && <span className="text-sm text-ink-muted">{notice}</span>}
+          {/* Saving, importing and clearing said nothing at all to a screen
+              reader. role="status" is polite and does not move focus, which
+              is right for a confirmation nobody asked to be interrupted by.
+              WCAG 4.1.3. */}
+          {notice !== null && (
+            <span role="status" className="text-sm text-ink-muted">
+              {notice}
+            </span>
+          )}
         </div>
 
         {/*

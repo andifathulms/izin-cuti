@@ -44,8 +44,19 @@ export function DownloadPanel({
 
   return (
     <section aria-label={t.downloadSection} className="no-print border-t border-rule px-6 py-4">
+      {/*
+       * The last chance to notice the wrong year was silent: warnings appear
+       * and vanish while somebody types, and nothing announced them. WCAG
+       * 4.1.3.
+       *
+       * role="status" rather than a native element because there is no native
+       * live region — <output> names a form calculation, which these are not.
+       * Polite and aggregated here rather than on each field: the per-field
+       * list is already tied to its input by aria-describedby, and making
+       * every one of them live would talk over every keystroke.
+       */}
       {(warnings.length > 0 || pending.length > 0) && (
-        <ul className="mb-4 space-y-1">
+        <ul role="status" className="mb-4 space-y-1">
           {warnings.map((warning) => (
             <li key={warning.id} className="flex items-baseline gap-2 text-sm">
               <span aria-hidden className="text-attention">
