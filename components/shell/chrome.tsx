@@ -114,3 +114,30 @@ export function StateLegend({ locale }: { locale: Locale }) {
     </ul>
   )
 }
+
+/**
+ * Where this is going, in three beats.
+ *
+ * The download panel lives at the foot of a scrolling column, four sections
+ * below the fold, so nothing above the fold said the word DOCX or suggested
+ * the form produced a file at all. This is not a stepper and claims no state
+ * it does not have — it is the shape of the task, with the outcome named and
+ * carrying the app's own colour so the eye lands on it.
+ */
+export function FlowLine({ locale }: { locale: Locale }) {
+  const t = strings(locale)
+  const beats = [t.flowFill, t.flowCheck]
+  return (
+    <p className="no-print flex flex-wrap items-baseline gap-2 text-sm">
+      {beats.map((beat) => (
+        <span key={beat} className="flex items-baseline gap-2 text-ink-muted">
+          {beat}
+          <span aria-hidden className="text-rule">
+            →
+          </span>
+        </span>
+      ))}
+      <span className="font-medium text-typed">{t.downloadDocx}</span>
+    </p>
+  )
+}

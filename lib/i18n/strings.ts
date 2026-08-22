@@ -92,7 +92,12 @@ type Strings = {
   readonly fillChooseMapping: string
   readonly fillWaiting: string
 
+  /** The three beats, so the payoff is legible before anyone scrolls. */
+  readonly flowFill: string
+  readonly flowCheck: string
+
   readonly preview: string
+  readonly previewHeading: string
   readonly previewApproximate: string
   readonly previewEmpty: string
   readonly previewAsText: string
@@ -219,7 +224,11 @@ const id: Strings = {
   fillChooseMapping: 'Pemetaan',
   fillWaiting: 'menunggu isian',
 
+  flowFill: 'Isi kolom',
+  flowCheck: 'Periksa pratinjau',
+
   preview: 'Pratinjau',
+  previewHeading: 'Pratinjau surat',
   previewApproximate:
     'Pratinjau ini perkiraan tata letak, bukan hasil akhir. DOCX adalah keluaran yang berlaku.',
   previewEmpty: 'Pratinjau muncul setelah dokumen dipilih.',
@@ -298,6 +307,9 @@ const en: Strings = {
   privacyWhy:
     'There is no server. The document is read into memory, filled, and downloaded locally. Profiles and mappings live in this browser’s local storage.',
   privacyShort: 'Nothing you type leaves this device — there is no server at all.',
+  flowFill: 'Fill the fields',
+  flowCheck: 'Check the preview',
+  previewHeading: 'Letter preview',
   openingForm: 'Opening the form…',
   openingFormHint: 'The bundled leave form is being opened on this device.',
   notADocxHint:

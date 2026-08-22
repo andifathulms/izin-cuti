@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useApp } from '@/components/app-state'
 import { PrivacyFootnote } from '@/components/shell/template-picker'
 import { DocumentPreview } from '@/components/preview/document-preview'
-import { StateLegend } from '@/components/shell/chrome'
+import { FlowLine, StateLegend } from '@/components/shell/chrome'
 import { DownloadPanel } from '@/components/summary/download-panel'
 import { DriftNotice } from '@/components/summary/drift-notice'
 import { PdfPreview } from '@/components/summary/pdf-preview'
@@ -264,6 +264,7 @@ export function FillMode({ locale }: { locale: Locale }) {
             </select>
           </label>
         )}
+        <FlowLine locale={locale} />
         <StateLegend locale={locale} />
         <button
           type="button"
