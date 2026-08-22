@@ -63,5 +63,29 @@ export function pageMetadata(locale: Locale, page: Page): Metadata {
         'x-default': url(DEFAULT_LOCALE, page),
       },
     },
+    /*
+     * How this tool actually spreads: one person sending a link to a
+     * colleague in a chat. The preview card was title-only and identical for
+     * all six routes, so a link to the profile page looked exactly like a
+     * link to the form.
+     *
+     * Same title and description as above rather than a second set written by
+     * hand — a card that disagrees with the page is worse than no card. No
+     * image: there is no artwork in this repository, and an invented one
+     * would be a claim about a government form that nobody made.
+     */
+    openGraph: {
+      type: 'website',
+      siteName: t.appName,
+      locale: locale === 'id' ? 'id_ID' : 'en_US',
+      url: url(locale, page),
+      title: `${pageName(locale, page)} — ${t.appName}`,
+      description,
+    },
+    twitter: {
+      card: 'summary',
+      title: `${pageName(locale, page)} — ${t.appName}`,
+      description,
+    },
   }
 }
