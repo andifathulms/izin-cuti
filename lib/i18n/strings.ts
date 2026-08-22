@@ -106,6 +106,8 @@ type Strings = {
   readonly previewHeading: string
   readonly previewApproximate: string
   readonly previewEmpty: string
+  readonly previewChecked: string
+  readonly previewUnchecked: string
   readonly previewAsText: string
 
   readonly downloadSection: string
@@ -251,6 +253,8 @@ const id: Strings = {
   previewApproximate:
     'Pratinjau ini perkiraan tata letak, bukan hasil akhir. DOCX adalah keluaran yang berlaku.',
   previewEmpty: 'Pratinjau muncul setelah dokumen dipilih.',
+  previewChecked: 'dicentang',
+  previewUnchecked: 'tidak dicentang',
   previewAsText: 'Salin sebagai teks',
 
   downloadSection: 'Unduh surat',
@@ -336,6 +340,8 @@ const en: Strings = {
   flowFill: 'Fill the fields',
   flowCheck: 'Check the preview',
   previewHeading: 'Letter preview',
+  previewChecked: 'ticked',
+  previewUnchecked: 'not ticked',
   openingForm: 'Opening the form…',
   openingFormHint: 'The bundled leave form is being opened on this device.',
   notADocxHint:

@@ -81,7 +81,7 @@ export function DocumentPreview({
           <p className="text-base text-ink-muted">{t.previewEmpty}</p>
         ) : (
           <article className="preview-page mx-auto max-w-[80ch] border border-rule bg-white px-8 py-10 text-base leading-6">
-            <Blocks blocks={model.blocks} />
+            <Blocks blocks={model.blocks} locale={locale} />
           </article>
         )}
       </div>
@@ -89,14 +89,20 @@ export function DocumentPreview({
   )
 }
 
-function Blocks({ blocks }: { blocks: ReadonlyArray<PreviewBlock> }) {
+function Blocks({
+  blocks,
+  locale,
+}: {
+  blocks: ReadonlyArray<PreviewBlock>
+  locale: Locale
+}) {
   return (
     <>
       {blocks.map((block) =>
         block.type === 'paragraph' ? (
           <Paragraph key={block.key} block={block} />
         ) : (
-          <Table key={block.key} block={block} />
+          <Table key={block.key} block={block} locale={locale} />
         ),
       )}
     </>
@@ -155,9 +161,27 @@ function Run({ run }: { run: PreviewRun }) {
   )
 }
 
-function Table({ block }: { block: Extract<PreviewBlock, { type: 'table' }> }) {
+function Table({
+  block,
+  locale,
+}: {
+  block: Extract<PreviewBlock, { type: 'table' }>
+  locale: Locale
+}) {
   return (
-    <table className="my-4 w-full border-collapse text-base">
+    /*
+     * role="presentation", and the justification the rule asks for: these are
+     * the Word form's layout grid, not data. There are no header cells to mark
+     * up because the source document has none, so a screen reader was entering
+     * table navigation and announcing "table, 14 rows, 4 columns" over what is
+     * a page layout. WCAG 1.3.1.
+     *
+     * The alternative — guessing which cell in a row is the label and marking
+     * it <th scope="row"> — would be a heuristic over somebody's official
+     * form, and the parse has no way to know. The other alternative, divs,
+     * would break the print path, which relies on real table semantics.
+     */
+    <table role="presentation" className="my-4 w-full border-collapse text-base">
       <tbody>
         {block.rows.map((row, r) => (
           <tr key={r}>
@@ -168,8 +192,19 @@ function Table({ block }: { block: Extract<PreviewBlock, { type: 'table' }> }) {
                 style={cell.widthTwips === null ? undefined : { width: `${cell.widthTwips / 20}pt` }}
               >
                 {cell.box === null ? (
-                  <Blocks blocks={cell.blocks} />
+                  <Blocks blocks={cell.blocks} locale={locale} />
                 ) : (
+                  /*
+                   * An unchecked box was aria-hidden — invisible to a screen
+                   * reader entirely — and a checked one announced the bare
+                   * character √. So a reader could not learn that six leave
+                   * types exist, which is ticked, or what the stray √ they
+                   * just heard belonged to. Verifying the tick is the one
+                   * thing the preview exists for. WCAG 1.1.1, 1.3.1.
+                   *
+                   * The glyph is decoration now and the state is a word, read
+                   * in document order right beside the label in the next cell.
+                   */
                   <span
                     data-focused={cell.box.focused ? 'true' : undefined}
                     className={[
@@ -178,9 +213,13 @@ function Table({ block }: { block: Extract<PreviewBlock, { type: 'table' }> }) {
                       cell.box.focused ? 'mark-changed' : '',
                       cell.box.checked ? 'text-typed' : 'text-transparent',
                     ].join(' ')}
-                    aria-hidden={!cell.box.checked}
                   >
-                    √
+                    <span aria-hidden>√</span>
+                    <span className="sr-only">
+                      {cell.box.checked
+                        ? strings(locale).previewChecked
+                        : strings(locale).previewUnchecked}
+                    </span>
                   </span>
                 )}
               </td>
