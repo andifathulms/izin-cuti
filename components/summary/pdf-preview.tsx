@@ -27,26 +27,69 @@ export function PdfPreview({
 }) {
   const t = strings(locale)
   const closeButton = useRef<HTMLButtonElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
 
+  /*
+   * `aria-modal` asserts that the rest of the page is unavailable, and it was
+   * not: Tab ran from the close button into the iframe and straight out into
+   * the form behind, which stayed fully interactive. Focus was also never
+   * given back on close, so shutting the dialog returned somebody to the top
+   * of the document. WCAG 2.4.3.
+   *
+   * Tab is wrapped inside the panel and the previously focused element is
+   * restored on close, which makes the assertion true for our own controls.
+   * What it cannot cover is the inside of the PDF iframe: once focus is in
+   * another document, its keystrokes are its own. Escape still closes.
+   */
   useEffect(() => {
+    const previous = window.document.activeElement
     closeButton.current?.focus()
+
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape') {
+        onClose()
+        return
+      }
+      if (event.key !== 'Tab' || panel.current === null) return
+      const stops = panel.current.querySelectorAll<HTMLElement>(
+        'button, iframe, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      )
+      const first = stops[0]
+      const last = stops[stops.length - 1]
+      if (first === undefined || last === undefined) return
+      if (event.shiftKey && window.document.activeElement === first) {
+        event.preventDefault()
+        last.focus()
+      } else if (!event.shiftKey && window.document.activeElement === last) {
+        event.preventDefault()
+        first.focus()
+      }
     }
+
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      if (previous instanceof HTMLElement) previous.focus()
+    }
   }, [onClose])
 
   return (
     <div
       role="dialog"
       aria-modal="true"
-      aria-label={t.previewPdf}
+      aria-labelledby="pdf-preview-heading"
       className="no-print fixed inset-0 z-50 flex flex-col bg-ink/40 p-4"
     >
-      <div className="mx-auto flex h-full w-full max-w-[1000px] flex-col border border-rule bg-paper">
+      <div
+        ref={panel}
+        className="mx-auto flex h-full w-full max-w-[1000px] flex-col border border-rule bg-paper"
+      >
         <div className="flex flex-wrap items-center gap-3 border-b border-rule px-4 py-3">
-          <h2 className="text-base font-semibold">{t.previewPdf}</h2>
+          {/* Named by its heading rather than by an aria-label holding the
+              identical string. */}
+          <h2 id="pdf-preview-heading" className="text-base font-semibold">
+            {t.previewPdf}
+          </h2>
           <p className="flex-1 text-sm text-ink-muted">{t.pdfApproximate}</p>
           <button
             type="button"
@@ -65,7 +108,14 @@ export function PdfPreview({
           </button>
         </div>
 
-        <iframe src={url} title={t.previewPdf} className="min-h-0 flex-1 bg-white" />
+        {/* The header wraps to three or four lines at 320px or at 200% zoom
+            and took its space from here, shrinking the document somebody is
+            about to sign towards nothing. A floor, so it cannot. */}
+        <iframe
+          src={url}
+          title={t.previewPdf}
+          className="min-h-[16rem] flex-1 bg-white"
+        />
       </div>
     </div>
   )
