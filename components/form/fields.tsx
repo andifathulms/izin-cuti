@@ -119,16 +119,23 @@ export function DerivedField({
 
 export function ChoiceGroupField({
   group,
+  hideLegend = false,
   onChoose,
   onFocus,
 }: {
   group: ChoiceGroup
+  /**
+   * The section heading is already this group's name. Hidden from sight, kept
+   * for the accessibility tree — a fieldset without a legend is a fieldset
+   * nobody can hear.
+   */
+  hideLegend?: boolean
   onChoose: (targetId: string | null) => void
   onFocus: (targetId: string | null) => void
 }) {
   return (
     <fieldset>
-      <legend className="text-sm font-medium">{group.group}</legend>
+      <legend className={hideLegend ? 'sr-only' : 'text-sm font-medium'}>{group.group}</legend>
       <div className="mt-1 space-y-1">
         {group.options.map((option) => (
           <label key={option.id} className="flex items-center gap-2 text-base">

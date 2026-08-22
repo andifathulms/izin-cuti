@@ -364,24 +364,32 @@ export function FillMode({ locale }: { locale: Locale }) {
                 ))}
               </Section>
 
-              <Section title={t.fillRequest} grid>
-                {model.request.map((field) => (
-                  <div key={field.key} className={SPAN[field.span]}>
-                    <TextField
-                      field={field}
-                      onChange={(value) => setRequestValue(field.key as keyof RequestValues, value)}
-                      onFocus={setFocus}
-                    />
-                  </div>
-                ))}
-              </Section>
-
+              {/*
+                * Ahead of the dates, not after them.
+                *
+                * The leave type decides whether the twelve-working-day cap
+                * applies, whether an alasan is required, and where the end-date
+                * picker stops. Sitting last, it was routinely chosen after the
+                * dates it governs — the case lib/fill/form.ts already has a
+                * comment about. First the kind of leave, then the leave.
+                *
+                * With one group and nothing else, the group's own name is the
+                * heading: "Pilihan" said nothing about what the decision was,
+                * and printing both would be the same word twice.
+                */}
               {(model.groups.length > 0 || model.standalone.length > 0) && (
-                <Section title={t.fillChecklist}>
+                <Section
+                  title={
+                    model.groups.length === 1 && model.standalone.length === 0
+                      ? model.groups[0]!.group
+                      : t.fillChecklist
+                  }
+                >
                   {model.groups.map((group) => (
                     <ChoiceGroupField
                       key={group.group}
                       group={group}
+                      hideLegend={model.groups.length === 1 && model.standalone.length === 0}
                       onChoose={(targetId) => setChoice(group.group, targetId)}
                       onFocus={setFocus}
                     />
@@ -397,6 +405,19 @@ export function FillMode({ locale }: { locale: Locale }) {
                   ))}
                 </Section>
               )}
+
+              <Section title={t.fillRequest} grid>
+                {model.request.map((field) => (
+                  <div key={field.key} className={SPAN[field.span]}>
+                    <TextField
+                      field={field}
+                      onChange={(value) => setRequestValue(field.key as keyof RequestValues, value)}
+                      onFocus={setFocus}
+                    />
+                  </div>
+                ))}
+              </Section>
+
 
             </form>
 
