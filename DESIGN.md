@@ -77,6 +77,8 @@ Every muted grey in the app is one of these two. **No opacity modifier on `--ink
 
 Also deepened, from `#B5762E` at 3.4:1. The amber marker is the only thing separating a warning from ordinary prose, and it has to be read to do that.
 
+**Amber is a mark, never a surface.** No amber background, no amber tint behind a paragraph. The moment it washes a block that is merely informational — "map mode needs a wide screen" — it stops meaning *a warning stands here* and starts meaning *this text is a bit important*, which is not a thing the palette can afford to say.
+
 **Amber, not red.** Validation warns and never prevents; offices have exceptions, and a red error state implies a refusal the app does not make. Amber sits beside the field, with the reason in words.
 
 **No red anywhere in the product.** Nothing here is an error, including a template mismatch — that is a refusal with an explanation, rendered in ink with an amber marker.

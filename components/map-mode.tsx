@@ -138,7 +138,10 @@ export function MapMode({ locale }: { locale: Locale }) {
     <div className="flex h-full flex-col">
       <TemplatePicker locale={locale} />
 
-      <p className="no-print border-b border-rule bg-attention/5 px-6 py-2 text-sm lg:hidden">
+      {/* Amber is a warning mark, and this was the one place it became a
+          background wash. "Map mode needs a wide screen" is a fact about the
+          viewport, not a warning about the document. Plain paper, plain ink. */}
+      <p className="no-print border-b border-rule px-6 py-2 text-sm text-ink-muted lg:hidden">
         {t.mapDesktopOnly}
       </p>
 
