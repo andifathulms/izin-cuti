@@ -32,7 +32,10 @@ export function Header({ locale }: { locale: Locale }) {
           </Link>
         </div>
 
-        <nav className="flex items-center gap-1" aria-label={t.appName}>
+        {/* No aria-label: it announced "Isi Surat navigation", naming the nav
+            after the app rather than its contents, and there is only one nav
+            on the page for it to be distinguished from. */}
+        <nav className="flex items-center gap-1">
           {tabs.map((tab) => {
             const active = pathname?.startsWith(tab.href) ?? false
             return (

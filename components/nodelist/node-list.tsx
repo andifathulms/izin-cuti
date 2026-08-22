@@ -54,9 +54,13 @@ export function NodeList({
   ]
 
   return (
-    <section aria-label={t.mapNodeList} className="flex h-full min-h-0 flex-col">
+    // The aria-label and the heading were the identical string, so the region
+    // carried the same name twice. The heading is the name.
+    <section aria-labelledby="nodelist-heading" className="flex h-full min-h-0 flex-col">
       <div className="border-b border-rule px-4 py-3">
-        <h2 className="text-base font-semibold">{t.mapNodeList}</h2>
+        <h2 id="nodelist-heading" className="text-base font-semibold">
+          {t.mapNodeList}
+        </h2>
         <p className="mt-1 max-w-[60ch] text-sm text-ink-muted">{t.mapIntro}</p>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
