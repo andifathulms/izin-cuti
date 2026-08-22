@@ -264,8 +264,14 @@ export function FillMode({ locale }: { locale: Locale }) {
             </select>
           </label>
         )}
-        {/* The legend moved to the preview pane, beside the colours it
-            explains. This strip says what the app is for instead. */}
+        {/*
+         * The page had no h1 at all in its ordinary state: the sections opened
+         * at h2 and the outline had no root, so a screen reader landing here
+         * was given no page title. The document being filled is the honest
+         * one, and naming it also answers the question the screen never
+         * answered — which form is this.
+         */}
+        <h1 className="text-base font-semibold">{mapping?.name ?? t.appName}</h1>
         <FlowLine locale={locale} />
         <button
           type="button"
