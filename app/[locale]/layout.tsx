@@ -27,8 +27,11 @@ export default function LocaleLayout({
        * own `100vh` minus a guessed header height — 5rem in one, 4rem in the
        * other, neither matching the header — and every line added to the
        * header made both guesses wronger.
+       *
+       * The height itself is `.app-shell` in globals.css: 100dvh over a 100vh
+       * fallback, which two declarations express and one utility class cannot.
        */}
-      <div lang={params.locale} className="app-shell flex h-screen flex-col">
+      <div lang={params.locale} className="app-shell flex flex-col">
         <HtmlLang locale={params.locale} />
         <Header locale={params.locale} />
         <main className="min-h-0 flex-1 overflow-auto">{children}</main>

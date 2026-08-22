@@ -133,6 +133,26 @@
 
 @layer components {
   /*
+   * The shell owns the viewport and the panes inside it scroll, so this has to
+   * be a definite height rather than a minimum — `flex-1 min-h-0 overflow-auto`
+   * needs something to be a fraction of.
+   *
+   * It was `h-screen`, and 100vh on iOS Safari is the viewport with the address
+   * bar taken away: taller than what is actually on screen while the bar is
+   * showing. The bottom of the form column is the privacy line and the download
+   * button, so the two things somebody scrolls to the end of a leave form to
+   * reach were the two sitting under the browser's own chrome.
+   *
+   * 100dvh is that height as it actually is, and it follows the bar as it
+   * hides. The vh line above it is the fallback for a browser that does not
+   * know dvh, which is the behaviour we already had.
+   */
+  .app-shell {
+    height: 100vh;
+    height: 100dvh;
+  }
+
+  /*
    * An unmapped target is an absence, not a value, so it is a pattern rather
    * than a colour — the same rule the sibling projects apply to unknown data.
    */
