@@ -297,7 +297,11 @@ export function FillMode({ locale }: { locale: Locale }) {
             <form className="space-y-8 px-6 py-6" onSubmit={(event) => event.preventDefault()}>
               <Section title={t.fillDirektorat} note={t.fillDirektoratHint}>
                 <label className="block">
-                  <span className="block text-sm font-medium">{t.fillDirektorat}</span>
+                  {/* The section heading one line above says "Direktorat"
+                      already; printing it twice read as a rendering fault.
+                      Kept in the accessibility tree, where the select still
+                      needs a name of its own. */}
+                  <span className="sr-only">{t.fillDirektorat}</span>
                   <select
                     value={chosenDirektorat?.id ?? ''}
                     onChange={(event) => chooseDirektorat(event.target.value)}
