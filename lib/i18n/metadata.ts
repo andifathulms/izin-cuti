@@ -17,7 +17,8 @@ export const SITE_ORIGIN = 'https://andifathulms.github.io'
 export const SITE_BASE = '/izin-cuti'
 
 /** Which page, in the app's own words — the same words the nav uses. */
-export type Page = 'isi' | 'petakan' | 'profil'
+export const PAGES = ['isi', 'petakan', 'profil'] as const
+export type Page = (typeof PAGES)[number]
 
 function pageName(locale: Locale, page: Page): string {
   const t = strings(locale)
@@ -36,7 +37,7 @@ function pageName(locale: Locale, page: Page): string {
 }
 
 /** The deployed URL of one page. Trailing slash: the export writes directories. */
-function url(locale: Locale, page: Page): string {
+export function pageUrl(locale: Locale, page: Page): string {
   return `${SITE_ORIGIN}${SITE_BASE}/${locale}/${page}/`
 }
 
@@ -56,11 +57,11 @@ export function pageMetadata(locale: Locale, page: Page): Metadata {
      * default locale, which is where the root doorway sends people too.
      */
     alternates: {
-      canonical: url(locale, page),
+      canonical: pageUrl(locale, page),
       languages: {
-        id: url('id', page),
-        en: url('en', page),
-        'x-default': url(DEFAULT_LOCALE, page),
+        id: pageUrl('id', page),
+        en: pageUrl('en', page),
+        'x-default': pageUrl(DEFAULT_LOCALE, page),
       },
     },
     /*
@@ -78,7 +79,7 @@ export function pageMetadata(locale: Locale, page: Page): Metadata {
       type: 'website',
       siteName: t.appName,
       locale: locale === 'id' ? 'id_ID' : 'en_US',
-      url: url(locale, page),
+      url: pageUrl(locale, page),
       title: `${pageName(locale, page)} — ${t.appName}`,
       description,
     },
