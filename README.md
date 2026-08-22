@@ -1,4 +1,4 @@
-# Isi Surat
+# Izin Cuti
 
 **Map an office form once, fill it in six fields forever. Your document never leaves your device.**
 

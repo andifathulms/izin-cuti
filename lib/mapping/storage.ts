@@ -22,6 +22,13 @@ import type { FieldSource, Mapping, Profile, Target } from './schema'
  * half-believed mapping points at the wrong nodes.
  */
 
+/*
+ * The app is called Izin Cuti; this key prefix is not, and must not be.
+ * It names data already written to real devices — rename it and every saved
+ * profile and mapping is orphaned in place, with no way to find it again.
+ * Same for the export `format` marker below and the IndexedDB name in
+ * template-store.ts: they are identifiers, not branding.
+ */
 const PREFIX = 'isi-surat'
 const MAPPINGS_KEY = `${PREFIX}.mappings.v1`
 const PROFILES_KEY = `${PREFIX}.profiles.v1`
@@ -126,7 +133,7 @@ export function importAll(store: Store | null, text: string): ImportResult {
     return { type: 'rejected', reason: 'Berkas ini bukan JSON yang bisa dibaca.' }
   }
   if (!isRecord(data) || data['format'] !== 'isi-surat-export') {
-    return { type: 'rejected', reason: 'Berkas ini bukan hasil ekspor Isi Surat.' }
+    return { type: 'rejected', reason: 'Berkas ini bukan hasil ekspor Izin Cuti.' }
   }
 
   const mappings = asArray(data['mappings'], asMapping)

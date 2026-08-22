@@ -1,4 +1,4 @@
-# DESIGN — Isi Surat
+# DESIGN — Izin Cuti
 
 Authoritative for every visual decision in this repository. `PRD.md` says what the product is; this says what it looks like and why. When code and this document disagree, this document is right.
 

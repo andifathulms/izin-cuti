@@ -1,4 +1,4 @@
-# CLAUDE.md — Isi Surat
+# CLAUDE.md — Izin Cuti
 
 Client-side docx template mapper and filler. Map an office form's fields once, then fill it from a short form. Static site, GitHub Pages, no backend, no runtime network, nothing transmitted.
 

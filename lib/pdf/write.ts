@@ -85,7 +85,7 @@ export function writePdf(pages: ReadonlyArray<PdfPage>, title: string): Uint8Arr
     add(`<< /Length ${byteLength(stream)} >>\nstream\n${stream}\nendstream`)
   })
 
-  const infoId = add(`<< /Title (${escapeString(title)}) /Producer (Isi Surat) >>`)
+  const infoId = add(`<< /Title (${escapeString(title)}) /Producer (Izin Cuti) >>`)
 
   // Assemble, recording where each object starts — the cross-reference table
   // is byte offsets, so this has to be counted as bytes and not as characters.

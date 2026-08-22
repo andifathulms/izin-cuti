@@ -153,7 +153,7 @@ type Strings = {
 }
 
 const id: Strings = {
-  appName: 'Isi Surat',
+  appName: 'Izin Cuti',
   taglineWhat:
     'Isi Formulir Permintaan dan Pemberian Cuti, lalu unduh suratnya sebagai DOCX.',
   taglineWhere: 'Semuanya berjalan di perangkat ini — tidak ada yang dikirim ke mana pun.',

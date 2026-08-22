@@ -1,4 +1,4 @@
-# PRD — Isi Surat
+# PRD — Izin Cuti
 
 **Map an office form once, fill it in six fields forever. Your document never leaves your device.**
 
@@ -11,7 +11,7 @@
 | **Language** | Indonesian-first UI; English secondary |
 | **Design** | See `DESIGN.md`. Authoritative for every visual decision. |
 
-*Name: explanatory. Alternatives: **Isian Dokumen**, **Docx Filler**.*
+*Name: the thing being asked for. Storage keys and the export format marker still read `isi-surat`, deliberately — see `lib/mapping/storage.ts`.*
 
 ---
 

@@ -60,7 +60,7 @@ export function ProfileMode({ locale }: { locale: Locale }) {
     const url = URL.createObjectURL(blob)
     const anchor = document.createElement('a')
     anchor.href = url
-    anchor.download = 'isi-surat.json'
+    anchor.download = 'izin-cuti.json'
     anchor.click()
     URL.revokeObjectURL(url)
   }

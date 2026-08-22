@@ -25,7 +25,7 @@ const plexMono = IBM_Plex_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Isi Surat',
+  title: 'Izin Cuti',
   description:
     'Isi Formulir Permintaan dan Pemberian Cuti, lalu unduh suratnya sebagai DOCX. Semuanya berjalan di perangkat ini — tidak ada yang dikirim ke mana pun.',
 }

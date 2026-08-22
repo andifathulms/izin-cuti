@@ -32,7 +32,7 @@ export function Header({ locale }: { locale: Locale }) {
           </Link>
         </div>
 
-        {/* No aria-label: it announced "Isi Surat navigation", naming the nav
+        {/* No aria-label: it announced "Izin Cuti navigation", naming the nav
             after the app rather than its contents, and there is only one nav
             on the page for it to be distinguished from. */}
         <nav className="flex items-center gap-1">
@@ -70,7 +70,7 @@ export function Header({ locale }: { locale: Locale }) {
        * It used to sit beside the wordmark at `text-sm` inside `hidden
        * md:block` — smaller than any label on the page, and absent on a
        * phone, where the only words above the form were the two in the
-       * wordmark. "Isi Surat" does not tell a stranger that this fills a
+       * wordmark. "Izin Cuti" does not tell a stranger that this fills a
        * cuti form or that it hands back a DOCX. This does, in one line,
        * before anything else is read.
        */}
