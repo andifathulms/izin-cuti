@@ -130,7 +130,18 @@ export function ProfileMode({ locale }: { locale: Locale }) {
                 <span className="flex-1 text-base">
                   {profile.name}
                   {profile.id === activeProfileId && (
-                    <span className="ml-2 font-mono text-sm text-typed">✓</span>
+                    /*
+                     * The tick was the whole of it: a bare ✓ in a span, which
+                     * a screen reader reads as the character or as nothing,
+                     * so which profile is loaded — the one thing this list is
+                     * for — was unavailable. The glyph is decoration and the
+                     * state is a word, the same shape the preview's checkbox
+                     * uses. WCAG 1.1.1.
+                     */
+                    <span className="ml-2 font-mono text-sm text-typed">
+                      <span aria-hidden>✓</span>
+                      <span className="sr-only">{t.profileActive}</span>
+                    </span>
                   )}
                 </span>
                 <button

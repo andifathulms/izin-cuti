@@ -137,6 +137,8 @@ type Strings = {
   readonly profileSaved: string
   readonly profileCleared: string
   readonly profileUse: string
+  /** Which profile is loaded. The tick alone is not readable. */
+  readonly profileActive: string
   readonly profileDelete: string
   readonly profileExport: string
   readonly profileImport: string
@@ -285,6 +287,7 @@ const id: Strings = {
   profileSaved: 'Profil tersimpan.',
   profileCleared: 'Semua profil, pemetaan dan dokumen yang diingat telah dihapus.',
   profileUse: 'Pakai',
+  profileActive: 'sedang dipakai',
   profileDelete: 'Hapus',
   profileExport: 'Ekspor semua',
   profileImport: 'Impor berkas',
@@ -455,6 +458,7 @@ const en: Strings = {
   profileSaved: 'Profile saved.',
   profileCleared: 'Every profile, mapping and remembered document has been deleted.',
   profileUse: 'Use',
+  profileActive: 'in use',
   profileDelete: 'Delete',
   profileExport: 'Export everything',
   profileImport: 'Import a file',
