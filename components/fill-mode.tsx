@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { useApp } from '@/components/app-state'
 import { PrivacyFootnote } from '@/components/shell/template-picker'
 import { DocumentPreview } from '@/components/preview/document-preview'
-import { FlowLine, StateLegend } from '@/components/shell/chrome'
+import { FlowLine } from '@/components/shell/chrome'
 import { DownloadPanel } from '@/components/summary/download-panel'
 import { DriftNotice } from '@/components/summary/drift-notice'
 import { PdfPreview } from '@/components/summary/pdf-preview'
@@ -264,8 +264,9 @@ export function FillMode({ locale }: { locale: Locale }) {
             </select>
           </label>
         )}
+        {/* The legend moved to the preview pane, beside the colours it
+            explains. This strip says what the app is for instead. */}
         <FlowLine locale={locale} />
-        <StateLegend locale={locale} />
         <button
           type="button"
           onClick={() => setPreviewOpen((open) => !open)}

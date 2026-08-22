@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import type { PreviewBlock, PreviewModel, PreviewRun, RunState } from '@/lib/preview/model'
+import { StateLegend } from '@/components/shell/chrome'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
 /**
@@ -55,12 +56,16 @@ export function DocumentPreview({
 
   return (
     <section aria-label={t.preview} className="print-area flex h-full min-h-0 flex-col">
-      <div className="no-print flex items-baseline justify-between gap-4 border-b border-rule px-4 py-3">
-        <h2 className="text-base font-semibold">{t.previewHeading}</h2>
-        {/* The legend contract: what this shows, and what it cannot. */}
-        <p className="max-w-[46ch] text-right font-mono text-sm leading-5 text-ink-muted">
-          {t.previewApproximate}
-        </p>
+      <div className="no-print space-y-2 border-b border-rule px-4 py-3">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 className="text-base font-semibold">{t.previewHeading}</h2>
+          {/* The legend contract: what this shows, and what it cannot. */}
+          <p className="max-w-[46ch] text-right font-mono text-sm leading-5 text-ink-muted">
+            {t.previewApproximate}
+          </p>
+        </div>
+        {/* The three field states, next to the three field states. */}
+        {model !== null && <StateLegend locale={locale} showUnmapped={model.hasUnmapped} />}
       </div>
 
       <div ref={container} className="print-area min-h-0 flex-1 overflow-auto px-4 py-6">

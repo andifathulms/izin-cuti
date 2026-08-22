@@ -94,8 +94,21 @@ export function PrivacyLine({ locale, className = '' }: { locale: Locale; classN
 /**
  * The legend contract: every view says what it is showing and what it cannot
  * show. Here, that the three field states mean three different things.
+ *
+ * It belongs beside the colours it explains, not ahead of them. On the fill
+ * screen it was the first content on the page — three swatches explaining a
+ * system nobody had met yet, in the strip where the purpose of the app should
+ * be. And the third entry described a state the bundled form never reaches, so
+ * `showUnmapped` keeps it for the template that does have one and drops it
+ * where it only raises a question with no answer on screen.
  */
-export function StateLegend({ locale }: { locale: Locale }) {
+export function StateLegend({
+  locale,
+  showUnmapped = true,
+}: {
+  locale: Locale
+  showUnmapped?: boolean
+}) {
   const t = strings(locale)
   return (
     <ul className="no-print flex flex-wrap items-center gap-4 text-sm text-ink-muted">
@@ -107,10 +120,12 @@ export function StateLegend({ locale }: { locale: Locale }) {
         <span className="inline-block h-3 w-3 rounded border border-derived bg-derived/20" />
         {t.fillDerived}
       </li>
-      <li className="flex items-center gap-2">
-        <span className="unmapped inline-block h-3 w-3 rounded border border-rule" />
-        {t.mapUnmapped}
-      </li>
+      {showUnmapped && (
+        <li className="flex items-center gap-2">
+          <span className="unmapped inline-block h-3 w-3 rounded border border-rule" />
+          {t.mapUnmapped}
+        </li>
+      )}
     </ul>
   )
 }

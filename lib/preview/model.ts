@@ -57,6 +57,15 @@ export type PreviewBlock =
 
 export type PreviewModel = {
   readonly blocks: ReadonlyArray<PreviewBlock>
+  /**
+   * Whether any run or box in this model is actually unmapped.
+   *
+   * The legend explains three field states, and with the bundled form the
+   * third never appears — an entry describing a state that is not on screen
+   * raises a question ("mapped to what?") the reader has no way to answer.
+   * Computed here rather than in the component. Invariant 15.
+   */
+  readonly hasUnmapped: boolean
 }
 
 export type Resolution = {
@@ -81,7 +90,17 @@ export const NOTHING: Resolution = {
 }
 
 export function buildPreview(document: ParsedDocument, resolution: Resolution): PreviewModel {
-  return { blocks: document.blocks.map((block, i) => convert(block, resolution, `b${i}`)) }
+  const blocks = document.blocks.map((block, i) => convert(block, resolution, `b${i}`))
+  return { blocks, hasUnmapped: blocks.some(unmappedIn) }
+}
+
+function unmappedIn(block: PreviewBlock): boolean {
+  if (block.type === 'paragraph') return block.runs.some((run) => run.state === 'unmapped')
+  return block.rows.some((row) =>
+    row.cells.some(
+      (cell) => cell.box?.state === 'unmapped' || cell.blocks.some(unmappedIn),
+    ),
+  )
 }
 
 function convert(block: Block, resolution: Resolution, key: string): PreviewBlock {

@@ -5,7 +5,6 @@ import { useApp } from '@/components/app-state'
 import { TemplatePicker } from '@/components/shell/template-picker'
 import { NodeList } from '@/components/nodelist/node-list'
 import { DocumentPreview } from '@/components/preview/document-preview'
-import { StateLegend } from '@/components/shell/chrome'
 import { buildPreview, resolutionForMapping } from '@/lib/preview/model'
 import { blankCopy, blankedNodes, residualPersonalData, type Residue } from '@/lib/mapping/sanitise'
 import { serialiseDocx } from '@/lib/docx/serialise'
@@ -178,7 +177,6 @@ export function MapMode({ locale }: { locale: Locale }) {
               {t.mapBlankCopy}
             </button>
             {saved !== null && <span className="text-sm text-ink-muted">{saved}</span>}
-            <StateLegend locale={locale} />
           </div>
 
           <p className="no-print max-w-[90ch] border-b border-rule px-6 py-2 text-sm text-ink-muted">
