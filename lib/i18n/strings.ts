@@ -36,6 +36,9 @@ type Strings = {
   readonly chooseTemplateHint: string
   readonly noTemplate: string
   readonly noTemplateHint: string
+  readonly openingForm: string
+  readonly openingFormHint: string
+  readonly notADocxHint: string
   readonly templateLoaded: string
   readonly textNodes: string
   readonly checkboxCells: string
@@ -149,6 +152,10 @@ const id: Strings = {
   noTemplate: 'Belum ada dokumen',
   noTemplateHint:
     'Pilih berkas .docx milik Anda untuk mulai. Setelah terbuka, Anda bisa meminta aplikasi mengingatnya di perangkat ini, sehingga langkah ini cukup sekali.',
+  openingForm: 'Membuka formulir…',
+  openingFormHint: 'Formulir cuti bawaan sedang dibuka di perangkat ini.',
+  notADocxHint:
+    'Pilih berkas .docx lain di halaman Profil, atau muat ulang halaman ini untuk kembali ke formulir bawaan.',
   templateLoaded: 'Dokumen dibaca',
   textNodes: 'simpul teks',
   checkboxCells: 'kotak centang',
@@ -291,6 +298,10 @@ const en: Strings = {
   privacyWhy:
     'There is no server. The document is read into memory, filled, and downloaded locally. Profiles and mappings live in this browser’s local storage.',
   privacyShort: 'Nothing you type leaves this device — there is no server at all.',
+  openingForm: 'Opening the form…',
+  openingFormHint: 'The bundled leave form is being opened on this device.',
+  notADocxHint:
+    'Choose another .docx on the Profile page, or reload this page to return to the bundled form.',
   documentSource: 'Document',
 
   chooseTemplate: 'Choose a .docx file',

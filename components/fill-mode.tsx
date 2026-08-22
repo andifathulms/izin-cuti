@@ -205,10 +205,35 @@ export function FillMode({ locale }: { locale: Locale }) {
   }
 
   if (document === null) {
+    /*
+     * Two different absences, and they used to share one message.
+     *
+     * `none` on this screen is never a resting state — the effect above opens
+     * the bundled form, and re-opens it after a clear — so it is the first
+     * frame and nothing else. It was showing "no document yet, choose your
+     * own .docx to begin", which is the first thing a stranger read and the
+     * opposite of how this app works. It says what is happening instead.
+     *
+     * `unreadable` is a real stop, and it now gets the refusal and the reason
+     * rather than being described as an empty screen.
+     */
+    const unreadable = template.type === 'unreadable'
     return (
       <div className="px-6 py-12">
-        <h1 className="text-xl font-semibold">{t.noTemplate}</h1>
-        <p className="mt-2 text-base text-ink-muted">{t.noTemplateHint}</p>
+        <h1 className="flex items-baseline gap-2 text-xl font-semibold">
+          {unreadable && (
+            <span aria-hidden className="text-attention">
+              ▲
+            </span>
+          )}
+          {unreadable ? t.notADocx : t.openingForm}
+        </h1>
+        <p className="mt-2 max-w-[70ch] text-base text-ink-muted">
+          {unreadable ? t.notADocxHint : t.openingFormHint}
+        </p>
+        {unreadable && (
+          <p className="mt-2 font-mono text-sm text-ink-muted">{template.reason}</p>
+        )}
       </div>
     )
   }
