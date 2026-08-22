@@ -59,6 +59,14 @@
   --radius: 2px;
   --hairline: 0.5px;
 
+  /*
+   * The smallest an interactive control may be, in either direction.
+   * WCAG 2.5.8 asks for 24x24; a browser's default checkbox is about 13.
+   * A token rather than a number on one checkbox, because the answer has to
+   * be the same for every control or it is not an answer.
+   */
+  --control-min: 24px;
+
   --dur-fast: 120ms;
   --dur-state: 240ms;
   --dur-mark: 500ms;
@@ -98,6 +106,15 @@
 
   label {
     font-weight: 500;
+  }
+
+  /* The radios and checkboxes are native and rendered at the browser's
+     default ~13px, which is under the target-size floor. Nothing else about
+     them changes. */
+  input[type='checkbox'],
+  input[type='radio'] {
+    width: var(--control-min);
+    height: var(--control-min);
   }
 }
 
@@ -145,6 +162,17 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /*
+   * 0.01ms does not stop an animation, it runs it instantly — so the mark's
+   * first keyframe could still paint its colour for a frame on every focus
+   * change. §6 promises a complete alternative rather than a degraded one,
+   * and the complete one is that the highlight does not happen. Nothing is
+   * lost: the value is already in place.
+   */
+  .mark-changed {
+    animation: none !important;
   }
 }
 

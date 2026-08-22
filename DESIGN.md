@@ -168,6 +168,7 @@ The profile panel carries an explicit **export** and **clear all**, both visible
 - Validation messages are associated with their field, announced, and non-blocking.
 - Full keyboard path through the form in document order; focus visible at 3px.
 - Type floor 16px; AA contrast on `--paper` for all three field states.
+- **Target floor 24px**, as `--control-min`. Native checkboxes and radios render at about 13px and are sized up to it. WCAG 2.5.8.
 - The preview has a text alternative — the filled document as readable text, which is also what someone would paste into a message.
 
 ## 10. What not to do
