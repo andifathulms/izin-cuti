@@ -74,8 +74,14 @@ export function NodeList({
               {label}
             </button>
           ))}
+          {/* The label's only text was the glyph ⌕, so the accessible name of
+              the search box was "⌕". The glyph stays as decoration; the name
+              is a word. */}
           <label className="ml-auto flex items-center gap-2 text-sm">
-            <span className="text-ink-muted">⌕</span>
+            <span aria-hidden className="text-ink-muted">
+              ⌕
+            </span>
+            <span className="sr-only">{t.mapSearch}</span>
             <input
               type="search"
               value={search}
@@ -139,7 +145,16 @@ function NodeRow({
               <>
                 <span className="text-ink-subtle">{entry.before}</span>
                 <span className={mapped ? 'font-medium text-typed' : 'font-medium'}>
-                  {entry.text === '' ? '⌀' : entry.text}
+                  {/* Empty versus not is what separates a text target from a
+                      checkbox cell, and ⌀ said that to sighted readers only. */}
+                  {entry.text === '' ? (
+                    <>
+                      <span aria-hidden>⌀</span>
+                      <span className="sr-only">{t.mapEmptyNode}</span>
+                    </>
+                  ) : (
+                    entry.text
+                  )}
                 </span>
                 <span className="text-ink-subtle">{entry.after}</span>
               </>
@@ -272,7 +287,10 @@ function TargetControls({
                 onClick={() => actions.onUnmerge(target.id)}
                 className="rounded border border-rule px-2 py-1 text-sm"
               >
-                −
+                {/* Was named "−". Its sibling above reads as a sentence and
+                    this one was announced as a minus sign. */}
+                <span aria-hidden>−</span>
+                <span className="sr-only">{t.mapUnmerge}</span>
               </button>
             )}
           </div>

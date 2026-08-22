@@ -73,6 +73,9 @@ type Strings = {
   readonly mapSaved: string
   readonly mapName: string
   readonly mapRemove: string
+  readonly mapSearch: string
+  readonly mapUnmerge: string
+  readonly mapEmptyNode: string
   readonly mapFilterAll: string
   readonly mapFilterUnmapped: string
   readonly mapFilterMapped: string
@@ -211,6 +214,9 @@ const id: Strings = {
   mapSaved: 'Pemetaan tersimpan',
   mapName: 'Nama pemetaan',
   mapRemove: 'Lepaskan',
+  mapSearch: 'Cari simpul',
+  mapUnmerge: 'Pisahkan kembali',
+  mapEmptyNode: 'simpul kosong',
   mapFilterAll: 'Semua',
   mapFilterUnmapped: 'Belum dipetakan',
   mapFilterMapped: 'Sudah dipetakan',
@@ -378,6 +384,9 @@ const en: Strings = {
     'This node sits beside one with identical formatting. If Word split a single value in two, merge them into one target.',
   mapSave: 'Save mapping',
   mapSaved: 'Mapping saved',
+  mapSearch: 'Search nodes',
+  mapUnmerge: 'Split apart again',
+  mapEmptyNode: 'empty node',
   mapName: 'Mapping name',
   mapRemove: 'Unmap',
   mapFilterAll: 'All',
