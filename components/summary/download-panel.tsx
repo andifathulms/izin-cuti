@@ -99,10 +99,10 @@ export function DownloadPanel({
             </button>
           </div>
           {/* Beside the buttons, not hidden behind them. */}
-          <p className="text-sm text-ink/70">{t.pdfApproximate}</p>
+          <p className="text-sm text-ink-muted">{t.pdfApproximate}</p>
         </div>
 
-        <p className="font-mono text-sm text-ink/60">{t.docxAuthoritative}</p>
+        <p className="font-mono text-sm text-ink-muted">{t.docxAuthoritative}</p>
       </div>
     </section>
   )

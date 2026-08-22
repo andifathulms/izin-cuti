@@ -47,7 +47,7 @@ export function PdfPreview({
       <div className="mx-auto flex h-full w-full max-w-[1000px] flex-col border border-rule bg-paper">
         <div className="flex flex-wrap items-center gap-3 border-b border-rule px-4 py-3">
           <h2 className="text-base font-semibold">{t.previewPdf}</h2>
-          <p className="flex-1 text-sm text-ink/70">{t.pdfApproximate}</p>
+          <p className="flex-1 text-sm text-ink-muted">{t.pdfApproximate}</p>
           <button
             type="button"
             onClick={onDownload}

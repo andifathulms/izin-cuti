@@ -7,12 +7,57 @@
  * components use the names, never the values.
  */
 :root {
-  --paper: #f6f5f1;
-  --ink: #1d1f1c;
-  --rule: #d9d7cf;
-  --typed: #2b4c6b;
-  --derived: #5e7a6b;
-  --attention: #b5762e;
+  /*
+   * Channels first, so Tailwind can mix an alpha into any of them and this
+   * file can still say `var(--typed)` where a plain colour is wanted.
+   * Contrast against --paper is measured, not estimated; the figure beside
+   * each one is the ratio. DESIGN.md §3, §9 — AA on paper, no exceptions.
+   */
+  --paper-rgb: 246 245 241;
+  --ink-rgb: 29 31 28; /* 15.2:1 */
+  --ink-muted-rgb: 85 86 83; /* 6.8:1 — secondary prose, hints, captions */
+  --ink-subtle-rgb: 110 111 107; /* 4.6:1 — the quietest text allowed */
+  --rule-rgb: 217 215 207;
+  --typed-rgb: 43 76 107; /* 8.2:1 */
+  --derived-rgb: 79 106 92; /* 5.4:1 — was 4.3:1, below the floor §9 asks for */
+  --attention-rgb: 148 96 34; /* 4.9:1 — was 3.4:1; same ochre, readable */
+  --white-rgb: 255 255 255;
+
+  --paper: rgb(var(--paper-rgb));
+  --ink: rgb(var(--ink-rgb));
+  --ink-muted: rgb(var(--ink-muted-rgb));
+  --ink-subtle: rgb(var(--ink-subtle-rgb));
+  --rule: rgb(var(--rule-rgb));
+  --typed: rgb(var(--typed-rgb));
+  --derived: rgb(var(--derived-rgb));
+  --attention: rgb(var(--attention-rgb));
+
+  /* One type scale, 1.25, floor 16px for body. DESIGN.md §4. */
+  --text-sm: 14px;
+  --text-sm-lh: 20px;
+  --text-base: 16px;
+  --text-base-lh: 24px;
+  --text-lg: 18px;
+  --text-lg-lh: 26px;
+  --text-xl: 22px;
+  --text-xl-lh: 30px;
+  --text-2xl: 28px;
+  --text-2xl-lh: 36px;
+
+  /* 4px base. DESIGN.md §1. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  --radius: 2px;
+  --hairline: 0.5px;
 
   --dur-fast: 120ms;
   --dur-state: 240ms;

@@ -57,7 +57,7 @@ export function NodeList({
     <section aria-label={t.mapNodeList} className="flex h-full min-h-0 flex-col">
       <div className="border-b border-rule px-4 py-3">
         <h2 className="text-base font-semibold">{t.mapNodeList}</h2>
-        <p className="mt-1 max-w-[60ch] text-sm text-ink/70">{t.mapIntro}</p>
+        <p className="mt-1 max-w-[60ch] text-sm text-ink-muted">{t.mapIntro}</p>
 
         <div className="mt-3 flex flex-wrap items-center gap-2">
           {filters.map(([value, label]) => (
@@ -68,14 +68,14 @@ export function NodeList({
               aria-pressed={filter === value}
               className={[
                 'rounded border px-3 py-1 text-sm transition-colors duration-state ease-house',
-                filter === value ? 'border-typed bg-typed/10 text-typed' : 'border-rule text-ink/70',
+                filter === value ? 'border-typed bg-typed/10 text-typed' : 'border-rule text-ink-muted',
               ].join(' ')}
             >
               {label}
             </button>
           ))}
           <label className="ml-auto flex items-center gap-2 text-sm">
-            <span className="text-ink/70">⌕</span>
+            <span className="text-ink-muted">⌕</span>
             <input
               type="search"
               value={search}
@@ -126,22 +126,22 @@ function NodeRow({
       onMouseLeave={() => actions.onFocus(null)}
     >
       <div className="flex items-baseline gap-3">
-        <span className="font-mono text-sm text-ink/50">
+        <span className="font-mono text-sm text-ink-subtle">
           {entry.kind === 'text' ? 'T' : '□'}
           {String(entry.index).padStart(3, '0')}
         </span>
         <div className="min-w-0 flex-1">
           {entry.section !== '' && (
-            <p className="text-sm text-ink/60">{entry.section}</p>
+            <p className="text-sm text-ink-muted">{entry.section}</p>
           )}
           <p className="break-words text-base">
             {entry.kind === 'text' ? (
               <>
-                <span className="text-ink/50">{entry.before}</span>
+                <span className="text-ink-subtle">{entry.before}</span>
                 <span className={mapped ? 'font-medium text-typed' : 'font-medium'}>
                   {entry.text === '' ? '⌀' : entry.text}
                 </span>
-                <span className="text-ink/50">{entry.after}</span>
+                <span className="text-ink-subtle">{entry.after}</span>
               </>
             ) : (
               <>
@@ -151,7 +151,7 @@ function NodeRow({
             )}
           </p>
           {entry.kind === 'text' && entry.rowLabel !== '' && (
-            <p className="text-sm text-ink/60">{entry.rowLabel}</p>
+            <p className="text-sm text-ink-muted">{entry.rowLabel}</p>
           )}
         </div>
 
@@ -171,7 +171,7 @@ function NodeRow({
           <button
             type="button"
             onClick={() => actions.onRemove(mapped.id)}
-            className="shrink-0 rounded border border-rule px-3 py-1 text-sm text-ink/70"
+            className="shrink-0 rounded border border-rule px-3 py-1 text-sm text-ink-muted"
           >
             {t.mapRemove}
           </button>
@@ -254,7 +254,7 @@ function TargetControls({
           <DerivedExplanation source={target.source} />
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="font-mono text-sm text-ink/60">
+            <span className="font-mono text-sm text-ink-muted">
               [{target.nodeIndices.join(', ')}]
             </span>
             {entry.kind === 'text' && entry.mergeableWithNext && (
@@ -278,7 +278,7 @@ function TargetControls({
           </div>
 
           {entry.kind === 'text' && entry.mergeableWithNext && (
-            <p className="max-w-[60ch] text-sm text-ink/60">{t.mapSplitHint}</p>
+            <p className="max-w-[60ch] text-sm text-ink-muted">{t.mapSplitHint}</p>
           )}
         </>
       ) : (

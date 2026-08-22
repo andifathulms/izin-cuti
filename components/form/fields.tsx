@@ -107,12 +107,12 @@ export function DerivedField({
         {row.unavailable === null ? (
           row.value
         ) : (
-          <span className="text-base text-ink/50">
+          <span className="text-base text-ink-subtle">
             {t.fillWaiting} — {row.unavailable}
           </span>
         )}
       </p>
-      <p className="max-w-[60ch] text-sm text-ink/60">{row.explanation}</p>
+      <p className="max-w-[60ch] text-sm text-ink-muted">{row.explanation}</p>
     </div>
   )
 }
@@ -148,7 +148,7 @@ export function ChoiceGroupField({
           <button
             type="button"
             onClick={() => onChoose(null)}
-            className="text-sm text-ink/60 underline"
+            className="text-sm text-ink-muted underline"
           >
             ×
           </button>

@@ -55,14 +55,14 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
         {template.type === 'loaded' && (
           <p className="text-base">
             <span className="font-medium">{template.fileName}</span>{' '}
-            <span className="font-mono text-sm text-ink/60">
+            <span className="font-mono text-sm text-ink-muted">
               {template.document.textNodes.length} {t.textNodes} ·{' '}
               {template.document.checkboxCells.length} {t.checkboxCells}
             </span>{' '}
             <button
               type="button"
               onClick={clearTemplate}
-              className="ml-2 text-sm text-ink/60 underline"
+              className="ml-2 text-sm text-ink-muted underline"
             >
               ×
             </button>
@@ -77,14 +77,14 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
             </span>
             <span>
               {t.notADocx}{' '}
-              <span className="font-mono text-sm text-ink/60">{template.reason}</span>
+              <span className="font-mono text-sm text-ink-muted">{template.reason}</span>
             </span>
           </p>
         )}
       </div>
 
       {template.type === 'none' && (
-        <p className="mt-2 max-w-[80ch] text-sm text-ink/70">{t.useBundledWhy}</p>
+        <p className="mt-2 max-w-[80ch] text-sm text-ink-muted">{t.useBundledWhy}</p>
       )}
 
       {template.type === 'loaded' && (
@@ -98,7 +98,7 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
             />
             {t.remember}
           </label>
-          <p className="mt-1 text-sm text-ink/70">{t.rememberWhy}</p>
+          <p className="mt-1 text-sm text-ink-muted">{t.rememberWhy}</p>
 
           {template.rememberedAt !== null && (
             <p className="mt-1 flex items-baseline gap-2 text-sm">
@@ -133,5 +133,5 @@ export function TemplatePicker({ locale }: { locale: Locale }) {
  */
 export function PrivacyFootnote({ locale }: { locale: Locale }) {
   const t = strings(locale)
-  return <p className="no-print pt-2 text-sm text-ink/50">{t.privacyShort}</p>
+  return <p className="no-print pt-2 text-sm text-ink-subtle">{t.privacyShort}</p>
 }

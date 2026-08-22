@@ -58,14 +58,14 @@ export function DocumentPreview({
       <div className="no-print flex items-baseline justify-between gap-4 border-b border-rule px-4 py-3">
         <h2 className="text-base font-semibold">{t.preview}</h2>
         {/* The legend contract: what this shows, and what it cannot. */}
-        <p className="max-w-[46ch] text-right font-mono text-sm leading-5 text-ink/60">
+        <p className="max-w-[46ch] text-right font-mono text-sm leading-5 text-ink-muted">
           {t.previewApproximate}
         </p>
       </div>
 
       <div ref={container} className="print-area min-h-0 flex-1 overflow-auto px-4 py-6">
         {model === null ? (
-          <p className="text-base text-ink/60">{t.previewEmpty}</p>
+          <p className="text-base text-ink-muted">{t.previewEmpty}</p>
         ) : (
           <article className="preview-page mx-auto max-w-[80ch] border border-rule bg-white px-8 py-10 text-base leading-6">
             <Blocks blocks={model.blocks} />

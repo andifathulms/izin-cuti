@@ -49,10 +49,21 @@ The semantic core. Every field on the form is in one of three states, and the re
 ### The three states
 
 ```
---typed     #2B4C6B    slate blue — you entered this
---derived   #5E7A6B    muted green — computed, not editable
+--typed     #2B4C6B    slate blue — you entered this          8.2:1 on paper
+--derived   #4F6A5C    muted green — computed, not editable   5.4:1 on paper
 --unmapped  hatch      diagonal over --paper — the template has this, you have not mapped it
 ```
+
+`--derived` was `#5E7A6B` and measured 4.3:1 — under the floor §9 asks for, on the one state that carries a value nobody can retype. Deepened, same hue.
+
+### Two greys, and no third
+
+```
+--ink-muted   #555653    6.8:1    secondary prose, hints, captions
+--ink-subtle  #6E6F6B    4.6:1    the quietest text allowed
+```
+
+Every muted grey in the app is one of these two. **No opacity modifier on `--ink`** — `text-ink/50` reads as a token and is really a value, it measured 3.2:1, and the privacy line was set in it.
 
 **`--derived` is the important one.** A derived field looks visibly different from a typed one, so nobody wonders why they cannot edit the day count — the colour already said it is computed. Derived fields are never rendered as disabled inputs; they are rendered as *results* — **in the preview, where they land in the document**, rather than as a second list beside the form. A computed value shown twice is a value somebody has to reconcile.
 
@@ -61,8 +72,10 @@ The semantic core. Every field on the form is in one of three states, and the re
 ### Validation
 
 ```
---attention  #B5762E    amber — a warning, never a block
+--attention  #946022    amber — a warning, never a block      4.9:1 on paper
 ```
+
+Also deepened, from `#B5762E` at 3.4:1. The amber marker is the only thing separating a warning from ordinary prose, and it has to be read to do that.
 
 **Amber, not red.** Validation warns and never prevents; offices have exceptions, and a red error state implies a refusal the app does not make. Amber sits beside the field, with the reason in words.
 
@@ -80,6 +93,8 @@ Self-hosted via `next/font`.
 ```
 14  16  18  22  28          1.25 ratio
 ```
+
+**One scale, declared once.** `globals.css` holds every token — colour, type, space, radius, edge — and `tailwind.config.ts` names them without repeating a value. Two files holding the same hex is how one palette becomes two.
 
 **Monospace on every number that has to be read digit by digit.** An NIP is eighteen digits and gets checked against a card; proportional figures make that harder than it needs to be. Tabular figures throughout.
 

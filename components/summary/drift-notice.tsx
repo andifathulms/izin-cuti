@@ -78,7 +78,7 @@ function Describe({ locale, difference }: { locale: Locale; difference: Differen
       return (
         <>
           <span className="font-medium">{difference.label}</span>{' '}
-          <span className="font-mono text-sm text-ink/60">
+          <span className="font-mono text-sm text-ink-muted">
             {difference.kind}:{difference.index}
           </span>{' '}
           {t.driftMissing}

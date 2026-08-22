@@ -208,7 +208,7 @@ export function FillMode({ locale }: { locale: Locale }) {
     return (
       <div className="px-6 py-12">
         <h1 className="text-xl font-semibold">{t.noTemplate}</h1>
-        <p className="mt-2 text-base text-ink/70">{t.noTemplateHint}</p>
+        <p className="mt-2 text-base text-ink-muted">{t.noTemplateHint}</p>
       </div>
     )
   }
@@ -421,7 +421,7 @@ function Section({
   return (
     <section>
       <h2 className="border-b border-rule pb-1 text-base font-semibold">{title}</h2>
-      {note !== undefined && <p className="mt-1 text-sm text-ink/60">{note}</p>}
+      {note !== undefined && <p className="mt-1 text-sm text-ink-muted">{note}</p>}
       <div className={grid ? 'mt-3 grid grid-cols-6 gap-x-4 gap-y-3' : 'mt-3 space-y-4'}>
         {children}
       </div>

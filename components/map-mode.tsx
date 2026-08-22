@@ -146,7 +146,7 @@ export function MapMode({ locale }: { locale: Locale }) {
       {document === null ? (
         <div className="px-6 py-12">
           <h1 className="text-xl font-semibold">{t.noTemplate}</h1>
-          <p className="mt-2 text-base text-ink/70">{t.noTemplateHint}</p>
+          <p className="mt-2 text-base text-ink-muted">{t.noTemplateHint}</p>
         </div>
       ) : (
         <>
@@ -160,7 +160,7 @@ export function MapMode({ locale }: { locale: Locale }) {
                 className="w-64 rounded border border-rule bg-white px-2 py-1 text-base"
               />
             </label>
-            <span className="font-mono text-sm text-ink/60">
+            <span className="font-mono text-sm text-ink-muted">
               {tally.mapped} / {tally.text + tally.checkbox}
             </span>
             <button
@@ -177,11 +177,11 @@ export function MapMode({ locale }: { locale: Locale }) {
             >
               {t.mapBlankCopy}
             </button>
-            {saved !== null && <span className="text-sm text-ink/70">{saved}</span>}
+            {saved !== null && <span className="text-sm text-ink-muted">{saved}</span>}
             <StateLegend locale={locale} />
           </div>
 
-          <p className="no-print max-w-[90ch] border-b border-rule px-6 py-2 text-sm text-ink/60">
+          <p className="no-print max-w-[90ch] border-b border-rule px-6 py-2 text-sm text-ink-muted">
             {t.mapBlankCopyWhy}
           </p>
 
@@ -197,15 +197,15 @@ export function MapMode({ locale }: { locale: Locale }) {
               </h2>
               {residue.length > 0 && (
                 <>
-                  <p className="mt-1 max-w-[90ch] text-sm text-ink/70">{t.mapResidueWhy}</p>
+                  <p className="mt-1 max-w-[90ch] text-sm text-ink-muted">{t.mapResidueWhy}</p>
                   <ul className="mt-2 space-y-1">
                     {residue.map((item) => (
                       <li key={item.nodeIndex} className="text-sm">
-                        <span className="font-mono text-ink/50">
+                        <span className="font-mono text-ink-subtle">
                           T{String(item.nodeIndex).padStart(3, '0')}
                         </span>{' '}
                         <span className="font-medium">{item.text}</span>{' '}
-                        <span className="text-ink/60">
+                        <span className="text-ink-muted">
                           {item.context} · {t.fieldLabels[item.field] ?? item.field}
                         </span>
                       </li>

@@ -137,7 +137,7 @@ export function ProfileMode({ locale }: { locale: Locale }) {
                 <button
                   type="button"
                   onClick={() => removeProfile(profile.id)}
-                  className="rounded border border-rule px-3 py-1 text-sm text-ink/70"
+                  className="rounded border border-rule px-3 py-1 text-sm text-ink-muted"
                 >
                   {t.profileDelete}
                 </button>
@@ -197,7 +197,7 @@ export function ProfileMode({ locale }: { locale: Locale }) {
               <li key={mapping.id} className="flex items-center gap-3 py-2">
                 <span className="flex-1 text-base">
                   {mapping.name}{' '}
-                  <span className="font-mono text-sm text-ink/60">
+                  <span className="font-mono text-sm text-ink-muted">
                     {mapping.targets.length} · {mapping.fingerprint.textNodeCount}/
                     {mapping.fingerprint.checkboxCellCount}
                   </span>
@@ -205,7 +205,7 @@ export function ProfileMode({ locale }: { locale: Locale }) {
                 <button
                   type="button"
                   onClick={() => removeMapping(mapping.id)}
-                  className="rounded border border-rule px-3 py-1 text-sm text-ink/70"
+                  className="rounded border border-rule px-3 py-1 text-sm text-ink-muted"
                 >
                   {t.profileDelete}
                 </button>
@@ -249,12 +249,12 @@ export function ProfileMode({ locale }: { locale: Locale }) {
           >
             {t.profileClearAll}
           </button>
-          {notice !== null && <span className="text-sm text-ink/70">{notice}</span>}
+          {notice !== null && <span className="text-sm text-ink-muted">{notice}</span>}
         </div>
 
         {/* Not in the main navigation: needed only if the office reissues the
             form and the mapping has to be redrawn. */}
-        <p className="mt-6 text-sm text-ink/60">
+        <p className="mt-6 text-sm text-ink-muted">
           <Link href={`/${locale}/petakan`} className="underline">
             {t.navMap}
           </Link>

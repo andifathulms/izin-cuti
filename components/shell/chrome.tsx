@@ -30,7 +30,7 @@ export function Header({ locale }: { locale: Locale }) {
           <Link href={`/${locale}/isi`} className="text-lg font-semibold tracking-tight">
             {t.appName}
           </Link>
-          <p className="hidden max-w-[52ch] text-sm text-ink/70 md:block">{t.tagline}</p>
+          <p className="hidden max-w-[52ch] text-sm text-ink-muted md:block">{t.tagline}</p>
         </div>
 
         <nav className="flex items-center gap-1" aria-label={t.appName}>
@@ -45,7 +45,7 @@ export function Header({ locale }: { locale: Locale }) {
                   'rounded border px-3 py-1 text-base transition-colors duration-state ease-house',
                   active
                     ? 'border-typed bg-typed/10 text-typed'
-                    : 'border-transparent text-ink/70 hover:border-rule',
+                    : 'border-transparent text-ink-muted hover:border-rule',
                 ].join(' ')}
               >
                 {tab.label}
@@ -54,7 +54,7 @@ export function Header({ locale }: { locale: Locale }) {
           })}
           <Link
             href={`/${other}${pathname?.slice(3) ?? '/isi'}`}
-            className="ml-2 rounded border border-rule px-2 py-1 font-mono text-sm uppercase text-ink/60"
+            className="ml-2 rounded border border-rule px-2 py-1 font-mono text-sm uppercase text-ink-muted"
             hrefLang={other}
           >
             {other}
@@ -72,7 +72,7 @@ export function Header({ locale }: { locale: Locale }) {
 export function PrivacyLine({ locale, className = '' }: { locale: Locale; className?: string }) {
   const t = strings(locale)
   return (
-    <p className={`text-sm text-ink/70 ${className}`}>
+    <p className={`text-sm text-ink-muted ${className}`}>
       <span className="font-medium text-ink">{t.privacy}</span> {t.privacyWhy}
     </p>
   )
@@ -85,7 +85,7 @@ export function PrivacyLine({ locale, className = '' }: { locale: Locale; classN
 export function StateLegend({ locale }: { locale: Locale }) {
   const t = strings(locale)
   return (
-    <ul className="no-print flex flex-wrap items-center gap-4 text-sm text-ink/70">
+    <ul className="no-print flex flex-wrap items-center gap-4 text-sm text-ink-muted">
       <li className="flex items-center gap-2">
         <span className="inline-block h-3 w-3 rounded border border-typed bg-typed/20" />
         {t.fillProfile} / {t.fillRequest}
