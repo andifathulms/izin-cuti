@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { strings, type Locale } from './strings'
+import { DEFAULT_LOCALE, strings, type Locale } from './strings'
 
 /**
  * Page metadata, built from the strings the page itself renders.
@@ -35,6 +35,11 @@ function pageName(locale: Locale, page: Page): string {
   }
 }
 
+/** The deployed URL of one page. Trailing slash: the export writes directories. */
+function url(locale: Locale, page: Page): string {
+  return `${SITE_ORIGIN}${SITE_BASE}/${locale}/${page}/`
+}
+
 export function pageMetadata(locale: Locale, page: Page): Metadata {
   const t = strings(locale)
   // The two clauses the header shows, joined — outcome first, then why it is
@@ -44,5 +49,19 @@ export function pageMetadata(locale: Locale, page: Page): Metadata {
   return {
     title: `${pageName(locale, page)} — ${t.appName}`,
     description,
+    /*
+     * The same page exists in two locales and nothing said so, so a crawler
+     * saw two near-identical documents competing with each other. Each names
+     * itself canonical and points at its sibling; x-default goes to the
+     * default locale, which is where the root doorway sends people too.
+     */
+    alternates: {
+      canonical: url(locale, page),
+      languages: {
+        id: url('id', page),
+        en: url('en', page),
+        'x-default': url(DEFAULT_LOCALE, page),
+      },
+    },
   }
 }
