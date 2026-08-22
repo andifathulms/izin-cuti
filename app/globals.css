@@ -177,6 +177,29 @@
 }
 
 /*
+ * Reflow. WCAG 1.4.10.
+ *
+ * The preview pins each cell to the width the document gives in twips, so a
+ * 2400-twip cell is nailed to 120pt no matter how much room there is. Below
+ * the two-pane breakpoint — which is also where a 200% zoom on an ordinary
+ * screen puts you — that overflows and the pane scrolls sideways.
+ *
+ * The print rules below already solve this with `td { width: auto }`, for
+ * print alone. The same answer, for the widths where it is a failure rather
+ * than a preference: the document's proportions are worth keeping while there
+ * is room for them, and worth nothing when there is not.
+ */
+@media screen and (max-width: 1023px) {
+  .preview-page table {
+    table-layout: auto !important;
+  }
+
+  .preview-page td {
+    width: auto !important;
+  }
+}
+
+/*
  * The print path is the PDF path, and it is labelled approximate.
  *
  * The form is one page in Word, and it should be one page here. That is not
