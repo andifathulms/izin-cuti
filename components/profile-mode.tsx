@@ -252,6 +252,17 @@ export function ProfileMode({ locale }: { locale: Locale }) {
               event.target.value = ''
             }}
           />
+          {notice !== null && <span className="text-sm text-ink-muted">{notice}</span>}
+        </div>
+
+        {/*
+         * Clear-all stood in that same row, the same size as Export — which is
+         * its own safety net — and it is the only irreversible action in the
+         * app. Weight should match consequence, so it sits apart, under a
+         * rule, with what it deletes written out rather than living only
+         * inside a confirm dialog nobody reads.
+         */}
+        <div className="mt-8 border-t border-rule pt-4">
           <button
             type="button"
             onClick={doClear}
@@ -259,7 +270,7 @@ export function ProfileMode({ locale }: { locale: Locale }) {
           >
             {t.profileClearAll}
           </button>
-          {notice !== null && <span className="text-sm text-ink-muted">{notice}</span>}
+          <p className="mt-2 max-w-[60ch] text-sm text-ink-muted">{t.profileClearWhy}</p>
         </div>
 
         {/* Not in the main navigation: needed only if the office reissues the

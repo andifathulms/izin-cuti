@@ -139,6 +139,7 @@ type Strings = {
   readonly profileImported: string
   readonly profileImportRejected: string
   readonly profileClearAll: string
+  readonly profileClearWhy: string
   readonly profileClearConfirm: string
   readonly profileNoStorage: string
   readonly savedMappings: string
@@ -280,6 +281,8 @@ const id: Strings = {
   profileImported: '{m} pemetaan dan {p} profil diimpor.',
   profileImportRejected: 'Impor dibatalkan.',
   profileClearAll: 'Hapus semua data',
+  profileClearWhy:
+    'Menghapus setiap profil, setiap pemetaan, dan dokumen yang diingat di perangkat ini. Tidak bisa dibatalkan — ekspor dulu bila Anda ingin bisa kembali.',
   profileClearConfirm:
     'Semua profil dan pemetaan di perangkat ini akan dihapus. Tindakan ini tidak bisa dibatalkan.',
   profileNoStorage:
@@ -443,6 +446,8 @@ const en: Strings = {
   profileImported: 'Imported {m} mappings and {p} profiles.',
   profileImportRejected: 'Import cancelled.',
   profileClearAll: 'Clear all data',
+  profileClearWhy:
+    'Deletes every profile, every mapping, and any remembered document on this device. It cannot be undone — export first if you want a way back.',
   profileClearConfirm:
     'Every profile and mapping on this device will be deleted. This cannot be undone.',
   profileNoStorage:
