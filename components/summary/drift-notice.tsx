@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
 import Link from 'next/link'
 import type { Difference } from '@/lib/docx/fingerprint'
 import { strings, type Locale } from '@/lib/i18n/strings'
@@ -23,13 +24,30 @@ export function DriftNotice({
   differences: ReadonlyArray<Difference>
 }) {
   const t = strings(locale)
+  const heading = useRef<HTMLHeadingElement>(null)
+
+  /*
+   * This screen replaces the entire fill view, and focus stayed on whatever
+   * triggered it — a node that no longer exists — so a keyboard or screen
+   * reader user arrived at the app's most important refusal without being
+   * told anything had happened. Focus moves to the heading, which reads the
+   * refusal and puts the differences below the cursor. WCAG 4.1.3.
+   *
+   * tabIndex={-1} makes the heading focusable programmatically without
+   * putting it in the tab order.
+   */
+  useEffect(() => {
+    heading.current?.focus()
+  }, [])
 
   return (
     <section className="mx-auto max-w-[70ch] px-6 py-12">
       <p aria-hidden className="text-lg text-attention">
         ▲
       </p>
-      <h1 className="mt-2 text-xl font-semibold">{t.driftTitle}</h1>
+      <h1 ref={heading} tabIndex={-1} className="mt-2 text-xl font-semibold">
+        {t.driftTitle}
+      </h1>
       <p className="mt-3 text-base">{t.driftExplain}</p>
 
       <ul className="mt-6 divide-y divide-rule border-y border-rule">
