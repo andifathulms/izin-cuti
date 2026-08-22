@@ -218,7 +218,7 @@ export function FillMode({ locale }: { locale: Locale }) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-5rem)] flex-col">
+    <div className="flex h-full flex-col">
       <div className="no-print flex flex-wrap items-center gap-4 border-b border-rule px-6 py-2">
         {/* One form means one mapping, and a select with one option in it is
             noise. It reappears the moment there is a second. */}

@@ -25,12 +25,11 @@ export function Header({ locale }: { locale: Locale }) {
 
   return (
     <header className="no-print border-b border-rule bg-paper">
-      <div className="mx-auto flex max-w-full items-baseline justify-between gap-6 px-6 py-4">
+      <div className="mx-auto flex max-w-full items-baseline justify-between gap-6 px-6 pt-4">
         <div className="flex items-baseline gap-4">
           <Link href={`/${locale}/isi`} className="text-lg font-semibold tracking-tight">
             {t.appName}
           </Link>
-          <p className="hidden max-w-[52ch] text-sm text-ink-muted md:block">{t.tagline}</p>
         </div>
 
         <nav className="flex items-center gap-1" aria-label={t.appName}>
@@ -61,6 +60,20 @@ export function Header({ locale }: { locale: Locale }) {
           </Link>
         </nav>
       </div>
+
+      {/*
+       * What this is, on its own line, at every width.
+       *
+       * It used to sit beside the wordmark at `text-sm` inside `hidden
+       * md:block` — smaller than any label on the page, and absent on a
+       * phone, where the only words above the form were the two in the
+       * wordmark. "Isi Surat" does not tell a stranger that this fills a
+       * cuti form or that it hands back a DOCX. This does, in one line,
+       * before anything else is read.
+       */}
+      <p className="max-w-[92ch] px-6 pb-4 pt-1 text-base">
+        {t.taglineWhat} <span className="text-ink-muted">{t.taglineWhere}</span>
+      </p>
     </header>
   )
 }

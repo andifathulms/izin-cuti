@@ -197,6 +197,7 @@
   html,
   body,
   main,
+  .app-shell,
   .print-area,
   .print-area * {
     height: auto !important;

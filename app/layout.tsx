@@ -27,7 +27,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: 'Isi Surat',
   description:
-    'Petakan formulir kantor sekali, isi dari enam kolom seterusnya. Tidak ada yang meninggalkan perangkat ini.',
+    'Isi Formulir Permintaan dan Pemberian Cuti, lalu unduh suratnya sebagai DOCX. Semuanya berjalan di perangkat ini — tidak ada yang dikirim ke mana pun.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

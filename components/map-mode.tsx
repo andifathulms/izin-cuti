@@ -136,7 +136,7 @@ export function MapMode({ locale }: { locale: Locale }) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] flex-col">
+    <div className="flex h-full flex-col">
       <TemplatePicker locale={locale} />
 
       <p className="no-print border-b border-rule bg-attention/5 px-6 py-2 text-sm lg:hidden">

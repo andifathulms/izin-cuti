@@ -17,7 +17,13 @@ export function isLocale(value: string): value is Locale {
 
 type Strings = {
   readonly appName: string
-  readonly tagline: string
+  /**
+   * What this is, in two clauses: the outcome, then the reason it is safe to
+   * type an NIP into. Split so the first can be set in ink and the second
+   * beside it — a stranger has five seconds and reads the first one.
+   */
+  readonly taglineWhat: string
+  readonly taglineWhere: string
   readonly navFill: string
   readonly navMap: string
   readonly navProfile: string
@@ -125,8 +131,9 @@ type Strings = {
 
 const id: Strings = {
   appName: 'Isi Surat',
-  tagline:
-    'Petakan formulir kantor sekali, isi dari enam kolom seterusnya. Dokumen tidak pernah meninggalkan perangkat ini.',
+  taglineWhat:
+    'Isi Formulir Permintaan dan Pemberian Cuti, lalu unduh suratnya sebagai DOCX.',
+  taglineWhere: 'Semuanya berjalan di perangkat ini — tidak ada yang dikirim ke mana pun.',
   navFill: 'Isi',
   navMap: 'Petakan',
   navProfile: 'Profil',
@@ -274,8 +281,9 @@ const id: Strings = {
 
 const en: Strings = {
   ...id,
-  tagline:
-    'Map an office form once, fill it in six fields forever. Your document never leaves your device.',
+  taglineWhat:
+    'Fill the Indonesian leave-request form, then download the letter as a DOCX.',
+  taglineWhere: 'It all runs on this device — nothing is sent anywhere.',
   navFill: 'Fill',
   navMap: 'Map',
   navProfile: 'Profile',
