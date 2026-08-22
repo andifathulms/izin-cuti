@@ -62,10 +62,14 @@ export function ProfileMode({ locale }: { locale: Locale }) {
 
   const doImport = async (file: File) => {
     const result = importAll(store, await file.text())
+    // It used to say `2 + 1`: two integers and a plus sign, with no words, as
+    // the only confirmation for the one operation that overwrites saved data.
     setNotice(
       result.type === 'imported'
-        ? `${result.mappings} + ${result.profiles}`
-        : result.reason,
+        ? t.profileImported
+            .replace('{m}', String(result.mappings))
+            .replace('{p}', String(result.profiles))
+        : `${t.profileImportRejected} ${result.reason}`,
     )
     refreshStorage()
   }

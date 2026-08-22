@@ -129,6 +129,9 @@ type Strings = {
   readonly profileDelete: string
   readonly profileExport: string
   readonly profileImport: string
+  /** `{m}` and `{p}` are counts. A confirmation has to say what it counted. */
+  readonly profileImported: string
+  readonly profileImportRejected: string
   readonly profileClearAll: string
   readonly profileClearConfirm: string
   readonly profileNoStorage: string
@@ -263,6 +266,8 @@ const id: Strings = {
   profileDelete: 'Hapus',
   profileExport: 'Ekspor semua',
   profileImport: 'Impor berkas',
+  profileImported: '{m} pemetaan dan {p} profil diimpor.',
+  profileImportRejected: 'Impor dibatalkan.',
   profileClearAll: 'Hapus semua data',
   profileClearConfirm:
     'Semua profil dan pemetaan di perangkat ini akan dihapus. Tindakan ini tidak bisa dibatalkan.',
@@ -419,6 +424,8 @@ const en: Strings = {
   profileDelete: 'Delete',
   profileExport: 'Export everything',
   profileImport: 'Import a file',
+  profileImported: 'Imported {m} mappings and {p} profiles.',
+  profileImportRejected: 'Import cancelled.',
   profileClearAll: 'Clear all data',
   profileClearConfirm:
     'Every profile and mapping on this device will be deleted. This cannot be undone.',
