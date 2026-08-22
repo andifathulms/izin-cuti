@@ -112,8 +112,17 @@ export function DerivedField({
      * Same mouse-only defect as the node list had. This component is not
      * rendered anywhere today — derived values live in the preview now — but
      * it should not be waiting to ship broken the day it is wired up.
+     *
+     * The node list's answer does not work here. There, onFocus and onBlur
+     * bubble from the controls already inside the row, so the div stays a div
+     * and needs no tabindex. This row is three paragraphs and holds nothing
+     * focusable at all, so the handlers it was given could never fire and the
+     * fix was only the shape of one. It takes focus itself instead: a computed
+     * value is a result somebody reads, and reading it should mark where it
+     * lands in the document, by keyboard as by pointer. WCAG 2.1.1.
      */
     <div
+      tabIndex={0}
       className="border-l-2 border-derived pl-3"
       onMouseEnter={() => onFocus(row.targetId)}
       onMouseLeave={() => onFocus(null)}
