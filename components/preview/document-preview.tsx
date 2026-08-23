@@ -76,7 +76,23 @@ export function DocumentPreview({
         {model !== null && <StateLegend locale={locale} showUnmapped={model.hasUnmapped} />}
       </div>
 
-      <div ref={container} className="print-area min-h-0 flex-1 overflow-auto px-4 py-6">
+      {/*
+       * `relative` is not decoration and nothing here is positioned against
+       * it. `overflow: auto` does not make a containing block for absolutely
+       * positioned descendants — only position, transform, filter and contain
+       * do — so every .sr-only inside this pane was escaping the scroller and
+       * landing against the initial containing block instead.
+       *
+       * Tailwind's .sr-only is `position: absolute` with `height: 1px`. This
+       * pane renders one in every checkbox cell, at whatever depth the
+       * document puts it, and each of them was extending the *page's* scroll
+       * area rather than this pane's. The window then scrolled hundreds of
+       * pixels past the shell into nothing, with both panes correctly clipped
+       * at the shell's bottom edge and empty paper below them.
+       *
+       * Making the scroller the containing block puts them back inside it.
+       */}
+      <div ref={container} className="print-area relative min-h-0 flex-1 overflow-auto px-4 py-6">
         {model === null ? (
           <p className="text-base text-ink-muted">{t.previewEmpty}</p>
         ) : (

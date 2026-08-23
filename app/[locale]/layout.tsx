@@ -34,7 +34,7 @@ export default function LocaleLayout({
       <div lang={params.locale} className="app-shell flex flex-col">
         <HtmlLang locale={params.locale} />
         <Header locale={params.locale} />
-        <main className="min-h-0 flex-1 overflow-auto">{children}</main>
+        <main className="relative min-h-0 flex-1 overflow-auto">{children}</main>
       </div>
     </AppStateProvider>
   )

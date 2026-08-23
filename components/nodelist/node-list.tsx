@@ -105,7 +105,7 @@ export function NodeList({
         )}
       </div>
 
-      <ol className="min-h-0 flex-1 divide-y divide-rule overflow-auto">
+      <ol className="relative min-h-0 flex-1 divide-y divide-rule overflow-auto">
         {entries.map((entry) => (
           <li key={entry.key} className="px-4 py-3">
             <NodeRow locale={locale} entry={entry} groups={groups} actions={actions} />
