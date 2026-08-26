@@ -117,15 +117,48 @@ Light ground, no dark-mode correction. Body 400, labels 500, section headings 60
 **Fill mode** is the default and the common case.
 
 ```
-left  50%   the form, sectioned exactly as the document is
+left  50%   the rail, then the form, sectioned as the document is
 right 50%   live preview, scroll-linked to the focused field
 ```
 
 Equal halves. The preview is not a thumbnail — it is where the derived values are read and where the fill is checked, so it gets the same room as the form.
 
-Fields are laid out in a six-column row: a date takes a third, an ordinary field a half, anything with prose the full width. Three date pickers stacked down the page is three rows spent on what the eye reads as one thing.
+### The form is a ledger, not a stack of inputs
+
+The document the office hands out has Roman-numeraled sections and labels with something written on a line above them. The left pane has the same, in the same order, because somebody who knows the paper form should find their place on the screen without being taught how.
+
+- **Sections are numbered in Roman**, under a heading in the display serif — the one place §4 allows it.
+- **A value sits on a ruled line**, not inside a box: border on the bottom edge only, ground lifting to `--page` on focus, the 3px focus ring unchanged.
+- **Rules are horizontal only.** A vertical rule looks right until a row does not add up to six columns; then the last cell in the row has an edge and the gap beside it does not, and the ledger reads as a rendering fault. A rule across the top of every cell joins its neighbours at any span combination.
+- **Six-column rows.** A date takes a third, an ordinary field a half, anything with prose the full width. Three date pickers stacked down the page is three rows spent on what the eye reads as one thing. Options in a single-select group wrap into two columns where there is room, which is how the document prints them.
+
+### The rail
+
+A narrow column at the left edge of the form pane: one Roman numeral per section, and beneath it either the number of fields still empty or `√` once there are none. Each entry links into its section, so it reports on the form and is a way through it.
+
+Complete is stated in `--derived`. Nothing in the rail is amber — a section nobody has reached yet is not a warning.
+
+It is narrow on purpose. This pane is half the window and the form needs the rest of it; the numeral is the visible part, and the accessible name carries the sentence, because "II, 4/6" read aloud is not one.
+
+**What the rail replaced:** a flow line in the header reading *Isi kolom → Periksa pratinjau → Unduh DOCX*. It named a sequence and never once said which part of it you were in. **A device that looks like a stepper and is a caption costs a row and answers nothing** — either it states position or it does not appear.
+
+### The form scrolls; the download does not
+
+The fields scroll inside the pane. The download panel is a sibling pinned to the bottom of it, on screen from the first frame. §7 is the rest of that argument.
+
+### Focus
 
 Focusing a field scrolls the preview to that part of the document and marks it — **the preview pane only.** Never the page: a preview that drags the whole window while somebody is typing is worse than one that does not scroll at all. **You always see where the thing you are typing lands.**
+
+### Controls are drawn, not borrowed
+
+Checkboxes and radios are real `input` elements with `appearance` given up, drawn as a hairline cell with a `√` in it — the same mark the fill engine inserts. The operating system's blue disc is not in this document. Same element, same keyboard path, same announced role, same 24px target; only the shape changes, from the platform's to the document's.
+
+Single-select groups draw the `√` too, because that is what a single-select group is here: one cell of several with a mark in it.
+
+### The preview is a sheet
+
+`--page` on `--paper`, with the app's one shadow under it and margins inside it. It is what somebody checks their letter against before it goes to an atasan, and it should look like the thing being checked. No page number: the preview is one continuous article and pagination is Word's to decide.
 
 **Map mode** is entered rarely, once per template.
 
@@ -158,9 +191,12 @@ Everything else is state change: switching mode, expanding a section, opening a 
 
 The one place to get the tone right. A person has just produced an official document.
 
+- **It does not scroll away.** The panel is pinned to the foot of the form column rather than sitting at the end of it. It used to be four sections below the fold, which meant the one button this app exists to offer was reachable only by scrolling past every field.
 - **Three actions, clearly unequal:** *Unduh DOCX* is primary; *Pratinjau PDF* and *Cetak* are secondary, with the approximation note beside them, not hidden behind a tooltip.
 - **The PDF is looked at before it is downloaded.** *Pratinjau PDF* opens the real file in the browser's own reader, at the size it prints, with the download inside it. Downloading a PDF unseen is how the wrong year reaches an atasan — and it is offered at all only because the file is built in the tab and never uploaded.
 - **A last chance to notice the wrong year** — the warnings that stand, and any computed field still waiting on an input, immediately above the buttons.
+
+  Being pinned gives the panel a height budget, so the warnings scroll inside their own box past three or so. They keep their place immediately above the buttons; they no longer push the buttons off the screen for somebody who has a lot of them.
 
   Not a summary of every filled value. That list duplicated the preview, which shows the same values in the document's own layout and is the better last look. What the preview cannot show is a warning, so that is what is left here.
 - **No confetti, no toast, no celebration.** The file downloads. That is the whole event.
@@ -178,7 +214,7 @@ The profile panel carries an explicit **export** and **clear all**, both visible
 - Validation messages are associated with their field, announced, and non-blocking.
 - Full keyboard path through the form in document order; focus visible at 3px.
 - Type floor 16px; AA contrast on `--paper` for all three field states.
-- **Target floor 24px**, as `--control-min`. Native checkboxes and radios render at about 13px and are sized up to it. WCAG 2.5.8.
+- **Target floor 24px**, as `--control-min`. Checkboxes and radios render at about 13px by default and are sized up to it. WCAG 2.5.8. Giving up `appearance` to draw them as the document's `√` changes the shape and nothing else — the element, the role, the keyboard path and the target size are the native ones. **A drawn control that is not a real `input` is not permitted**, whatever it looks like.
 - The preview has a text alternative — the filled document as readable text, which is also what someone would paste into a message.
 
 ## 10. What not to do
@@ -188,6 +224,10 @@ The profile panel carries an explicit **export** and **clear all**, both visible
 - No derived field rendered as an editable-looking input.
 - No unmapped target rendered as a colour rather than a pattern.
 - No placeholder text standing in for a label.
+- No device that looks like a stepper without stating position.
+- No serif outside a section heading or the document's title. §4.
+- No shadow anywhere but under the preview sheet.
+- No page count on the preview — pagination belongs to Word.
 - No celebration on download.
 - No PDF button without its approximation note.
 - No mapping UI on mobile.
