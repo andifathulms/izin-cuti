@@ -19,7 +19,26 @@ const types = {
   '.txt': 'text/plain; charset=utf-8',
 }
 
-async function resolve(pathname) {
+/**
+ * A URL path is percent-encoded and a file path is not.
+ *
+ * The route directory Next writes for `app/[locale]` is literally `[locale]`,
+ * and a browser asks for it as `%5Blocale%5D`. GitHub Pages decodes that; this
+ * server did not, so every chunk under a dynamic segment 404'd — which is the
+ * whole fill screen, on the one command CLAUDE.md names as the check to run
+ * before pushing.
+ *
+ * Decoding happens before `normalize`, so an encoded `%2e%2e` becomes `..` in
+ * time for it to be collapsed, and the `startsWith(root)` guard below still
+ * has the last word.
+ */
+async function resolve(encoded) {
+  let pathname
+  try {
+    pathname = decodeURIComponent(encoded)
+  } catch {
+    return null // a malformed escape is not a file
+  }
   const candidates = [pathname, join(pathname, 'index.html'), `${pathname}.html`]
   for (const c of candidates) {
     const file = join(root, normalize(c))
