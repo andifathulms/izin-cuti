@@ -34,6 +34,8 @@ export type FormField = {
    * something the eye reads as one thing.
    */
   readonly span: 2 | 3 | 6
+  /** Whether a spellchecker belongs on it. `PROSE_KEYS` is the whole rule. */
+  readonly prose: boolean
   /**
    * Bounds for a date input, so the picker greys out what cannot be chosen.
    *
@@ -72,6 +74,19 @@ export type FormModel = {
 }
 
 /**
+ * The only field on this form a spellchecker should touch.
+ *
+ * Everything else is a name, a NIP, a jabatan, a unit kerja, a phone number
+ * or an address — proper nouns and digits, every one of which the browser
+ * underlines in red. The product has no red in it anywhere, including on
+ * validation, and a person's own name is not a misspelling. DESIGN.md §3, §10.
+ *
+ * Alasan cuti is the exception because it is the one place somebody writes a
+ * sentence, and a sentence going to an atasan is worth checking.
+ */
+const PROSE_KEYS: ReadonlySet<string> = new Set(['alasan'])
+
+/**
  * Date fields get a date input, a balance gets a number, a reason and an
  * address get room to breathe. Everything else is a line of text.
  */
@@ -96,9 +111,18 @@ const INPUT_KIND: Readonly<Record<string, InputKind>> = {
  * NIP by testing whether its key contained the substring "nip". One rule, one
  * definition, read by both screens rather than approximated by one of them.
  */
-export function fieldLayout(key: string): { readonly input: InputKind; readonly span: 2 | 3 | 6 } {
+export function fieldLayout(key: string): {
+  readonly input: InputKind
+  readonly span: 2 | 3 | 6
+  /** Whether a spellchecker belongs on it. */
+  readonly prose: boolean
+} {
   const input = INPUT_KIND[key] ?? 'text'
-  return { input, span: input === 'textarea' ? 6 : input === 'date' ? 2 : 3 }
+  return {
+    input,
+    span: input === 'textarea' ? 6 : input === 'date' ? 2 : 3,
+    prose: PROSE_KEYS.has(key),
+  }
 }
 
 export function buildForm(
@@ -158,13 +182,14 @@ export function buildForm(
     value: string,
     targetIds: ReadonlyArray<string>,
   ): FormField => {
-    const { input, span } = fieldLayout(key)
+    const { input, span, prose } = fieldLayout(key)
     return {
       key,
       label: labels[key] ?? key,
       value,
       input,
       span,
+      prose,
       targetIds,
       warnings: warnings.filter((warning) => warning.field === key),
       ...dateBounds(key, inputs.request),

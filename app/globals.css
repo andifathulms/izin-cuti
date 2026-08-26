@@ -198,6 +198,26 @@
   }
 
   /*
+   * The last control still wearing the operating system's clothes.
+   *
+   * Tailwind's preflight resets a great deal and `appearance` on a `select` is
+   * not part of it, so the border classes this was given never had a chance —
+   * macOS drew its own rounded box and stepper arrows over the top, in section
+   * I, immediately above thirty ruled lines. Same argument as `.box-mark`:
+   * the shape belongs to the document, not to the platform.
+   *
+   * The chevron is markup rather than a background image, because a data URI
+   * cannot read `--ink-subtle` and a second definition of a colour is how one
+   * palette becomes two. `SelectShell` supplies it. The padding here is the
+   * room it sits in.
+   */
+  .field-select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: var(--space-6);
+  }
+
+  /*
    * The shell owns the viewport and the panes inside it scroll, so this has to
    * be a definite height rather than a minimum — `flex-1 min-h-0 overflow-auto`
    * needs something to be a fraction of.

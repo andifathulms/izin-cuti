@@ -111,7 +111,8 @@ export function ProfileMode({ locale }: { locale: Locale }) {
               type="text"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base"
+              spellCheck={false}
+              className="mt-1 w-full border-0 border-b border-rule bg-transparent px-1 py-1 text-base"
             />
           </label>
           <button
@@ -179,7 +180,7 @@ export function ProfileMode({ locale }: { locale: Locale }) {
          */}
         <div className="mt-3 grid grid-cols-6 gap-x-4 gap-y-3">
           {(Object.keys(EMPTY_PROFILE) as Array<keyof ProfileValues>).map((key) => {
-            const { input, span } = fieldLayout(key)
+            const { input, span, prose } = fieldLayout(key)
             const isNip = input === 'nip'
             return (
               <label key={key} className={`block ${SPAN[span]}`}>
@@ -194,8 +195,9 @@ export function ProfileMode({ locale }: { locale: Locale }) {
                       isNip ? normaliseNip(event.target.value) : event.target.value,
                     )
                   }
+                  spellCheck={prose}
                   className={[
-                    'mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base text-typed',
+                    'mt-1 w-full border-0 border-b border-rule bg-transparent px-1 py-1 text-base text-typed',
                     isNip ? 'font-mono' : '',
                   ].join(' ')}
                 />

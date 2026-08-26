@@ -9,6 +9,7 @@ const field = (key: string, value: string) => ({
   value,
   input: 'text' as const,
   span: 3 as const,
+  prose: false,
   targetIds: [],
   warnings: [],
 })

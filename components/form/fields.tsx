@@ -32,6 +32,29 @@ export const SPAN: Record<2 | 3 | 6, string> = {
 export const CELL = 'px-1 pb-3 pt-2'
 
 /**
+ * The chevron a drawn `select` no longer gets for free.
+ *
+ * `.field-select` gives up `appearance` so the control can be the document's
+ * shape rather than the platform's, and giving that up takes the arrow with
+ * it. Markup rather than a background image: a data URI cannot read
+ * `--ink-subtle`, and writing the colour a second time is how one palette
+ * becomes two. §3, §4.
+ */
+export function SelectShell({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="relative block">
+      {children}
+      <span
+        aria-hidden
+        className="pointer-events-none absolute right-1 top-1/2 -translate-y-1/2 text-sm text-ink-subtle"
+      >
+        ▾
+      </span>
+    </span>
+  )
+}
+
+/**
  * The three field states, which are the semantic core of this app.
  *
  * A typed field is an input. A derived field is a *result* — never an input
@@ -62,6 +85,14 @@ export function TextField({
   const shared = {
     id,
     value: shown,
+    /*
+     * A name, a NIP, a jabatan, a unit kerja and an address are all things the
+     * browser underlines in red, and the product has no red in it — a person's
+     * own name is not a misspelling. Alasan cuti is the one field somebody
+     * writes a sentence in, and that one keeps its checker. The rule lives in
+     * lib/fill/form.ts; nothing is decided here.
+     */
+    spellCheck: field.prose,
     'aria-describedby': hasWarning ? warningId : undefined,
     onChange: (event: { target: { value: string } }) =>
       onChange(isNip ? normaliseNip(event.target.value) : event.target.value),

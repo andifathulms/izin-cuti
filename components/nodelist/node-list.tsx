@@ -3,6 +3,7 @@
 import { EMPTY_PROFILE, EMPTY_REQUEST, allDerivations } from '@/lib/derive/compute'
 import type { FieldSource, Target } from '@/lib/mapping/schema'
 import type { NodeEntry, NodeFilter } from '@/lib/mapping/nodelist'
+import { SelectShell } from '@/components/form/fields'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
 /**
@@ -254,10 +255,11 @@ function TargetControls({
         <>
           <label className="block">
             <span className="block text-sm font-medium">{t.mapKind}</span>
+            <SelectShell>
             <select
               value={sourceKey(target.source)}
               onChange={(event) => actions.onRetype(target.id, sourceFromKey(event.target.value))}
-              className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base"
+              className="field-select mt-1 w-full border-0 border-b border-rule bg-transparent px-1 py-1 text-base"
             >
               <optgroup label={t.mapKindProfile}>
                 {Object.keys(EMPTY_PROFILE).map((key) => (
@@ -281,6 +283,7 @@ function TargetControls({
                 ))}
               </optgroup>
             </select>
+            </SelectShell>
           </label>
 
           <DerivedExplanation source={target.source} />

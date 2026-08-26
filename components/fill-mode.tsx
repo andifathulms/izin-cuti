@@ -8,7 +8,14 @@ import { DocumentPreview } from '@/components/preview/document-preview'
 import { DownloadPanel } from '@/components/summary/download-panel'
 import { DriftNotice } from '@/components/summary/drift-notice'
 import { PdfPreview } from '@/components/summary/pdf-preview'
-import { CELL, ChoiceGroupField, SPAN, StandaloneBox, TextField } from '@/components/form/fields'
+import {
+  CELL,
+  ChoiceGroupField,
+  SelectShell,
+  SPAN,
+  StandaloneBox,
+  TextField,
+} from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
 import { sectionProgress } from '@/lib/fill/progress'
 import { DIREKTORAT, direktoratOf, managedKeys } from '@/lib/presets/kedeputian'
@@ -255,18 +262,20 @@ export function FillMode({ locale }: { locale: Locale }) {
         {mappings.length > 1 && (
           <label className="flex items-center gap-2">
             <span className="text-sm font-medium">{t.fillChooseMapping}</span>
-            <select
-              value={activeMappingId ?? ''}
-              onChange={(event) => selectMapping(event.target.value || null)}
-              className="rounded border border-rule bg-page px-2 py-1 text-base"
-            >
-              <option value="">—</option>
-              {mappings.map((candidate) => (
-                <option key={candidate.id} value={candidate.id}>
-                  {candidate.name}
-                </option>
-              ))}
-            </select>
+            <SelectShell>
+              <select
+                value={activeMappingId ?? ''}
+                onChange={(event) => selectMapping(event.target.value || null)}
+                className="field-select w-full border-0 border-b border-rule bg-transparent px-1 py-1 text-base"
+              >
+                <option value="">—</option>
+                {mappings.map((candidate) => (
+                  <option key={candidate.id} value={candidate.id}>
+                    {candidate.name}
+                  </option>
+                ))}
+              </select>
+            </SelectShell>
           </label>
         )}
         {/*
@@ -318,18 +327,20 @@ export function FillMode({ locale }: { locale: Locale }) {
                       Kept in the accessibility tree, where the select still
                       needs a name of its own. */}
                   <span className="sr-only">{t.fillDirektorat}</span>
-                  <select
-                    value={chosenDirektorat?.id ?? ''}
-                    onChange={(event) => chooseDirektorat(event.target.value)}
-                    className="mt-1 w-full border-0 border-b border-rule bg-transparent px-1 py-1 text-base text-typed"
-                  >
-                    <option value="">{t.fillDirektoratNone}</option>
-                    {DIREKTORAT.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.nama}
-                      </option>
-                    ))}
-                  </select>
+                  <SelectShell>
+                    <select
+                      value={chosenDirektorat?.id ?? ''}
+                      onChange={(event) => chooseDirektorat(event.target.value)}
+                      className="field-select mt-1 w-full border-0 border-b border-rule bg-transparent px-1 py-1 text-base text-typed"
+                    >
+                      <option value="">{t.fillDirektoratNone}</option>
+                      {DIREKTORAT.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.nama}
+                        </option>
+                      ))}
+                    </select>
+                  </SelectShell>
                 </label>
 
                 {chosenDirektorat !== null && (

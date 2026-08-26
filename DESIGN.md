@@ -156,6 +156,12 @@ Checkboxes and radios are real `input` elements with `appearance` given up, draw
 
 Single-select groups draw the `√` too, because that is what a single-select group is here: one cell of several with a mark in it.
 
+A `select` is the same argument and needs saying separately, because Tailwind's preflight does not reset `appearance` on one: without `.field-select` it keeps the platform's rounded box and stepper arrows however it is bordered. Its chevron is markup rather than a background image — a data URI cannot read `--ink-subtle`, and writing a colour a second time is how one palette becomes two.
+
+### The spellchecker is off unless the field is prose
+
+A name, a NIP, a jabatan, a unit kerja, a phone number and an address are all underlined in red by the browser, and **this product has no red in it**. A person's own name is not a misspelling. `alasan` is the one field somebody writes a sentence in and the one field that keeps its checker; the rule is `PROSE_KEYS` in `lib/fill/form.ts` and no component decides it.
+
 ### The preview is a sheet
 
 `--page` on `--paper`, with the app's one shadow under it and margins inside it. It is what somebody checks their letter against before it goes to an atasan, and it should look like the thing being checked. No page number: the preview is one continuous article and pagination is Word's to decide.
@@ -228,6 +234,8 @@ The profile panel carries an explicit **export** and **clear all**, both visible
 - No serif outside a section heading or the document's title. §4.
 - No shadow anywhere but under the preview sheet.
 - No page count on the preview — pagination belongs to Word.
+- No browser spellchecker on a field that is not prose. Red is red whoever drew it.
+- No `select` without `.field-select`. Preflight will not reset `appearance` for you.
 - No celebration on download.
 - No PDF button without its approximation note.
 - No mapping UI on mobile.
