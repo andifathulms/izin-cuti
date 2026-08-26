@@ -62,6 +62,28 @@
   --hairline: 0.5px;
 
   /*
+   * The preview is a facsimile of the page, so its measurements are the
+   * document's rather than the interface's.
+   *
+   * Every number below is the matching constant in `lib/pdf/render.ts`, in the
+   * same units — points on a 595pt-wide A4. Keeping one set of figures is the
+   * point: the PDF and the on-screen preview are two renderings of one model,
+   * and they disagreed about type size, cell padding and margins, so the thing
+   * somebody checked their letter against was not the thing they printed.
+   *
+   * `--doc-unit` turns a point into a length that fits the pane, the way a PDF
+   * viewer's "fit width" does. Everything else is a multiple of it, so the
+   * page keeps the document's proportions at any pane width and the type is as
+   * large as the room allows. DESIGN.md §5.
+   */
+  --doc-page-pt: 595; /* A4 width in points */
+  --doc-unit: calc(100cqw / var(--doc-page-pt));
+  --doc-size: 9; /* BASE_SIZE */
+  --doc-line: 1.22; /* LINE_GAP */
+  --doc-cell-pad: 2.5; /* CELL_PAD */
+  --doc-margin: 34; /* MARGIN, 12mm */
+
+  /*
    * The one shadow in the app, and it is not decoration: it is what separates
    * a sheet of paper from the desk it is lying on. The preview is the thing
    * somebody checks their letter against, and it was a white rectangle butted
@@ -238,11 +260,47 @@
   }
 
   /*
+   * The scroller is the container the page is measured against, so the sheet
+   * fills the width it is given rather than a width chosen in advance.
+   */
+  .preview-frame {
+    container-type: inline-size;
+  }
+
+  /*
    * The sheet, lying on the desk. Screen only — the print rules below strip
-   * it, because paper does not need to be told it is paper.
+   * the shadow, because paper does not need to be told it is paper.
+   *
+   * The px values on the first line of each pair are the fallback for a
+   * browser without container query units; the calc beside them is what every
+   * current browser uses.
    */
   .preview-page {
     box-shadow: var(--shadow-page);
+    font-size: 11px;
+    font-size: calc(var(--doc-size) * var(--doc-unit));
+    line-height: var(--doc-line);
+    padding: 40px;
+    padding: calc(var(--doc-margin) * var(--doc-unit));
+  }
+
+  /* A paragraph is a line, not a line plus a margin — the document's spacing
+     is its own empty paragraphs, and those are half a line each, exactly as
+     `drawParagraph` treats them. */
+  .preview-page p {
+    margin: 0;
+  }
+
+  .preview-page p[data-empty='true'] {
+    height: calc(var(--doc-line) * 0.5em);
+  }
+
+  .preview-page table {
+    margin: 0;
+  }
+
+  .preview-page td {
+    padding: calc(var(--doc-cell-pad) * var(--doc-unit));
   }
 
   /*
@@ -322,6 +380,18 @@
 
   .preview-page td {
     width: auto !important;
+    padding: 2px 4px;
+  }
+
+  /*
+   * Fitting an A4 width into a phone puts the type at about 6px, which is not
+   * a preview of anything. Below this width the reflow rule above has already
+   * given up the document's column proportions, so the type stops being a
+   * fraction of the page and goes back to being readable.
+   */
+  .preview-page {
+    font-size: 12px;
+    padding: 16px;
   }
 }
 
@@ -346,6 +416,16 @@
 @media print {
   .no-print {
     display: none !important;
+  }
+
+  /*
+   * `container-type: inline-size` brings layout and size containment with it,
+   * and a contained box does not fragment across pages. On screen it is what
+   * lets the sheet be measured against the pane; on paper the page is the
+   * measure and containment would keep the form from breaking properly.
+   */
+  .preview-frame {
+    container-type: normal !important;
   }
 
   .print-only {

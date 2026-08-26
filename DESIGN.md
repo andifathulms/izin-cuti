@@ -162,9 +162,15 @@ A `select` is the same argument and needs saying separately, because Tailwind's 
 
 A name, a NIP, a jabatan, a unit kerja, a phone number and an address are all underlined in red by the browser, and **this product has no red in it**. A person's own name is not a misspelling. `alasan` is the one field somebody writes a sentence in and the one field that keeps its checker; the rule is `PROSE_KEYS` in `lib/fill/form.ts` and no component decides it.
 
-### The preview is a sheet
+### The preview is a sheet, at the document's scale
 
 `--page` on `--paper`, with the app's one shadow under it and margins inside it. It is what somebody checks their letter against before it goes to an atasan, and it should look like the thing being checked. No page number: the preview is one continuous article and pagination is Word's to decide.
+
+**Its measurements are the document's, not the interface's.** Type size, line height, cell padding, page margin and column widths are the constants in `lib/pdf/render.ts`, in the same units — points on a 595pt A4. The PDF preview and the on-screen preview are two renderings of one model and they used to disagree about every one of those numbers, so the thing somebody checked was not the thing they printed.
+
+`--doc-unit` turns one of those points into a length that fits the pane, the way a PDF viewer's *fit width* does, and everything else is a multiple of it. The page keeps its proportions at any pane width and the type is as large as the room allows.
+
+**This is the one place the 16px type floor does not apply**, and it is worth being explicit about why. §9's floor is about interface text, which somebody reads. This is a facsimile of a page, which somebody *checks* — and it stops being checkable the moment it stops matching what will print. It remains real selectable text rather than an image, so a screen reader is unaffected, browser zoom works, and the PDF preview at full size is a click away. Below the two-pane breakpoint the column proportions are already given up to reflow, and the type goes back to being sized for reading rather than for fitting.
 
 **Map mode** is entered rarely, once per template.
 
@@ -234,6 +240,7 @@ The profile panel carries an explicit **export** and **clear all**, both visible
 - No serif outside a section heading or the document's title. §4.
 - No shadow anywhere but under the preview sheet.
 - No page count on the preview — pagination belongs to Word.
+- No second set of figures for the preview. It reads `lib/pdf/render.ts`'s constants or it is lying about what will print.
 - No browser spellchecker on a field that is not prose. Red is red whoever drew it.
 - No `select` without `.field-select`. Preflight will not reset `appearance` for you.
 - No celebration on download.

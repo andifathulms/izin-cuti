@@ -92,11 +92,16 @@ export function DocumentPreview({
        *
        * Making the scroller the containing block puts them back inside it.
        */}
-      <div ref={container} className="print-area relative min-h-0 flex-1 overflow-auto px-4 py-8">
+      <div
+        ref={container}
+        className="preview-frame print-area relative min-h-0 flex-1 overflow-auto px-4 py-8"
+      >
+        {/* No max-width in ch: the sheet is a page, and its width is the pane
+            it is shown in — which is what --doc-unit is measured against. */}
         {model === null ? (
           <p className="text-base text-ink-muted">{t.previewEmpty}</p>
         ) : (
-          <article className="preview-page mx-auto max-w-[80ch] border border-rule bg-page px-10 py-14 text-base leading-6">
+          <article className="preview-page border border-rule bg-page">
             <Blocks blocks={model.blocks} locale={locale} />
           </article>
         )}
@@ -135,12 +140,20 @@ const ALIGNMENT: Record<'left' | 'center' | 'right' | 'both', string> = {
 function Paragraph({ block }: { block: Extract<PreviewBlock, { type: 'paragraph' }> }) {
   const empty = block.runs.every((run) => run.text.trim() === '')
   return (
+    /*
+     * No margin, and an empty paragraph is half a line.
+     *
+     * The margins here were an interface's idea of paragraph spacing — mt-6
+     * before a bold line, mt-2 otherwise — on top of the document's own empty
+     * paragraphs, which is why the preview ran so much longer than the page it
+     * was previewing. `drawParagraph` in the PDF renderer gives a blank
+     * paragraph half a line and everything else nothing at all; this is the
+     * same rule, and the height lives in CSS where the rest of the document
+     * scale does.
+     */
     <p
-      className={[
-        ALIGNMENT[block.alignment],
-        block.bold ? 'mt-6 font-semibold' : 'mt-2',
-        empty ? 'h-3' : '',
-      ].join(' ')}
+      data-empty={empty ? 'true' : undefined}
+      className={[ALIGNMENT[block.alignment], block.bold ? 'font-semibold' : ''].join(' ')}
     >
       {block.runs.map((run, i) => (
         <Run key={i} run={run} />
@@ -197,15 +210,26 @@ function Table({
      * form, and the parse has no way to know. The other alternative, divs,
      * would break the print path, which relies on real table semantics.
      */
-    <table role="presentation" className="my-4 w-full border-collapse text-base">
+    <table role="presentation" className="w-full border-collapse">
       <tbody>
         {block.rows.map((row, r) => (
           <tr key={r}>
             {row.cells.map((cell, c) => (
               <td
                 key={c}
-                className="border border-rule px-2 py-1 align-top"
-                style={cell.widthTwips === null ? undefined : { width: `${cell.widthTwips / 20}pt` }}
+                className="border border-rule align-top"
+                /*
+                 * The document gives this cell a width in twips; the PDF draws
+                 * it in points on a 595pt page, and --doc-unit is that same
+                 * point scaled to the pane. So the columns on screen and the
+                 * columns in the PDF are the same columns, rather than one
+                 * being pt and the other whatever the pane happened to be.
+                 */
+                style={
+                  cell.widthTwips === null
+                    ? undefined
+                    : { width: `calc(${cell.widthTwips / 20} * var(--doc-unit))` }
+                }
               >
                 {cell.box === null ? (
                   <Blocks blocks={cell.blocks} locale={locale} />
@@ -224,12 +248,16 @@ function Table({
                   <span
                     data-focused={cell.box.focused ? 'true' : undefined}
                     className={[
-                      // 24px, which is --control-min: the same square as the
-                      // form's own checkbox, so the box you tick and the box
-                      // you check it in are the same size. It was h-5 w-5 —
-                      // 20px is not on the 4px scale, `spacing` is replaced
-                      // rather than extended, and the class was never emitted.
-                      'flex h-6 w-6 items-center justify-center border border-rule font-mono',
+                      // Sized in em, so it scales with the page.
+                      //
+                      // It was 24px — --control-min, on the argument that the
+                      // box you tick and the box you check it in should be the
+                      // same size. That held while the preview was set at
+                      // interface scale. It is a facsimile of a printed cell
+                      // now, and nothing here is interactive, so the target
+                      // floor does not apply and a fixed 24px square would
+                      // simply burst the row it sits in.
+                      'flex h-[1.6em] w-[1.6em] items-center justify-center border border-rule font-mono',
                       cell.box.state === 'unmapped' ? 'unmapped' : '',
                       cell.box.focused ? 'mark-changed' : '',
                       cell.box.checked ? 'text-typed' : 'text-transparent',
