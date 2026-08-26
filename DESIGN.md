@@ -41,41 +41,40 @@ No delight. No personality flourishes. A person filling a leave request wants to
 The semantic core. Every field on the form is in one of three states, and the reader must know which at a glance.
 
 ```
---paper    #F6F5F1    warm off-white
---ink      #1D1F1C    labels, values, rules
---rule     #D9D7CF    hairlines, field boxes, section borders
+--paper    #F5F4EC    warm document ground, biased green rather than cream
+--page     #FDFCF7    the sheet, and the field somebody types into
+--ink      #211E19    labels, values, rules                   15.05:1 on paper
+--rule     #DDD8C9    hairlines, field boxes, section borders
 ```
+
+`--paper` and `--page` are two steps of the same ground, not a colour and a white. The form is a document; a field is a place on it where something is written, and it sits one step lighter than the page around it rather than jumping to `#FFF`. True white survives in exactly one place — `--white`, the label on the `--typed` button, at 10.66:1.
 
 ### The three states
 
 ```
---typed     #2B4C6B    slate blue — you entered this          8.2:1 on paper
---derived   #4F6A5C    muted green — computed, not editable   5.4:1 on paper
+--typed     #23405F    fountain-pen blue — you entered this     9.66:1 on paper
+--derived   #4B6650    muted green — computed, not editable     5.74:1 on paper
 --unmapped  hatch      diagonal over --paper — the template has this, you have not mapped it
 ```
-
-`--derived` was `#5E7A6B` and measured 4.3:1 — under the floor §9 asks for, on the one state that carries a value nobody can retype. Deepened, same hue.
-
-### Two greys, and no third
-
-```
---ink-muted   #555653    6.8:1    secondary prose, hints, captions
---ink-subtle  #6E6F6B    4.6:1    the quietest text allowed
-```
-
-Every muted grey in the app is one of these two. **No opacity modifier on `--ink`** — `text-ink/50` reads as a token and is really a value, it measured 3.2:1, and the privacy line was set in it.
 
 **`--derived` is the important one.** A derived field looks visibly different from a typed one, so nobody wonders why they cannot edit the day count — the colour already said it is computed. Derived fields are never rendered as disabled inputs; they are rendered as *results* — **in the preview, where they land in the document**, rather than as a second list beside the form. A computed value shown twice is a value somebody has to reconcile.
 
 **`--unmapped` uses a pattern, not a colour**, because it is an absence rather than a value — the same rule the sibling projects apply to unknown data.
 
+### Two greys, and no third
+
+```
+--ink-muted   #57534A   6.94:1    secondary prose, hints, captions
+--ink-subtle  #6F6B60   4.82:1    the quietest text allowed
+```
+
+Every muted grey in the app is one of these two. **No opacity modifier on `--ink`** — `text-ink/50` reads as a token and is really a value, and it measures well under the floor §9 asks for.
+
 ### Validation
 
 ```
---attention  #946022    amber — a warning, never a block      4.9:1 on paper
+--attention  #8B5C1D   amber — a warning, never a block        5.22:1 on paper
 ```
-
-Also deepened, from `#B5762E` at 3.4:1. The amber marker is the only thing separating a warning from ordinary prose, and it has to be read to do that.
 
 **Amber is a mark, never a surface.** No amber background, no amber tint behind a paragraph. The moment it washes a block that is merely informational — "map mode needs a wide screen" — it stops meaning *a warning stands here* and starts meaning *this text is a bit important*, which is not a thing the palette can afford to say.
 
@@ -83,14 +82,25 @@ Also deepened, from `#B5762E` at 3.4:1. The amber marker is the only thing separ
 
 **No red anywhere in the product.** Nothing here is an error, including a template mismatch — that is a refusal with an explanation, rendered in ink with an amber marker.
 
+### Every ratio here is measured
+
+Against `--paper`, with the WCAG 2.1 relative-luminance formula, not estimated from a screen. The floor is 4.5:1 and no text colour in the palette is within a rounding error of it. A colour that cannot clear the floor is deepened at the same hue rather than kept and excused.
+
 ## 4. Type
 
 ```
+Source Serif 4    section headings, and the document's own title — nowhere else
 Public Sans       labels, prose, controls — designed for government use, plain and legible
 IBM Plex Mono     NIP, dates, day counts, node indices, fingerprints
 ```
 
 Self-hosted via `next/font`.
+
+### Where the serif may appear, and where it may not
+
+The left pane is meant to read as the document it fills, and a serif on the Roman-numeraled section headings is the cheapest honest way to say so. It carries **section headings and the document's own title, and nothing else**.
+
+It may not touch a label, a control, a button, a warning, a caption, or a value. The moment it does, it stops meaning *this is a document heading* and starts meaning *this text is a bit important* — the same failure §3 forbids for amber, for the same reason. `font-display` exists in the config so that the rule has one name to be broken by, and so a review can grep for it.
 
 ```
 14  16  18  22  28          1.25 ratio

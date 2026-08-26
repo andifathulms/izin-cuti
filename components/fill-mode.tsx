@@ -253,7 +253,7 @@ export function FillMode({ locale }: { locale: Locale }) {
             <select
               value={activeMappingId ?? ''}
               onChange={(event) => selectMapping(event.target.value || null)}
-              className="rounded border border-rule bg-white px-2 py-1 text-base"
+              className="rounded border border-rule bg-page px-2 py-1 text-base"
             >
               <option value="">—</option>
               {mappings.map((candidate) => (
@@ -305,7 +305,7 @@ export function FillMode({ locale }: { locale: Locale }) {
                   <select
                     value={chosenDirektorat?.id ?? ''}
                     onChange={(event) => chooseDirektorat(event.target.value)}
-                    className="mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base text-typed"
+                    className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base text-typed"
                   >
                     <option value="">{t.fillDirektoratNone}</option>
                     {DIREKTORAT.map((option) => (
@@ -349,7 +349,7 @@ export function FillMode({ locale }: { locale: Locale }) {
                             }}
                             onFocus={() => setFocus('atasan-nip')}
                             onBlur={() => setFocus(null)}
-                            className="mt-1 w-full rounded border border-rule bg-white px-2 py-1 font-mono text-base text-typed"
+                            className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 font-mono text-base text-typed"
                           />
                         </label>
                       </>

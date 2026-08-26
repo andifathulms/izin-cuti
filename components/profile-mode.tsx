@@ -111,7 +111,7 @@ export function ProfileMode({ locale }: { locale: Locale }) {
               type="text"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              className="mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base"
+              className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base"
             />
           </label>
           <button
@@ -195,7 +195,7 @@ export function ProfileMode({ locale }: { locale: Locale }) {
                     )
                   }
                   className={[
-                    'mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base text-typed',
+                    'mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base text-typed',
                     isNip ? 'font-mono' : '',
                   ].join(' ')}
                 />

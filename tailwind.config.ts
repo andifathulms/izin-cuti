@@ -17,6 +17,8 @@ const config: Config = {
       transparent: 'transparent',
       current: 'currentColor',
       paper: channel('paper'),
+      // The sheet, and the field somebody types into: paper one step lighter.
+      page: channel('page'),
       ink: channel('ink'),
       // Two muted greys, both above 4.5:1 on paper. Every `text-ink/50` this
       // replaced was 3.2:1 — including the privacy line, which is the one
@@ -56,6 +58,9 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-public-sans)', 'system-ui', 'sans-serif'],
+        // Section headings and the document's own title — nowhere else.
+        // DESIGN.md §4 says where the serif may appear and where it may not.
+        display: ['var(--font-source-serif)', 'Georgia', 'serif'],
         mono: ['var(--font-plex-mono)', 'ui-monospace', 'monospace'],
       },
       borderWidth: { hairline: 'var(--hairline)' },

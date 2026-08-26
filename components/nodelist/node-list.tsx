@@ -90,7 +90,7 @@ export function NodeList({
               type="search"
               value={search}
               onChange={(event) => onSearch(event.target.value)}
-              className="w-[24ch] rounded border border-rule bg-white px-2 py-1 text-base"
+              className="w-[24ch] rounded border border-rule bg-page px-2 py-1 text-base"
             />
           </label>
         </div>
@@ -246,7 +246,7 @@ function TargetControls({
           type="text"
           value={target.label}
           onChange={(event) => actions.onRelabel(target.id, event.target.value)}
-          className="mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base"
+          className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base"
         />
       </label>
 
@@ -257,7 +257,7 @@ function TargetControls({
             <select
               value={sourceKey(target.source)}
               onChange={(event) => actions.onRetype(target.id, sourceFromKey(event.target.value))}
-              className="mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base"
+              className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base"
             >
               <optgroup label={t.mapKindProfile}>
                 {Object.keys(EMPTY_PROFILE).map((key) => (
@@ -327,7 +327,7 @@ function TargetControls({
             onChange={(event) =>
               actions.onRegroup(target.id, event.target.value.trim() === '' ? null : event.target.value)
             }
-            className="mt-1 w-full rounded border border-rule bg-white px-2 py-1 text-base"
+            className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base"
           />
           <datalist id="mapping-groups">
             {groups.map((group) => (

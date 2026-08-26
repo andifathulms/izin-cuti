@@ -13,17 +13,19 @@
    * Contrast against --paper is measured, not estimated; the figure beside
    * each one is the ratio. DESIGN.md §3, §9 — AA on paper, no exceptions.
    */
-  --paper-rgb: 246 245 241;
-  --ink-rgb: 29 31 28; /* 15.2:1 */
-  --ink-muted-rgb: 85 86 83; /* 6.8:1 — secondary prose, hints, captions */
-  --ink-subtle-rgb: 110 111 107; /* 4.6:1 — the quietest text allowed */
-  --rule-rgb: 217 215 207;
-  --typed-rgb: 43 76 107; /* 8.2:1 */
-  --derived-rgb: 79 106 92; /* 5.4:1 — was 4.3:1, below the floor §9 asks for */
-  --attention-rgb: 148 96 34; /* 4.9:1 — was 3.4:1; same ochre, readable */
-  --white-rgb: 255 255 255;
+  --paper-rgb: 245 244 236; /* warm document ground, biased green not cream */
+  --page-rgb: 253 252 247; /* the sheet and the field: paper, one step lighter */
+  --ink-rgb: 33 30 25; /* 15.05:1 */
+  --ink-muted-rgb: 87 83 74; /* 6.94:1 — secondary prose, hints, captions */
+  --ink-subtle-rgb: 111 107 96; /* 4.82:1 — the quietest text allowed */
+  --rule-rgb: 221 216 201;
+  --typed-rgb: 35 64 95; /* 9.66:1 — fountain-pen blue; white on it is 10.66:1 */
+  --derived-rgb: 75 102 80; /* 5.74:1 */
+  --attention-rgb: 139 92 29; /* 5.22:1 */
+  --white-rgb: 255 255 255; /* true white, and only where white is meant */
 
   --paper: rgb(var(--paper-rgb));
+  --page: rgb(var(--page-rgb));
   --ink: rgb(var(--ink-rgb));
   --ink-muted: rgb(var(--ink-muted-rgb));
   --ink-subtle: rgb(var(--ink-subtle-rgb));

@@ -53,7 +53,7 @@ export function TextField({
     onFocus: () => onFocus(field.targetIds[0] ?? null),
     onBlur: () => onFocus(null),
     className: [
-      'mt-1 w-full rounded border bg-white px-2 py-1 text-base text-typed',
+      'mt-1 w-full rounded border bg-page px-2 py-1 text-base text-typed',
       hasWarning ? 'border-attention' : 'border-rule',
       field.input === 'number' || field.input === 'date' || isNip ? 'font-mono' : '',
     ].join(' '),
