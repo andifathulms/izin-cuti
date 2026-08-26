@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { useApp } from '@/components/app-state'
 import { PrivacyFootnote } from '@/components/shell/template-picker'
 import { DocumentPreview } from '@/components/preview/document-preview'
-import { FlowLine } from '@/components/shell/chrome'
 import { DownloadPanel } from '@/components/summary/download-panel'
 import { DriftNotice } from '@/components/summary/drift-notice'
 import { PdfPreview } from '@/components/summary/pdf-preview'
@@ -272,7 +271,6 @@ export function FillMode({ locale }: { locale: Locale }) {
          * answered — which form is this.
          */}
         <h1 className="text-base font-semibold">{mapping?.name ?? t.appName}</h1>
-        <FlowLine locale={locale} />
         <button
           type="button"
           onClick={() => setPreviewOpen((open) => !open)}

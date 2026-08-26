@@ -24,13 +24,31 @@ export function Header({ locale }: { locale: Locale }) {
   ]
 
   return (
+    /*
+     * One line at any width that has room for one.
+     *
+     * This was three stacked rows — wordmark, then a two-sentence tagline,
+     * then the flow line — and it took a third of a laptop screen before the
+     * first field. The wordmark, what the app does, and the nav share a row
+     * and wrap only when they must.
+     *
+     * The second half of the tagline used to live here too: "nothing is sent
+     * anywhere". It is gone from the header on purpose. §8 asks for that
+     * sentence at the foot of the column where the NIP and the home address
+     * are being typed, because that is where it is believed, and it is
+     * already there — saying it twice made the header longer and the claim
+     * no more true.
+     */
     <header className="no-print border-b border-rule bg-paper">
-      <div className="mx-auto flex max-w-full items-baseline justify-between gap-6 px-6 pt-4">
-        <div className="flex items-baseline gap-4">
-          <Link href={`/${locale}/isi`} className="text-lg font-semibold tracking-tight">
-            {t.appName}
-          </Link>
-        </div>
+      <div className="mx-auto flex max-w-full flex-wrap items-baseline gap-x-6 gap-y-1 px-6 py-3">
+        <Link href={`/${locale}/isi`} className="text-lg font-semibold tracking-tight">
+          {t.appName}
+        </Link>
+
+        {/* What this is, before anything else is read, at every width. */}
+        <p className="order-last w-full text-base text-ink-muted sm:order-none sm:w-auto sm:flex-1">
+          {t.taglineWhat}
+        </p>
 
         {/* No aria-label: it announced "Izin Cuti navigation", naming the nav
             after the app rather than its contents, and there is only one nav
@@ -63,20 +81,6 @@ export function Header({ locale }: { locale: Locale }) {
           </Link>
         </nav>
       </div>
-
-      {/*
-       * What this is, on its own line, at every width.
-       *
-       * It used to sit beside the wordmark at `text-sm` inside `hidden
-       * md:block` — smaller than any label on the page, and absent on a
-       * phone, where the only words above the form were the two in the
-       * wordmark. "Izin Cuti" does not tell a stranger that this fills a
-       * cuti form or that it hands back a DOCX. This does, in one line,
-       * before anything else is read.
-       */}
-      <p className="max-w-[92ch] px-6 pb-4 pt-1 text-base">
-        {t.taglineWhat} <span className="text-ink-muted">{t.taglineWhere}</span>
-      </p>
     </header>
   )
 }
@@ -130,32 +134,5 @@ export function StateLegend({
         </li>
       )}
     </ul>
-  )
-}
-
-/**
- * Where this is going, in three beats.
- *
- * The download panel lives at the foot of a scrolling column, four sections
- * below the fold, so nothing above the fold said the word DOCX or suggested
- * the form produced a file at all. This is not a stepper and claims no state
- * it does not have — it is the shape of the task, with the outcome named and
- * carrying the app's own colour so the eye lands on it.
- */
-export function FlowLine({ locale }: { locale: Locale }) {
-  const t = strings(locale)
-  const beats = [t.flowFill, t.flowCheck]
-  return (
-    <p className="no-print flex flex-wrap items-baseline gap-2 text-sm">
-      {beats.map((beat) => (
-        <span key={beat} className="flex items-baseline gap-2 text-ink-muted">
-          {beat}
-          <span aria-hidden className="text-rule">
-            →
-          </span>
-        </span>
-      ))}
-      <span className="font-medium text-typed">{t.downloadDocx}</span>
-    </p>
   )
 }
