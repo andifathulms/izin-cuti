@@ -189,7 +189,9 @@ export function ChoiceGroupField({
   return (
     <fieldset>
       <legend className={hideLegend ? 'sr-only' : 'text-sm font-medium'}>{group.group}</legend>
-      <div className="mt-1 space-y-1">
+      {/* Six options stacked is six rows spent on what the document prints as
+          a two-column table. They wrap where there is room for them. §5. */}
+      <div className="mt-1 grid gap-x-6 gap-y-1 sm:grid-cols-2">
         {group.options.map((option) => (
           <label key={option.id} className="flex items-center gap-2 text-base">
             <input
@@ -199,7 +201,7 @@ export function ChoiceGroupField({
               onChange={() => onChoose(option.id)}
               onFocus={() => onFocus(option.id)}
               onBlur={() => onFocus(null)}
-              className="accent-[color:var(--typed)]"
+              className="box-mark"
             />
             {option.label}
           </label>
@@ -223,7 +225,7 @@ export function ChoiceGroupField({
               onChoose(null)
               first?.focus()
             }}
-            className="text-sm text-ink-muted underline"
+            className="justify-self-start text-sm text-ink-muted underline sm:col-span-2"
           >
             {strings(locale).clearChoice}
           </button>
@@ -252,7 +254,7 @@ export function StandaloneBox({
         onChange={(event) => onToggle(event.target.checked)}
         onFocus={() => onFocus(target.id)}
         onBlur={() => onFocus(null)}
-        className="accent-[color:var(--typed)]"
+        className="box-mark"
       />
       {target.label}
     </label>

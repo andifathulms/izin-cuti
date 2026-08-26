@@ -124,8 +124,7 @@
   }
 
   /* The radios and checkboxes are native and rendered at the browser's
-     default ~13px, which is under the target-size floor. Nothing else about
-     them changes. */
+     default ~13px, which is under the target-size floor. WCAG 2.5.8. */
   input[type='checkbox'],
   input[type='radio'] {
     width: var(--control-min);
@@ -134,6 +133,59 @@
 }
 
 @layer components {
+  /*
+   * The box on the screen is the box in the document.
+   *
+   * These were the browser's own radios and checkboxes, sized up to the target
+   * floor and tinted with `accent-color`. That renders macOS's filled blue
+   * disc and Windows' own square, neither of which is what the form has — the
+   * form has a ruled cell with a √ written in it, and a √ is exactly what the
+   * fill engine inserts. Drawing the control as the mark it produces means the
+   * thing being ticked on screen and the thing that lands in the DOCX are the
+   * same shape.
+   *
+   * Still a real `input`: same element, same keyboard path, same announced
+   * role, same 24px target. Only `appearance` is given up, and with it the one
+   * thing the native control was contributing — a shape belonging to the
+   * operating system rather than to the document.
+   *
+   * Single-select groups are radios and draw the same √, because that is what
+   * a single-select group is in this document: one cell of several with a mark
+   * in it. Invariant 6.
+   */
+  .box-mark {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    display: inline-grid;
+    place-content: center;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--page);
+    transition:
+      border-color var(--dur-fast) var(--ease),
+      background-color var(--dur-fast) var(--ease);
+  }
+
+  .box-mark::before {
+    content: '√';
+    font-family: var(--font-plex-mono), ui-monospace, monospace;
+    font-size: 15px;
+    line-height: 1;
+    color: var(--typed);
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease);
+  }
+
+  .box-mark:checked {
+    border-color: var(--typed);
+    background: rgb(var(--typed-rgb) / 0.08);
+  }
+
+  .box-mark:checked::before {
+    opacity: 1;
+  }
+
   /*
    * The shell owns the viewport and the panes inside it scroll, so this has to
    * be a definite height rather than a minimum — `flex-1 min-h-0 overflow-auto`
