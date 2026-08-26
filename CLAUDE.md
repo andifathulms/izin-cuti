@@ -127,7 +127,8 @@ tests/
 - Indonesian office vocabulary in identifiers and UI: `nip`, `jabatan`, `unitKerja`, `masaKerja`, `jenisCuti`, `sisaCuti`, `atasanLangsung`, `pejabatBerwenang`. Do not substitute English approximations.
 - Dates formatted in Indonesian long form — `20 Juli 2026` — via an explicit month table, not `toLocaleDateString`, which varies by environment.
 - Tabular figures on every NIP, date and count.
-- Tailwind tokens exactly as in `DESIGN.md` — `paper`, `ink`, `rule`, `typed`, `derived`, `unmapped`, `attention`. Never raw hex in components.
+- Tailwind tokens exactly as in `DESIGN.md` — `paper`, `page`, `ink`, `rule`, `typed`, `derived`, `unmapped`, `attention`. Never raw hex in components.
+- **`font-display` is section headings and the document's own title, and nothing else.** `DESIGN.md` §4 lists every place the serif may not go. It has one name so that a review can grep for it.
 
 ## Testing rules
 
@@ -160,8 +161,11 @@ M0–M5 built. `pnpm test:run` green; `test:escape`, `test:roundtrip` and
   nothing untouched is re-serialised.
 - **Map** — node list with context, marking, kinds, single-select groups, and
   run merging for values Word split. Desktop only.
-- **Fill** — generated form, profile prefill, derived fields as results,
-  inline non-blocking warnings, summary and download.
+- **Fill** — generated form laid out as a ledger: Roman-numeraled sections
+  under a serif heading, values on ruled lines rather than in boxes, a rail
+  reporting what is left per section, and the download pinned to the foot of
+  the column rather than four sections below the fold. Profile prefill,
+  derived fields as results, inline non-blocking warnings.
 - **Preview** — rendered from the parse's own block model, so runs carry node
   indices and the preview can mark and scroll to the focused field. mammoth was
   not adopted: it has no node indices and cannot answer "where does what I am
@@ -172,6 +176,12 @@ M0–M5 built. `pnpm test:run` green; `test:escape`, `test:roundtrip` and
 independent OOXML reader, with `& < > " '` intact. **Not yet verified in Word
 itself** — that is the check that should happen before this is used on a real
 letter.
+
+**Palette and type are the "Surat" pairing:** `--paper` #F5F4EC with `--page` a
+step lighter for the sheet and the field, `--typed` at 9.66:1, Source Serif 4
+on headings over Public Sans and IBM Plex Mono. Every ratio in `DESIGN.md` §3
+is measured with the WCAG relative-luminance formula; a new colour is measured
+the same way, never estimated from a screen.
 
 **Next:** open an output in Word; map the real cuti form end to end; check the
 preview against the printed document.
