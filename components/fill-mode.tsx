@@ -8,7 +8,7 @@ import { DocumentPreview } from '@/components/preview/document-preview'
 import { DownloadPanel } from '@/components/summary/download-panel'
 import { DriftNotice } from '@/components/summary/drift-notice'
 import { PdfPreview } from '@/components/summary/pdf-preview'
-import { ChoiceGroupField, SPAN, StandaloneBox, TextField } from '@/components/form/fields'
+import { CELL, ChoiceGroupField, SPAN, StandaloneBox, TextField } from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
 import { DIREKTORAT, direktoratOf, managedKeys } from '@/lib/presets/kedeputian'
 import { formatNip, normaliseNip } from '@/lib/derive/nip'
@@ -303,7 +303,7 @@ export function FillMode({ locale }: { locale: Locale }) {
           <div className="no-print relative flex min-h-0 flex-col border-r border-rule">
             <div className="min-h-0 flex-1 overflow-auto">
             <form className="space-y-8 px-6 py-6" onSubmit={(event) => event.preventDefault()}>
-              <Section title={t.fillDirektorat} note={t.fillDirektoratHint}>
+              <Section numeral="I" title={t.fillDirektorat} note={t.fillDirektoratHint}>
                 <label className="block">
                   {/* The section heading one line above says "Direktorat"
                       already; printing it twice read as a rendering fault.
@@ -313,7 +313,7 @@ export function FillMode({ locale }: { locale: Locale }) {
                   <select
                     value={chosenDirektorat?.id ?? ''}
                     onChange={(event) => chooseDirektorat(event.target.value)}
-                    className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 text-base text-typed"
+                    className="mt-1 w-full border-0 border-b border-rule bg-transparent px-1 py-1 text-base text-typed"
                   >
                     <option value="">{t.fillDirektoratNone}</option>
                     {DIREKTORAT.map((option) => (
@@ -357,7 +357,7 @@ export function FillMode({ locale }: { locale: Locale }) {
                             }}
                             onFocus={() => setFocus('atasan-nip')}
                             onBlur={() => setFocus(null)}
-                            className="mt-1 w-full rounded border border-rule bg-page px-2 py-1 font-mono text-base text-typed"
+                            className="mt-1 w-full border-0 border-b border-rule bg-transparent px-1 py-1 font-mono text-base text-typed"
                           />
                         </label>
                       </>
@@ -370,9 +370,9 @@ export function FillMode({ locale }: { locale: Locale }) {
                 )}
               </Section>
 
-              <Section title={t.fillProfile} grid>
+              <Section numeral="II" title={t.fillProfile} grid>
                 {model.profile.map((field) => (
-                  <div key={field.key} className={SPAN[field.span]}>
+                  <div key={field.key} className={`${SPAN[field.span]} ${CELL}`}>
                     <TextField
                       field={field}
                       onChange={(value) => setProfileValue(field.key as keyof ProfileValues, value)}
@@ -397,6 +397,7 @@ export function FillMode({ locale }: { locale: Locale }) {
                 */}
               {(model.groups.length > 0 || model.standalone.length > 0) && (
                 <Section
+                  numeral="III"
                   title={
                     model.groups.length === 1 && model.standalone.length === 0
                       ? model.groups[0]!.group
@@ -425,9 +426,9 @@ export function FillMode({ locale }: { locale: Locale }) {
                 </Section>
               )}
 
-              <Section title={t.fillRequest} grid>
+              <Section numeral="IV" title={t.fillRequest} grid>
                 {model.request.map((field) => (
-                  <div key={field.key} className={SPAN[field.span]}>
+                  <div key={field.key} className={`${SPAN[field.span]} ${CELL}`}>
                     <TextField
                       field={field}
                       onChange={(value) => setRequestValue(field.key as keyof RequestValues, value)}
@@ -474,12 +475,27 @@ export function FillMode({ locale }: { locale: Locale }) {
   )
 }
 
+/**
+ * A numbered section of the ledger.
+ *
+ * The document numbers its sections in Roman and so does this, in the same
+ * order — not because the numerals map one-to-one onto the document's own (the
+ * form asks for a direktorat the letter states as a salutation, and the letter
+ * splits across five headings where the form needs four), but because
+ * numbering the sections is the document's habit and following it is what
+ * lets somebody who knows the paper form find their place on the screen.
+ *
+ * The heading is the one place the serif is allowed. DESIGN.md §4.
+ */
 function Section({
+  numeral,
   title,
   note,
   grid = false,
   children,
 }: {
+  /** Roman, in document order. */
+  numeral: string
   title: string
   note?: string
   /** Lay the children out in a six-column row rather than stacking them. */
@@ -488,11 +504,14 @@ function Section({
 }) {
   return (
     <section>
-      <h2 className="border-b border-rule pb-1 text-base font-semibold">{title}</h2>
-      {note !== undefined && <p className="mt-1 text-sm text-ink-muted">{note}</p>}
-      <div className={grid ? 'mt-3 grid grid-cols-6 gap-x-4 gap-y-3' : 'mt-3 space-y-4'}>
-        {children}
-      </div>
+      <h2 className="flex items-baseline gap-3 border-b-2 border-ink pb-1">
+        <span aria-hidden className="font-mono text-sm text-ink-subtle">
+          {numeral}.
+        </span>
+        <span className="font-display text-lg font-semibold">{title}</span>
+      </h2>
+      {note !== undefined && <p className="mt-2 max-w-[68ch] text-sm text-ink-muted">{note}</p>}
+      <div className={grid ? 'mt-1 grid grid-cols-6 gap-x-4' : 'mt-3 space-y-4'}>{children}</div>
     </section>
   )
 }

@@ -17,6 +17,18 @@ export const SPAN: Record<2 | 3 | 6, string> = {
 }
 
 /**
+ * A ruled row in the ledger.
+ *
+ * Horizontal rules only. Vertical ones look right until a row does not add up
+ * to six columns — then the last cell in the row has an edge and the gap
+ * beside it does not, and the ledger reads as a rendering fault. A rule across
+ * the top of every cell joins its neighbours into one line at any span
+ * combination, and the underline beneath each value supplies the vertical
+ * rhythm the boxes used to.
+ */
+export const CELL = 'border-t border-rule px-1 pb-3 pt-2'
+
+/**
  * The three field states, which are the semantic core of this app.
  *
  * A typed field is an input. A derived field is a *result* — never an input
@@ -52,8 +64,19 @@ export function TextField({
       onChange(isNip ? normaliseNip(event.target.value) : event.target.value),
     onFocus: () => onFocus(field.targetIds[0] ?? null),
     onBlur: () => onFocus(null),
+    /*
+     * A value written on a ruled line, not typed into a box.
+     *
+     * The document this fills has no input boxes in it — it has labels and
+     * lines with something written above them, and thirty of those lines is
+     * what the left pane is supposed to look like. The border survives on one
+     * edge, which is the edge that was doing the work; the focus ring is the
+     * global 3px outline either way, so nothing is lost by dropping the other
+     * three. DESIGN.md §2, §9.
+     */
     className: [
-      'mt-1 w-full rounded border bg-page px-2 py-1 text-base text-typed',
+      'mt-1 w-full border-0 border-b bg-transparent px-1 py-1 text-base text-typed',
+      'focus:bg-page',
       hasWarning ? 'border-attention' : 'border-rule',
       field.input === 'number' || field.input === 'date' || isNip ? 'font-mono' : '',
     ].join(' '),
