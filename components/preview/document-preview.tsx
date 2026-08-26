@@ -92,11 +92,11 @@ export function DocumentPreview({
        *
        * Making the scroller the containing block puts them back inside it.
        */}
-      <div ref={container} className="print-area relative min-h-0 flex-1 overflow-auto px-4 py-6">
+      <div ref={container} className="print-area relative min-h-0 flex-1 overflow-auto px-4 py-8">
         {model === null ? (
           <p className="text-base text-ink-muted">{t.previewEmpty}</p>
         ) : (
-          <article className="preview-page mx-auto max-w-[80ch] border border-rule bg-page px-8 py-12 text-base leading-6">
+          <article className="preview-page mx-auto max-w-[80ch] border border-rule bg-page px-10 py-14 text-base leading-6">
             <Blocks blocks={model.blocks} locale={locale} />
           </article>
         )}

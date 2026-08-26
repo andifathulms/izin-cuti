@@ -62,6 +62,17 @@
   --hairline: 0.5px;
 
   /*
+   * The one shadow in the app, and it is not decoration: it is what separates
+   * a sheet of paper from the desk it is lying on. The preview is the thing
+   * somebody checks their letter against, and it was a white rectangle butted
+   * against a beige one with a hairline between them — which reads as a panel,
+   * not a page. Two stops: a tight one for the edge, a wide soft one for the
+   * lift. Nothing else in the product casts a shadow.
+   */
+  --shadow-page:
+    0 1px 2px rgb(var(--ink-rgb) / 0.07), 0 8px 24px -12px rgb(var(--ink-rgb) / 0.18);
+
+  /*
    * The smallest an interactive control may be, in either direction.
    * WCAG 2.5.8 asks for 24x24; a browser's default checkbox is about 13.
    * A token rather than a number on one checkbox, because the answer has to
@@ -204,6 +215,14 @@
   .app-shell {
     height: 100vh;
     height: 100dvh;
+  }
+
+  /*
+   * The sheet, lying on the desk. Screen only — the print rules below strip
+   * it, because paper does not need to be told it is paper.
+   */
+  .preview-page {
+    box-shadow: var(--shadow-page);
   }
 
   /*
