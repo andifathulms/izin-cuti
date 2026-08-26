@@ -17,6 +17,8 @@ export function isLocale(value: string): value is Locale {
 
 type Strings = {
   readonly appName: string
+  readonly railLabel: string
+  readonly railFilled: string
   /**
    * What this is, in two clauses: the outcome, then the reason it is safe to
    * type an NIP into. Split so the first can be set in ink and the second
@@ -154,6 +156,8 @@ type Strings = {
 
 const id: Strings = {
   appName: 'Izin Cuti',
+  railLabel: 'Bagian formulir',
+  railFilled: 'terisi',
   taglineWhat:
     'Isi Formulir Permintaan dan Pemberian Cuti, lalu unduh suratnya sebagai DOCX.',
   taglineWhere: 'Semuanya berjalan di perangkat ini — tidak ada yang dikirim ke mana pun.',
@@ -325,6 +329,8 @@ const id: Strings = {
 
 const en: Strings = {
   ...id,
+  railLabel: 'Form sections',
+  railFilled: 'filled',
   taglineWhat:
     'Fill the Indonesian leave-request form, then download the letter as a DOCX.',
   taglineWhere: 'It all runs on this device — nothing is sent anywhere.',

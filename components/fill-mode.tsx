@@ -10,6 +10,7 @@ import { DriftNotice } from '@/components/summary/drift-notice'
 import { PdfPreview } from '@/components/summary/pdf-preview'
 import { CELL, ChoiceGroupField, SPAN, StandaloneBox, TextField } from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
+import { sectionProgress } from '@/lib/fill/progress'
 import { DIREKTORAT, direktoratOf, managedKeys } from '@/lib/presets/kedeputian'
 import { formatNip, normaliseNip } from '@/lib/derive/nip'
 import { applyMapping } from '@/lib/mapping/apply'
@@ -114,6 +115,11 @@ export function FillMode({ locale }: { locale: Locale }) {
     checkboxState,
     managed,
   ])
+
+  const progress = useMemo(
+    () => (model === null ? [] : sectionProgress(model, chosenDirektorat !== null)),
+    [model, chosenDirektorat],
+  )
 
   const applied = useMemo(() => {
     if (document === null || mapping === null) return null
@@ -301,6 +307,8 @@ export function FillMode({ locale }: { locale: Locale }) {
            * of the column, and the warnings ride with it. DESIGN.md §7.
            */}
           <div className="no-print relative flex min-h-0 flex-col border-r border-rule">
+            <div className="flex min-h-0 flex-1">
+            <SectionRail locale={locale} sections={progress} titles={sectionTitles(t, model)} />
             <div className="min-h-0 flex-1 overflow-auto">
             <form className="space-y-8 px-6 py-6" onSubmit={(event) => event.preventDefault()}>
               <Section numeral="I" title={t.fillDirektorat} note={t.fillDirektoratHint}>
@@ -445,6 +453,7 @@ export function FillMode({ locale }: { locale: Locale }) {
               <PrivacyFootnote locale={locale} />
             </div>
             </div>
+            </div>
 
             <DownloadPanel
               locale={locale}
@@ -503,7 +512,7 @@ function Section({
   children: React.ReactNode
 }) {
   return (
-    <section>
+    <section id={`sec-${numeral}`} className="scroll-mt-4">
       <h2 className="flex items-baseline gap-3 border-b-2 border-ink pb-1">
         <span aria-hidden className="font-mono text-sm text-ink-subtle">
           {numeral}.
@@ -514,6 +523,70 @@ function Section({
       <div className={grid ? 'mt-1 grid grid-cols-6 gap-x-4' : 'mt-3 space-y-4'}>{children}</div>
     </section>
   )
+}
+
+/**
+ * Which section you are in, and how much of it is left.
+ *
+ * Narrow on purpose: this pane is half the window and the form needs the rest
+ * of it. Each entry is a link into its section, so it is a way through the
+ * form as well as a report on it — the numeral is the visible part and the
+ * accessible name carries the whole sentence, because "II, 4/6" read aloud is
+ * not a sentence.
+ *
+ * Complete is stated in --derived, which is the app's word for "this one is
+ * settled and not yours to type". Nothing here is amber: a section you have
+ * not reached yet is not a warning. DESIGN.md §3.
+ */
+function SectionRail({
+  locale,
+  sections,
+  titles,
+}: {
+  locale: Locale
+  sections: ReturnType<typeof sectionProgress>
+  titles: ReadonlyArray<string>
+}) {
+  const t = strings(locale)
+  return (
+    <nav
+      aria-label={t.railLabel}
+      className="flex w-11 flex-none flex-col items-center gap-1 border-r border-rule py-6"
+    >
+      {sections.map((section, index) => (
+        <a
+          key={section.id}
+          href={`#${section.id}`}
+          aria-label={`${titles[index] ?? section.numeral} — ${section.filled}/${section.total} ${t.railFilled}`}
+          className={[
+            'flex w-8 flex-col items-center rounded py-1 font-mono text-sm leading-tight',
+            'transition-colors duration-state ease-house hover:bg-typed/10',
+            section.complete ? 'text-derived' : 'text-ink-subtle',
+          ].join(' ')}
+        >
+          <span aria-hidden>{section.numeral}</span>
+          <span aria-hidden className="text-sm">
+            {section.complete ? '√' : section.total - section.filled}
+          </span>
+        </a>
+      ))}
+    </nav>
+  )
+}
+
+/**
+ * The rail's accessible names, in the same order the sections are rendered.
+ *
+ * Section III takes its name from the group it holds when it holds exactly
+ * one, which is the same rule the heading follows — so the rail and the
+ * heading never disagree about what a section is called.
+ */
+function sectionTitles(t: ReturnType<typeof strings>, model: ReturnType<typeof buildForm> | null) {
+  const checklist =
+    model !== null && model.groups.length === 1 && model.standalone.length === 0
+      ? model.groups[0]!.group
+      : t.fillChecklist
+  return [t.fillDirektorat, t.fillProfile, checklist, t.fillRequest]
 }
 
 /** A filename somebody can find again in a downloads folder. */
