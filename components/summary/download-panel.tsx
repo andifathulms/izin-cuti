@@ -25,7 +25,9 @@ import { strings, type Locale } from '@/lib/i18n/strings'
  * immediately above the buttons — §7 is specific about that, and it is the
  * last chance to notice the wrong year — but they scroll within their own
  * box past three or so, rather than pushing the buttons off the screen the
- * moment somebody has a lot of them.
+ * moment somebody has a lot of them. On a phone, where the column is the
+ * whole viewport, that cap is tighter still — two warnings and a scrollbar,
+ * because a panel taking half the screen leaves too little of it to type in.
  */
 export function DownloadPanel({
   locale,
@@ -63,7 +65,7 @@ export function DownloadPanel({
        * every one of them live would talk over every keystroke.
        */}
       {(warnings.length > 0 || pending.length > 0) && (
-        <ul role="status" className="mb-3 max-h-24 space-y-1 overflow-auto">
+        <ul role="status" className="mb-3 max-h-16 space-y-1 overflow-auto sm:max-h-24">
           {warnings.map((warning) => (
             <li key={warning.id} className="flex items-baseline gap-2 text-sm">
               <span aria-hidden className="text-attention">
@@ -85,7 +87,15 @@ export function DownloadPanel({
         </ul>
       )}
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+      {/*
+       * Aligned to the top, not the middle.
+       *
+       * The secondary column is two rows tall — buttons over the
+       * approximation note — so centring the row floated Unduh DOCX below
+       * Pratinjau PDF. Three actions clearly unequal, with the primary one
+       * sitting lower than the others, is the hierarchy stated backwards.
+       */}
+      <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
         <button
           type="button"
           onClick={onDownload}

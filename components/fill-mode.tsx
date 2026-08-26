@@ -551,7 +551,7 @@ function SectionRail({
   return (
     <nav
       aria-label={t.railLabel}
-      className="flex w-11 flex-none flex-col items-center gap-1 border-r border-rule py-6"
+      className="flex w-12 flex-none flex-col items-center gap-2 border-r border-rule py-6"
     >
       {sections.map((section, index) => (
         <a
@@ -559,14 +559,26 @@ function SectionRail({
           href={`#${section.id}`}
           aria-label={`${titles[index] ?? section.numeral} — ${section.filled}/${section.total} ${t.railFilled}`}
           className={[
-            'flex w-8 flex-col items-center rounded py-1 font-mono text-sm leading-tight',
+            'flex w-10 flex-col items-center rounded py-1 font-mono leading-tight',
             'transition-colors duration-state ease-house hover:bg-typed/10',
-            section.complete ? 'text-derived' : 'text-ink-subtle',
+            section.complete ? 'text-derived' : 'text-ink',
           ].join(' ')}
         >
-          <span aria-hidden>{section.numeral}</span>
-          <span aria-hidden className="text-sm">
-            {section.complete ? '√' : section.total - section.filled}
+          <span aria-hidden className="text-base">
+            {section.numeral}
+          </span>
+          {/*
+           * A bare number under a numeral reads as a page number. The one
+           * that means "none left" is the √ this form marks a box with; the
+           * one that means "some left" says so as a count of fields, in the
+           * quietest grey the palette allows, so the numeral stays the thing
+           * being read.
+           */}
+          <span
+            aria-hidden
+            className={section.complete ? 'text-sm' : 'text-sm text-ink-subtle'}
+          >
+            {section.complete ? '√' : `−${section.total - section.filled}`}
           </span>
         </a>
       ))}
