@@ -19,6 +19,13 @@ import { strings, type Locale } from '@/lib/i18n/strings'
  *
  * Three actions, clearly unequal, with the approximation note beside the two
  * that produce a PDF. No confetti, no toast. The file downloads.
+ *
+ * This is the foot of the form column and it does not scroll with it, so it
+ * has a height budget it did not have before. The warnings keep their place
+ * immediately above the buttons — §7 is specific about that, and it is the
+ * last chance to notice the wrong year — but they scroll within their own
+ * box past three or so, rather than pushing the buttons off the screen the
+ * moment somebody has a lot of them.
  */
 export function DownloadPanel({
   locale,
@@ -43,7 +50,7 @@ export function DownloadPanel({
   const pending = fields.filter((field) => field.unavailable !== null)
 
   return (
-    <section aria-label={t.downloadSection} className="no-print border-t border-rule px-6 py-4">
+    <section aria-label={t.downloadSection} className="no-print border-t border-rule bg-paper px-6 py-3">
       {/*
        * The last chance to notice the wrong year was silent: warnings appear
        * and vanish while somebody types, and nothing announced them. WCAG
@@ -56,7 +63,7 @@ export function DownloadPanel({
        * every one of them live would talk over every keystroke.
        */}
       {(warnings.length > 0 || pending.length > 0) && (
-        <ul role="status" className="mb-4 space-y-1">
+        <ul role="status" className="mb-3 max-h-24 space-y-1 overflow-auto">
           {warnings.map((warning) => (
             <li key={warning.id} className="flex items-baseline gap-2 text-sm">
               <span aria-hidden className="text-attention">
@@ -78,7 +85,7 @@ export function DownloadPanel({
         </ul>
       )}
 
-      <div className="flex flex-wrap items-start gap-4">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <button
           type="button"
           onClick={onDownload}
@@ -113,7 +120,10 @@ export function DownloadPanel({
           <p className="text-sm text-ink-muted">{t.pdfApproximate}</p>
         </div>
 
-        <p className="font-mono text-sm text-ink-muted">{t.docxAuthoritative}</p>
+        {/* The citation line: small, monospace, where the claim is made. */}
+        <p className="ml-auto max-w-[30ch] font-mono text-sm text-ink-muted">
+          {t.docxAuthoritative}
+        </p>
       </div>
     </section>
   )

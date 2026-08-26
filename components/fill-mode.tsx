@@ -293,7 +293,17 @@ export function FillMode({ locale }: { locale: Locale }) {
         </div>
       ) : (
         <div className="print-area grid min-h-0 flex-1 lg:grid-cols-2">
-          <div className="no-print relative min-h-0 overflow-auto border-r border-rule">
+          {/*
+           * The form scrolls; the download does not.
+           *
+           * DownloadPanel used to sit at the foot of this scrolling column,
+           * four sections below the fold — so the one button that is the
+           * reason this app exists was reachable only by scrolling past every
+           * field. It is a sibling of the scroller now, pinned to the bottom
+           * of the column, and the warnings ride with it. DESIGN.md §7.
+           */}
+          <div className="no-print relative flex min-h-0 flex-col border-r border-rule">
+            <div className="min-h-0 flex-1 overflow-auto">
             <form className="space-y-8 px-6 py-6" onSubmit={(event) => event.preventDefault()}>
               <Section title={t.fillDirektorat} note={t.fillDirektoratHint}>
                 <label className="block">
@@ -432,8 +442,9 @@ export function FillMode({ locale }: { locale: Locale }) {
 
             </form>
 
-            <div className="px-6">
+            <div className="px-6 pb-6">
               <PrivacyFootnote locale={locale} />
+            </div>
             </div>
 
             <DownloadPanel
