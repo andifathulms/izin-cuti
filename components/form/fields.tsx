@@ -17,16 +17,19 @@ export const SPAN: Record<2 | 3 | 6, string> = {
 }
 
 /**
- * A ruled row in the ledger.
+ * A row in the ledger: spacing, and no rule of its own.
  *
- * Horizontal rules only. Vertical ones look right until a row does not add up
- * to six columns — then the last cell in the row has an edge and the gap
- * beside it does not, and the ledger reads as a rendering fault. A rule across
- * the top of every cell joins its neighbours into one line at any span
- * combination, and the underline beneath each value supplies the vertical
- * rhythm the boxes used to.
+ * This used to draw a rule across the top of every cell as well. With every
+ * value already underlined, that put two hairlines between every pair of rows
+ * — the value's underline, a gap, then the next row's top edge — which reads
+ * as a doubled border rather than as a ruled form.
+ *
+ * The document has one line per field and it sits *under* what you write, so
+ * that is the one that stays. Two half-width fields side by side underline at
+ * the same height with a gap between them, which is what the paper form does
+ * too; the cell only has to supply the rhythm around them.
  */
-export const CELL = 'border-t border-rule px-1 pb-3 pt-2'
+export const CELL = 'px-1 pb-3 pt-2'
 
 /**
  * The three field states, which are the semantic core of this app.
