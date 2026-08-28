@@ -32,6 +32,8 @@ export type StoredSignature = {
   readonly heightPx: number
   /** How it was made. Shown back, so nobody wonders which one is saved. */
   readonly source: 'drawn' | 'uploaded'
+  /** How wide it is drawn on the page, in millimetres. */
+  readonly widthMm: number
   /** ISO date, supplied by the caller — this module has no clock. */
   readonly savedAt: string
 }
@@ -191,19 +193,27 @@ export function fromBase64(base64: string): Uint8Array {
   return new Uint8Array(Buffer.from(base64, 'base64'))
 }
 
-export function storeSignature(signature: Signature): StoredSignature {
+export function storeSignature(signature: Signature, widthMm: number): StoredSignature {
   return {
     version: 1,
     png: toBase64(signature.bytes),
     widthPx: signature.info.widthPx,
     heightPx: signature.info.heightPx,
     source: signature.source,
+    widthMm: clampWidthMm(widthMm),
     savedAt: signature.savedAt,
   }
 }
 
-/** Never trusts the stored shape: local storage is editable by hand. */
-export function restoreSignature(stored: unknown): Signature | null {
+/**
+ * Never trusts the stored shape: local storage is editable by hand.
+ *
+ * The width comes back clamped rather than as written, so a hand-edited 4000
+ * is 90 and not a picture wider than the page.
+ */
+export function restoreSignature(
+  stored: unknown,
+): { readonly signature: Signature; readonly widthMm: number } | null {
   if (typeof stored !== 'object' || stored === null) return null
   const record = stored as Partial<StoredSignature>
   if (record.version !== 1 || typeof record.png !== 'string') return null
@@ -216,9 +226,12 @@ export function restoreSignature(stored: unknown): Signature | null {
   const png = readPng(bytes)
   if (png.type !== 'png') return null
   return {
-    bytes,
-    info: png.info,
-    source: record.source === 'drawn' ? 'drawn' : 'uploaded',
-    savedAt: typeof record.savedAt === 'string' ? record.savedAt : '',
+    signature: {
+      bytes,
+      info: png.info,
+      source: record.source === 'drawn' ? 'drawn' : 'uploaded',
+      savedAt: typeof record.savedAt === 'string' ? record.savedAt : '',
+    },
+    widthMm: clampWidthMm(typeof record.widthMm === 'number' ? record.widthMm : 40),
   }
 }

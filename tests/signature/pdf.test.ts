@@ -177,6 +177,61 @@ describe('renderPdf with a signature', () => {
     expect(text).toContain('/Subtype /Image')
   })
 
+  it('draws a signature that lives inside a table cell', () => {
+    // The signature block of the real form is a table cell, and a cell is
+    // flattened to lines rather than drawn through drawParagraph — so the
+    // picture reached the DOCX and the on-screen preview and silently did not
+    // reach the PDF. Only an end-to-end look at a downloaded file found it.
+    const inTable: PreviewModel = {
+      hasUnmapped: false,
+      blocks: [
+        {
+          type: 'table',
+          key: 't0',
+          rows: [
+            {
+              cells: [
+                {
+                  widthTwips: null,
+                  box: null,
+                  blocks: [
+                    {
+                      type: 'paragraph',
+                      key: 'p0',
+                      runs: [
+                        { text: 'Hormat Saya,', state: 'plain', targetId: null, nodeIndex: null, focused: false },
+                      ],
+                      alignment: 'center',
+                      bold: false,
+                      signature: null,
+                    },
+                    {
+                      type: 'paragraph',
+                      key: 'p1',
+                      runs: [],
+                      alignment: 'center',
+                      bold: false,
+                      signature: {
+                        targetId: 'tanda-tangan',
+                        png: realPng(),
+                        widthMm: 40,
+                        heightMm: 20,
+                        focused: false,
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    }
+    const text = new TextDecoder('latin1').decode(renderPdf(inTable))
+    expect(text).toContain('/Subtype /Image')
+    expect(text).toContain('/Imtandatangan Do')
+  })
+
   it('leaves no image behind when nothing is signed', () => {
     const unsigned: PreviewModel = {
       ...model,

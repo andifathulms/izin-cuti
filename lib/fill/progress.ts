@@ -44,6 +44,11 @@ export function sectionProgress(
     { id: 'sec-II', numeral: 'II', filled: filledCount(model.profile), total: model.profile.length },
     { id: 'sec-III', numeral: 'III', filled: chosenGroups, total: model.groups.length },
     { id: 'sec-IV', numeral: 'IV', filled: filledCount(model.request), total: model.request.length },
+    // The signature is optional. Somebody who prints the form and signs it by
+    // hand has a complete document, so this counts nothing and is complete
+    // from the start — the rail reports what is left to do, and this is not
+    // something that is owed. Invariant 8's argument: nothing here refuses.
+    { id: 'sec-V', numeral: 'V', filled: 0, total: 0 },
   ]
 
   // A section with nothing in it is complete, not stuck at 0/0 forever.

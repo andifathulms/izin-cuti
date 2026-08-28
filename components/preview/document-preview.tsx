@@ -1,7 +1,13 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
-import type { PreviewBlock, PreviewModel, PreviewRun, RunState } from '@/lib/preview/model'
+import { useEffect, useRef, useState } from 'react'
+import type {
+  PreviewBlock,
+  PreviewModel,
+  PreviewRun,
+  PreviewSignature,
+  RunState,
+} from '@/lib/preview/model'
 import { StateLegend } from '@/components/shell/chrome'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
@@ -138,7 +144,7 @@ const ALIGNMENT: Record<'left' | 'center' | 'right' | 'both', string> = {
 }
 
 function Paragraph({ block }: { block: Extract<PreviewBlock, { type: 'paragraph' }> }) {
-  const empty = block.runs.every((run) => run.text.trim() === '')
+  const empty = block.runs.every((run) => run.text.trim() === '') && block.signature === null
   return (
     /*
      * No margin, and an empty paragraph is half a line.
@@ -155,10 +161,55 @@ function Paragraph({ block }: { block: Extract<PreviewBlock, { type: 'paragraph'
       data-empty={empty ? 'true' : undefined}
       className={[ALIGNMENT[block.alignment], block.bold ? 'font-semibold' : ''].join(' ')}
     >
+      {block.signature !== null && <SignatureImage signature={block.signature} />}
       {block.runs.map((run, i) => (
         <Run key={i} run={run} />
       ))}
     </p>
+  )
+}
+
+/**
+ * The signature, where it lands, at the size it lands at.
+ *
+ * Sized in millimetres against the document scale, so it is the same fraction
+ * of the page here as it is in the DOCX — a preview that showed it at some
+ * other size would answer the one question this pane exists for incorrectly.
+ *
+ * The object URL is made here and revoked when the bytes change or the block
+ * unmounts. A blob URL keeps its bytes alive, and these are somebody's
+ * handwriting.
+ */
+function SignatureImage({ signature }: { signature: PreviewSignature }) {
+  const [url, setUrl] = useState<string | null>(null)
+
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(
+      new Blob([signature.png.slice().buffer as ArrayBuffer], { type: 'image/png' }),
+    )
+    setUrl(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [signature.png])
+
+  if (url === null) return null
+  return (
+    // A blob URL for bytes that exist only in this tab: nothing for
+    // next/image to fetch or optimise, and nothing that may leave the device.
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={url}
+      alt=""
+      data-focused={signature.focused ? 'true' : undefined}
+      className={`block ${signature.focused ? 'mark-changed' : ''}`}
+      style={{
+        // `--doc-unit` is one PDF point scaled to the pane. A millimetre is
+        // 72/25.4 of those, so the picture is the same fraction of the page
+        // here as it is on paper.
+        width: `calc(${(signature.widthMm * 72) / 25.4} * var(--doc-unit))`,
+        height: `calc(${(signature.heightMm * 72) / 25.4} * var(--doc-unit))`,
+        marginInline: 'auto',
+      }}
+    />
   )
 }
 

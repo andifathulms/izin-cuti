@@ -11,11 +11,19 @@ import {
   loadActiveProfileId,
   loadMappings,
   loadProfiles,
+  loadSignature,
   saveActiveProfileId,
   saveMapping,
   saveProfile,
+  saveSignature,
   type Store,
 } from '@/lib/mapping/storage'
+import {
+  clampWidthMm,
+  restoreSignature,
+  storeSignature,
+  type Signature,
+} from '@/lib/signature/signature'
 import {
   EMPTY_PROFILE,
   EMPTY_REQUEST,
@@ -74,6 +82,15 @@ type State = {
   readonly checkboxState: Readonly<Record<string, boolean>>
   readonly focusedTargetId: string | null
   readonly storageAvailable: boolean
+  /**
+   * The applicant's signature, and how wide it is drawn.
+   *
+   * In state rather than read from storage at the point of use, because the
+   * preview redraws on every keystroke and decoding base64 each time would be
+   * work done thirty times a second for a value that changes twice a year.
+   */
+  readonly signature: Signature | null
+  readonly signatureWidthMm: number
 }
 
 type Action =
@@ -88,7 +105,15 @@ type Action =
   | { type: 'template-remembered'; rememberedAt: string | null }
   | { type: 'template-unreadable'; fileName: string; reason: string }
   | { type: 'template-cleared' }
-  | { type: 'hydrated'; mappings: ReadonlyArray<Mapping>; profiles: ReadonlyArray<Profile>; activeProfileId: string | null; storageAvailable: boolean }
+  | {
+      type: 'hydrated'
+      mappings: ReadonlyArray<Mapping>
+      profiles: ReadonlyArray<Profile>
+      activeProfileId: string | null
+      storageAvailable: boolean
+      signature: Signature | null
+      signatureWidthMm: number
+    }
   | { type: 'mappings-changed'; mappings: ReadonlyArray<Mapping>; activeMappingId?: string | null }
   | { type: 'mapping-selected'; id: string | null }
   | { type: 'profiles-changed'; profiles: ReadonlyArray<Profile> }
@@ -100,6 +125,8 @@ type Action =
   | { type: 'choice-changed'; group: string; targetId: string | null }
   | { type: 'box-toggled'; targetId: string; checked: boolean }
   | { type: 'focus-changed'; targetId: string | null }
+  | { type: 'signature-set'; signature: Signature | null; widthMm: number }
+  | { type: 'signature-width-changed'; widthMm: number }
 
 const INITIAL: State = {
   template: { type: 'none' },
@@ -115,6 +142,8 @@ const INITIAL: State = {
   checkboxState: {},
   focusedTargetId: null,
   storageAvailable: true,
+  signature: null,
+  signatureWidthMm: 40,
 }
 
 function reduce(state: State, action: Action): State {
@@ -152,6 +181,8 @@ function reduce(state: State, action: Action): State {
           action.profiles.find((profile) => profile.id === action.activeProfileId)?.values ??
           state.profileValues,
         storageAvailable: action.storageAvailable,
+        signature: action.signature,
+        signatureWidthMm: action.signatureWidthMm,
       }
     case 'mappings-changed':
       return {
@@ -193,6 +224,14 @@ function reduce(state: State, action: Action): State {
       }
     case 'focus-changed':
       return { ...state, focusedTargetId: action.targetId }
+    case 'signature-set':
+      return {
+        ...state,
+        signature: action.signature,
+        signatureWidthMm: clampWidthMm(action.widthMm),
+      }
+    case 'signature-width-changed':
+      return { ...state, signatureWidthMm: clampWidthMm(action.widthMm) }
     default: {
       const unreachable: never = action
       throw new Error(`unhandled action ${JSON.stringify(unreachable)}`)
@@ -219,6 +258,9 @@ export type AppState = State & {
   readonly setChoice: (group: string, targetId: string | null) => void
   readonly setBox: (targetId: string, checked: boolean) => void
   readonly setFocus: (targetId: string | null) => void
+  readonly setSignature: (signature: Signature, widthMm: number) => void
+  readonly setSignatureWidth: (widthMm: number) => void
+  readonly removeSignature: () => void
   readonly refreshStorage: () => void
 }
 
@@ -229,12 +271,18 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
   const store = useMemo(() => (typeof window === 'undefined' ? null : browserStore()), [])
 
   const hydrate = useCallback(() => {
+    // Validated on the way in rather than trusted: local storage is editable
+    // by hand, and a stored signature is decoded and re-read as a PNG or it is
+    // treated as absent.
+    const restored = restoreSignature(loadSignature(store))
     dispatch({
       type: 'hydrated',
       mappings: loadMappings(store),
       profiles: loadProfiles(store),
       activeProfileId: loadActiveProfileId(store),
       storageAvailable: store !== null,
+      signature: restored?.signature ?? null,
+      signatureWidthMm: restored?.widthMm ?? 40,
     })
   }, [store])
 
@@ -390,6 +438,22 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setChoice: (group, targetId) => dispatch({ type: 'choice-changed', group, targetId }),
       setBox: (targetId, checked) => dispatch({ type: 'box-toggled', targetId, checked }),
       setFocus: (targetId) => dispatch({ type: 'focus-changed', targetId }),
+      setSignature: (signature, widthMm) => {
+        dispatch({ type: 'signature-set', signature, widthMm })
+        saveSignature(store, storeSignature(signature, widthMm))
+      },
+      setSignatureWidth: (widthMm) => {
+        dispatch({ type: 'signature-width-changed', widthMm })
+        // Persisted with the image, so the width survives a reload alongside
+        // the thing it describes rather than resetting to the default.
+        if (state.signature !== null) {
+          saveSignature(store, storeSignature(state.signature, widthMm))
+        }
+      },
+      removeSignature: () => {
+        dispatch({ type: 'signature-set', signature: null, widthMm: state.signatureWidthMm })
+        saveSignature(store, null)
+      },
       refreshStorage: hydrate,
     }),
     [state, store, openTemplate, openBundledForm, hydrate],

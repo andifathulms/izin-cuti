@@ -1,4 +1,4 @@
-import type { PreviewBlock, PreviewModel } from '../preview/model'
+import type { PreviewBlock, PreviewModel, PreviewSignature } from '../preview/model'
 import { measure, wrap, type PdfFont } from './metrics'
 import { A4, SYMBOL_RADICAL, writePdf, type DrawOp, type PdfPage } from './write'
 
@@ -233,8 +233,12 @@ function drawTable(
         cell.box !== null
           ? []
           : openSignatureGap(
-              cellLines(cell.blocks).flatMap((line) =>
-                wrap(
+              cellLines(cell.blocks).flatMap((line) => {
+                // A signature line has no text to wrap and must survive the
+                // wrap intact — rebuilding it from `text` alone is how the
+                // picture was lost between `cellLines` and the page.
+                if (line.signature !== undefined) return [line]
+                return wrap(
                   line.text,
                   Math.max(8, (widths[i] ?? width) - CELL_PAD * 2),
                   cursor.size,
@@ -244,14 +248,18 @@ function drawTable(
                   alignment: line.alignment,
                   // Only the first line of a wrapped paragraph is indented.
                   indent: part === 0 ? line.indent : 0,
-                })),
-              ),
+                }))
+              }),
             ),
     }))
 
+    const lineHeightOf = (line: CellLine): number =>
+      line.signature === undefined ? lineHeight : line.signature.heightMm * MM
     const height = Math.max(
       lineHeight + CELL_PAD * 2,
-      ...cells.map((cell) => cell.lines.length * lineHeight + CELL_PAD * 2),
+      ...cells.map(
+        (cell) => cell.lines.reduce((sum, line) => sum + lineHeightOf(line), 0) + CELL_PAD * 2,
+      ),
     )
     needRoom(cursor, height)
 
@@ -276,7 +284,24 @@ function drawTable(
           })
         }
       } else {
-        cell.lines.forEach((line, lineIndex) => {
+        // Walked rather than indexed, because a signature line is taller than
+        // a line of type and everything under it has to move by that much.
+        let lineTop = top - CELL_PAD
+        for (const line of cell.lines) {
+          if (line.signature !== undefined) {
+            const w = line.signature.widthMm * MM
+            const h = line.signature.heightMm * MM
+            cursor.ops.push({
+              type: 'image',
+              key: line.signature.targetId,
+              x: cellX + CELL_PAD + Math.max(0, (cellWidth - CELL_PAD * 2 - w) / 2),
+              y: lineTop - h,
+              w,
+              h,
+            })
+            lineTop -= h
+            continue
+          }
           // Alignment comes from the paragraph, so a centred signature block
           // is centred here too rather than pinned to the left edge of a cell
           // that is three times wider than the name in it.
@@ -286,12 +311,13 @@ function drawTable(
             cursor,
             line.text,
             cellX + CELL_PAD + indent,
-            top - CELL_PAD - lineHeight * (lineIndex + 1) + lineHeight * 0.25,
+            lineTop - lineHeight + lineHeight * 0.25,
             cellWidth - CELL_PAD * 2 - indent,
             line.alignment,
             'regular',
           )
-        })
+          lineTop -= lineHeight
+        }
       }
       cellX += cellWidth
     })
@@ -304,6 +330,10 @@ function drawTable(
 
 /** Widen the largest run of blank lines to leave room for a signature. */
 function openSignatureGap(lines: ReadonlyArray<CellLine>): CellLine[] {
+  // A real signature already occupies the space, and adding blank lines under
+  // it would push the name away from it.
+  if (lines.some((line) => line.signature !== undefined)) return [...lines]
+
   let bestStart = -1
   let bestLength = 0
   let start = -1
@@ -364,6 +394,16 @@ type CellLine = {
   readonly alignment: 'left' | 'center' | 'right' | 'both'
   /** Small leading indents the document put there, kept as written. */
   readonly indent: number
+  /**
+   * A signature that lands on this line rather than text.
+   *
+   * The signature block of this form is inside a table cell, and a cell is
+   * flattened to lines here rather than drawn through `drawParagraph` — so
+   * without this the picture reached the DOCX and the on-screen preview and
+   * silently did not reach the PDF. A line carries it, and the row's height
+   * is measured from the image instead of from the type.
+   */
+  readonly signature?: PreviewSignature
 }
 
 /**
@@ -407,15 +447,22 @@ function lineOf(raw: string, alignment: CellLine['alignment']): CellLine {
 }
 
 function cellLines(blocks: ReadonlyArray<PreviewBlock>): CellLine[] {
-  const lines = blocks.flatMap((block): CellLine[] =>
-    block.type === 'paragraph'
-      ? [lineOf(block.runs.map((run) => run.text).join(''), block.alignment)]
-      : block.rows.flatMap((row) => row.cells.flatMap((cell) => cellLines(cell.blocks))),
-  )
+  const lines = blocks.flatMap((block): CellLine[] => {
+    if (block.type !== 'paragraph') {
+      return block.rows.flatMap((row) => row.cells.flatMap((cell) => cellLines(cell.blocks)))
+    }
+    const line = lineOf(block.runs.map((run) => run.text).join(''), block.alignment)
+    return [block.signature === null ? line : { ...line, signature: block.signature }]
+  })
+
+  // A signature line is empty of text and is not blank. Trimming it away is
+  // how the picture disappeared from the PDF the first time.
+  const blank = (line: CellLine | undefined): boolean =>
+    line !== undefined && line.text === '' && line.signature === undefined
 
   let first = 0
   let last = lines.length - 1
-  while (first <= last && lines[first]?.text === '') first++
-  while (last >= first && lines[last]?.text === '') last--
+  while (first <= last && blank(lines[first])) first++
+  while (last >= first && blank(lines[last])) last--
   return lines.slice(first, last + 1)
 }

@@ -17,6 +17,32 @@ export function isLocale(value: string): value is Locale {
 
 type Strings = {
   readonly appName: string
+  readonly signatureSection: string
+  readonly signatureIntro: string
+  readonly signatureStepMake: string
+  readonly signatureStepSize: string
+  readonly signatureStepCheck: string
+  readonly signatureStepCheckHint: string
+  readonly signatureDraw: string
+  readonly signatureUpload: string
+  readonly signatureDrawLabel: string
+  readonly signatureDrawHint: string
+  readonly signatureUndo: string
+  readonly signatureClear: string
+  readonly signatureUse: string
+  readonly signatureReplace: string
+  readonly signatureRemove: string
+  readonly signatureChooseFile: string
+  readonly signatureRemoveWhite: string
+  readonly signatureRemoveWhiteHint: string
+  readonly signatureWidth: string
+  readonly signatureWidthHint: string
+  readonly signatureSaved: string
+  readonly signatureSavedDrawn: string
+  readonly signatureSavedUploaded: string
+  readonly signaturePrivacy: string
+  readonly signatureNone: string
+  readonly signatureUnavailable: string
   readonly kedudukanLegend: string
   readonly kedudukanHint: string
   readonly kedudukanDefinitif: string
@@ -161,6 +187,36 @@ type Strings = {
 
 const id: Strings = {
   appName: 'Izin Cuti',
+  signatureSection: 'Tanda tangan',
+  signatureIntro:
+    'Tanda tangan hanya untuk blok pemohon. Bagian VII dan VIII ditandatangani orang lain, dan aplikasi ini tidak menandatangani atas nama siapa pun.',
+  signatureStepMake: 'Buat tanda tangan',
+  signatureStepSize: 'Atur lebarnya',
+  signatureStepCheck: 'Periksa letaknya',
+  signatureStepCheckHint:
+    'Tanda tangan muncul di pratinjau, tepat di tempat ia akan tercetak — di atas nama Anda pada bagian VI.',
+  signatureDraw: 'Gambar sendiri',
+  signatureUpload: 'Unggah gambar',
+  signatureDrawLabel: 'Area menggambar tanda tangan',
+  signatureDrawHint: 'Gunakan tetikus, jari, atau pena.',
+  signatureUndo: 'Batalkan goresan',
+  signatureClear: 'Hapus semua',
+  signatureUse: 'Pakai tanda tangan ini',
+  signatureReplace: 'Ganti',
+  signatureRemove: 'Hapus tanda tangan',
+  signatureChooseFile: 'Pilih berkas gambar',
+  signatureRemoveWhite: 'Hapus latar putih',
+  signatureRemoveWhiteHint:
+    'Untuk foto tanda tangan di atas kertas. Pada tinta yang pucat, coretannya bisa ikut terhapus — periksa hasilnya.',
+  signatureWidth: 'Lebar pada surat',
+  signatureWidthHint: 'Tingginya mengikuti, supaya tanda tangan tidak berubah bentuk.',
+  signatureSaved: 'Tersimpan di perangkat ini',
+  signatureSavedDrawn: 'digambar',
+  signatureSavedUploaded: 'diunggah',
+  signaturePrivacy:
+    'Gambar tanda tangan disimpan di peramban ini saja, ikut terhapus oleh Hapus semua, dan tidak ikut dalam berkas ekspor.',
+  signatureNone: 'Belum ada tanda tangan.',
+  signatureUnavailable: 'Formulir ini tidak menyediakan tempat tanda tangan.',
   kedudukanLegend: 'Kedudukan penanda tangan',
   kedudukanHint:
     'Bila direktur sedang berhalangan, pilih Plt. atau Plh. Awalan itu ikut tertulis pada jabatan di seluruh surat.',
@@ -340,6 +396,36 @@ const id: Strings = {
 
 const en: Strings = {
   ...id,
+  signatureSection: 'Signature',
+  signatureIntro:
+    'The signature is for the applicant’s block only. Sections VII and VIII are signed by other people, and this app does not sign on anybody’s behalf.',
+  signatureStepMake: 'Make a signature',
+  signatureStepSize: 'Set its width',
+  signatureStepCheck: 'Check where it lands',
+  signatureStepCheckHint:
+    'It appears in the preview exactly where it will print — above your name in section VI.',
+  signatureDraw: 'Draw it',
+  signatureUpload: 'Upload an image',
+  signatureDrawLabel: 'Signature drawing area',
+  signatureDrawHint: 'Use a mouse, a finger, or a stylus.',
+  signatureUndo: 'Undo stroke',
+  signatureClear: 'Clear',
+  signatureUse: 'Use this signature',
+  signatureReplace: 'Replace',
+  signatureRemove: 'Remove signature',
+  signatureChooseFile: 'Choose an image file',
+  signatureRemoveWhite: 'Remove the white background',
+  signatureRemoveWhiteHint:
+    'For a photo of a signature on paper. On pale ink it will eat the stroke too — check the result.',
+  signatureWidth: 'Width on the letter',
+  signatureWidthHint: 'The height follows, so the signature is never stretched out of shape.',
+  signatureSaved: 'Kept on this device',
+  signatureSavedDrawn: 'drawn',
+  signatureSavedUploaded: 'uploaded',
+  signaturePrivacy:
+    'The signature image is kept in this browser only, is removed by Clear all, and is left out of the export file.',
+  signatureNone: 'No signature yet.',
+  signatureUnavailable: 'This form has no place for a signature.',
   kedudukanLegend: 'Signatory’s standing',
   kedudukanHint:
     'If the direktur is away, choose Plt. or Plh. The prefix is written into the jabatan everywhere it appears in the letter.',

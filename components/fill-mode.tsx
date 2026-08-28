@@ -8,6 +8,7 @@ import { DocumentPreview } from '@/components/preview/document-preview'
 import { DownloadPanel } from '@/components/summary/download-panel'
 import { DriftNotice } from '@/components/summary/drift-notice'
 import { PdfPreview } from '@/components/summary/pdf-preview'
+import { SignaturePanel } from '@/components/signature/signature-panel'
 import {
   CELL,
   ChoiceGroupField,
@@ -17,6 +18,7 @@ import {
   TextField,
 } from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
+import { signatureTargets } from '@/lib/mapping/schema'
 import { sectionProgress } from '@/lib/fill/progress'
 import {
   DIREKTORAT,
@@ -56,6 +58,11 @@ export function FillMode({ locale }: { locale: Locale }) {
     checkboxState,
     focusedTargetId,
     setFocus,
+    setSignature,
+    setSignatureWidth,
+    removeSignature,
+    signature,
+    signatureWidthMm,
     setProfileValue,
     setRequestValue,
     setChoice,
@@ -143,8 +150,28 @@ export function FillMode({ locale }: { locale: Locale }) {
       request,
       checkboxChoice,
       checkboxState,
+      signature:
+        signature === null || template.type !== 'loaded'
+          ? null
+          : {
+              image: signature,
+              widthMm: signatureWidthMm,
+              name: t.signatureSection,
+              package: template.package,
+            },
     })
-  }, [document, mapping, profileValues, request, checkboxChoice, checkboxState])
+  }, [
+    document,
+    mapping,
+    profileValues,
+    request,
+    checkboxChoice,
+    checkboxState,
+    signature,
+    signatureWidthMm,
+    template,
+    t.signatureSection,
+  ])
 
   const preview = useMemo(() => {
     if (document === null) return null
@@ -166,9 +193,16 @@ export function FillMode({ locale }: { locale: Locale }) {
         applied.fields,
         model === null ? new Set() : checkedTargetIds(model),
         focusedTargetId,
+        signature === null
+          ? null
+          : {
+              png: signature.bytes,
+              widthPx: signature.info.widthPx,
+              heightPx: signature.info.heightPx,
+            },
       ),
     )
-  }, [document, mapping, applied, model, focusedTargetId])
+  }, [document, mapping, applied, model, focusedTargetId, signature])
 
   const save = (bytes: Uint8Array, type: string, extension: string) => {
     const blob = new Blob([bytes.slice().buffer as ArrayBuffer], { type })
@@ -219,7 +253,9 @@ export function FillMode({ locale }: { locale: Locale }) {
   const download = () => {
     if (template.type !== 'loaded' || applied === null || applied.type !== 'filled') return
     save(
-      serialiseDocx(template.package, applied.xml),
+      // The changes are the parts a signature adds — empty when there is none,
+      // so an unsigned download is the package it always was.
+      serialiseDocx(template.package, applied.xml, applied.changes),
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'docx',
     )
@@ -481,7 +517,18 @@ export function FillMode({ locale }: { locale: Locale }) {
                 ))}
               </Section>
 
-
+              <Section numeral="V" title={t.signatureSection}>
+                <SignaturePanel
+                  locale={locale}
+                  signature={signature}
+                  widthMm={signatureWidthMm}
+                  available={mapping !== null && signatureTargets(mapping).length > 0}
+                  onSet={setSignature}
+                  onWidth={setSignatureWidth}
+                  onRemove={removeSignature}
+                  onFocus={setFocus}
+                />
+              </Section>
             </form>
 
             <div className="px-6 pb-6">
@@ -641,7 +688,7 @@ function SectionRail({
           href={`#${section.id}`}
           aria-label={`${titles[index] ?? section.numeral} — ${section.filled}/${section.total} ${t.railFilled}`}
           className={[
-            'flex w-10 flex-col items-center rounded py-1 font-mono leading-tight',
+            'flex w-8 flex-col items-center rounded py-1 font-mono leading-tight',
             'transition-colors duration-state ease-house hover:bg-typed/10',
             section.complete ? 'text-derived' : 'text-ink',
           ].join(' ')}
@@ -680,7 +727,7 @@ function sectionTitles(t: ReturnType<typeof strings>, model: ReturnType<typeof b
     model !== null && model.groups.length === 1 && model.standalone.length === 0
       ? model.groups[0]!.group
       : t.fillChecklist
-  return [t.fillDirektorat, t.fillProfile, checklist, t.fillRequest]
+  return [t.fillDirektorat, t.fillProfile, checklist, t.fillRequest, t.signatureSection]
 }
 
 /** A filename somebody can find again in a downloads folder. */

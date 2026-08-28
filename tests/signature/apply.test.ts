@@ -80,11 +80,12 @@ describe('width', () => {
 
 describe('storing a signature', () => {
   it('round-trips through the stored shape byte-for-byte', () => {
-    const restored = restoreSignature(storeSignature(image()))
+    const restored = restoreSignature(storeSignature(image(), 40))
     expect(restored).not.toBeNull()
-    expect(Array.from(restored!.bytes)).toEqual(Array.from(png()))
-    expect(restored!.info).toEqual({ widthPx: 4, heightPx: 2 })
-    expect(restored!.source).toBe('drawn')
+    expect(Array.from(restored!.signature.bytes)).toEqual(Array.from(png()))
+    expect(restored!.signature.info).toEqual({ widthPx: 4, heightPx: 2 })
+    expect(restored!.signature.source).toBe('drawn')
+    expect(restored!.widthMm).toBe(40)
   })
 
   it('returns null for anything it does not recognise, since storage is editable by hand', () => {
@@ -92,6 +93,11 @@ describe('storing a signature', () => {
     expect(restoreSignature({})).toBeNull()
     expect(restoreSignature({ version: 2, png: 'x' })).toBeNull()
     expect(restoreSignature({ version: 1, png: 'not base64 of a png' })).toBeNull()
+  })
+
+  it('clamps a hand-edited width rather than trusting it', () => {
+    const stored = { ...storeSignature(image(), 40), widthMm: 4000 }
+    expect(restoreSignature(stored)?.widthMm).toBe(MAX_WIDTH_MM)
   })
 })
 

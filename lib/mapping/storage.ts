@@ -8,6 +8,7 @@ import {
 } from '../derive/compute'
 import type { Fingerprint } from '../docx/fingerprint'
 import type { FieldSource, Mapping, Profile, Target } from './schema'
+import type { StoredSignature } from '../signature/signature'
 
 /**
  * Local storage, and nothing else.
@@ -33,6 +34,17 @@ const PREFIX = 'isi-surat'
 const MAPPINGS_KEY = `${PREFIX}.mappings.v1`
 const PROFILES_KEY = `${PREFIX}.profiles.v1`
 const ACTIVE_PROFILE_KEY = `${PREFIX}.active-profile.v1`
+/**
+ * Somebody's handwriting, which is the most personal thing this app holds.
+ *
+ * Its own key rather than a field on the profile, so it can be removed on its
+ * own — "I want my signature off this machine" should not mean losing a NIP
+ * and an address as well. Cleared by clear-all with everything else, and
+ * deliberately left out of the export: a file somebody mails to themselves,
+ * or hands to a colleague to copy a mapping from, should not carry their
+ * signature inside it. PRD §8.
+ */
+const SIGNATURE_KEY = `${PREFIX}.signature.v1`
 
 export type Store = {
   getItem: (key: string) => string | null
@@ -107,7 +119,35 @@ export function saveActiveProfileId(store: Store | null, id: string | null): voi
   }
 }
 
-/** Everything this app holds, as one file. */
+export function loadSignature(store: Store | null): StoredSignature | null {
+  try {
+    const raw = store?.getItem(SIGNATURE_KEY)
+    if (raw === null || raw === undefined) return null
+    const parsed: unknown = JSON.parse(raw)
+    // Validated by `restoreSignature` at the point of use; this only has to
+    // hand back something shaped like a record.
+    return isRecord(parsed) ? (parsed as unknown as StoredSignature) : null
+  } catch {
+    return null
+  }
+}
+
+export function saveSignature(store: Store | null, signature: StoredSignature | null): void {
+  try {
+    if (signature === null) store?.removeItem(SIGNATURE_KEY)
+    else store?.setItem(SIGNATURE_KEY, JSON.stringify(signature))
+  } catch {
+    /* storage denied or full; the signature simply does not persist */
+  }
+}
+
+/**
+ * Everything this app holds, as one file — except the signature.
+ *
+ * An export is a thing people mail to themselves or hand to a colleague to
+ * copy a mapping from. A handwritten signature travelling inside it is a
+ * surprise nobody asked for, so it stays on the machine it was made on.
+ */
 export function exportAll(store: Store | null): string {
   return JSON.stringify(
     {
@@ -145,7 +185,7 @@ export function importAll(store: Store | null, text: string): ImportResult {
 
 /** Every key this app owns. Visible, not buried in settings. DESIGN.md §8. */
 export function clearAll(store: Store | null): void {
-  for (const key of [MAPPINGS_KEY, PROFILES_KEY, ACTIVE_PROFILE_KEY]) {
+  for (const key of [MAPPINGS_KEY, PROFILES_KEY, ACTIVE_PROFILE_KEY, SIGNATURE_KEY]) {
     try {
       store?.removeItem(key)
     } catch {
@@ -222,6 +262,21 @@ function asTarget(value: unknown): Target | null {
       group: typeof group === 'string' ? group : null,
     }
   }
+  if (value['type'] === 'signature') {
+    const paragraphIndex = asIndex(value['paragraphIndex'])
+    if (paragraphIndex === null) return null
+    const widthMm = value['widthMm']
+    return {
+      type: 'signature',
+      id,
+      label,
+      // A width that is not a number is a width nobody set. The default is
+      // here rather than at the call site so a mapping hand-edited to remove
+      // it still loads.
+      widthMm: typeof widthMm === 'number' && Number.isFinite(widthMm) ? widthMm : 40,
+      paragraphIndex,
+    }
+  }
   return null
 }
 
@@ -263,7 +318,10 @@ function asFingerprint(value: unknown): Fingerprint | null {
     const contextHash = asString(target['contextHash'])
     const kind = target['kind']
     if (id === null || label === null || index === null || contextHash === null) return null
-    if (kind !== 'text' && kind !== 'checkbox') return null
+    // A kind this build does not know is dropped, because a fingerprint entry
+    // that cannot be checked is worse than none: it would sit in the list
+    // being compared against nothing and reporting a match.
+    if (kind !== 'text' && kind !== 'checkbox' && kind !== 'signature') return null
     return { id, label, kind, index, contextHash }
   })
 
