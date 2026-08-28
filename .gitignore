@@ -13,3 +13,7 @@ coverage/
 
 # Names real people, so it never ships. Used only to prove the blanking worked.
 /scripts/blank-check.json
+
+# Brand asset masters (icons, lockups, wordmarks, OG image). The few the app
+# ships are copied into app/, public/ and docs/ — the masters stay out.
+/exports/
