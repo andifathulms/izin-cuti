@@ -80,6 +80,31 @@ export type CheckboxCell = {
   readonly contextHash: string
 }
 
+/**
+ * A paragraph, with the one offset something can be inserted into.
+ *
+ * Text nodes and checkbox cells are the two things a mapping targets, and
+ * neither of them is a place — a signature is not a value written over an
+ * existing `<w:t>`, it is a drawing added to a paragraph that may well have
+ * nothing in it at all. The document leaves exactly that: empty paragraphs
+ * above the applicant's name in section VI, which is the space somebody signs.
+ *
+ * `empty` is what makes those findable. A paragraph with text in it is
+ * somebody's sentence and a signature does not belong on top of it.
+ */
+export type Paragraph = {
+  /** Document-order index. The same index `TextNode.paragraphIndex` carries. */
+  readonly index: number
+  /** Offset just before the closing `</w:p>`, where a run is appended. */
+  readonly insertAt: number
+  /** No text at all — the signature space the document leaves. */
+  readonly empty: boolean
+  /** Offsets of any `<w:drawing>` runs already in this paragraph, in order. */
+  readonly drawingRuns: ReadonlyArray<{ readonly start: number; readonly end: number }>
+  readonly context: NodeContext
+  readonly contextHash: string
+}
+
 export type Run = {
   readonly text: string
   /**
@@ -114,6 +139,7 @@ export type ParsedDocument = {
   readonly xml: string
   readonly textNodes: ReadonlyArray<TextNode>
   readonly checkboxCells: ReadonlyArray<CheckboxCell>
+  readonly paragraphs: ReadonlyArray<Paragraph>
   readonly blocks: ReadonlyArray<Block>
   /** Tag structure with all text removed. Changes when the template changes. */
   readonly structuralHash: string
@@ -135,6 +161,7 @@ export function parseDocument(xml: string): ParseResult {
     xml,
     textNodes: [],
     checkboxCells: [],
+    paragraphs: [],
     paragraphCount: 0,
     tableCount: 0,
     section: '',
@@ -150,6 +177,7 @@ export function parseDocument(xml: string): ParseResult {
       xml,
       textNodes: published(state.textNodes),
       checkboxCells: state.checkboxCells,
+      paragraphs: state.paragraphs,
       blocks,
       structuralHash: structuralHash(blocks),
     },
@@ -166,6 +194,7 @@ type State = {
   readonly xml: string
   readonly textNodes: InternalTextNode[]
   readonly checkboxCells: CheckboxCell[]
+  readonly paragraphs: Paragraph[]
   paragraphCount: number
   tableCount: number
   section: string
@@ -266,6 +295,26 @@ function readParagraph(paragraph: XmlElement, state: State, rowLabel: string): B
     node.contextHash = hashContext(node.context)
   }
 
+  const context: NodeContext = {
+    before: paragraphText,
+    after: '',
+    paragraph: paragraphText,
+    section: state.section,
+    rowLabel,
+  }
+  state.paragraphs.push({
+    index: paragraphIndex,
+    // `innerEnd` is the offset of the closing tag's `<`, so a run written here
+    // lands after everything the paragraph already holds and before `</w:p>`.
+    // A self-closing `<w:p/>` has innerEnd === end and cannot take a child, so
+    // it is recorded with an insertion point that plans will refuse.
+    insertAt: paragraph.selfClosing ? -1 : paragraph.innerEnd,
+    empty: paragraphText.trim() === '',
+    drawingRuns: drawingRunsIn(paragraph),
+    context,
+    contextHash: hashContext(context),
+  })
+
   return {
     type: 'paragraph',
     paragraphIndex,
@@ -273,6 +322,23 @@ function readParagraph(paragraph: XmlElement, state: State, rowLabel: string): B
     alignment: alignmentOf(paragraph),
     bold: isHeading(paragraphText),
   }
+}
+
+/**
+ * The `<w:r>` elements in this paragraph that carry a `<w:drawing>`.
+ *
+ * Removing a signature has to remove exactly the run that was added, the same
+ * way unchecking a box removes exactly the run carrying the mark — so the
+ * document goes back to the bytes it had rather than to something equivalent.
+ */
+function drawingRunsIn(paragraph: XmlElement): ReadonlyArray<{ start: number; end: number }> {
+  const runs: Array<{ start: number; end: number }> = []
+  for (const child of paragraph.children) {
+    if (child.type !== 'element' || child.name !== 'w:r') continue
+    if (firstChild(child, 'w:drawing') === null) continue
+    runs.push({ start: child.start, end: child.end })
+  }
+  return runs
 }
 
 function readTable(table: XmlElement, state: State): Block {

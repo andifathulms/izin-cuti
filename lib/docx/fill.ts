@@ -28,6 +28,24 @@ export type FillInstruction =
       readonly cellIndex: number
       readonly checked: boolean
     }
+  | {
+      /**
+       * A drawing appended to a paragraph, or removed from it.
+       *
+       * Unlike a text instruction this writes no value over anything: the
+       * paragraph the document leaves for a signature is empty, and the run is
+       * added at its end. `run` is the XML `image.ts` produced, already
+       * carrying its relationship id — the fill engine places bytes, it does
+       * not decide what an image is.
+       *
+       * `run: null` removes whatever drawing runs the paragraph holds, so
+       * signing and un-signing return the document to the bytes it had. Same
+       * rule as a checkbox. Invariant 6's argument, applied to a picture.
+       */
+      readonly type: 'signature'
+      readonly paragraphIndex: number
+      readonly run: string | null
+    }
 
 export type FillProblem = {
   readonly reason: string
@@ -57,6 +75,12 @@ export function fillDocument(
       }
       case 'checkbox': {
         const planned = planCheckboxEdit(document, instruction)
+        if (planned.type === 'problem') problems.push(planned.problem)
+        else edits.push(...planned.edits)
+        break
+      }
+      case 'signature': {
+        const planned = planSignatureEdit(document, instruction)
         if (planned.type === 'problem') problems.push(planned.problem)
         else edits.push(...planned.edits)
         break
@@ -180,6 +204,51 @@ function planCheckboxEdit(
   return {
     type: 'edits',
     edits: [{ start: cell.markStart, end: cell.markEnd, replacement: '' }],
+  }
+}
+
+function planSignatureEdit(
+  document: ParsedDocument,
+  instruction: Extract<FillInstruction, { type: 'signature' }>,
+): Planned {
+  const refuse = (reason: string): Planned => ({
+    type: 'problem',
+    problem: { reason, instruction },
+  })
+
+  const paragraph = document.paragraphs[instruction.paragraphIndex]
+  if (paragraph === undefined) {
+    return refuse(`this document has no paragraph ${instruction.paragraphIndex}`)
+  }
+
+  // Removing first, in both cases. Placing a signature into a paragraph that
+  // already holds one would leave two, and a document with the previous
+  // signature still in it under the new one is the silent wrong output this
+  // tool exists to prevent.
+  const removals = paragraph.drawingRuns.map((run) => ({
+    start: run.start,
+    end: run.end,
+    replacement: '',
+  }))
+
+  if (instruction.run === null) return { type: 'edits', edits: removals }
+
+  // `<w:p/>` has no inside to write into. Word does not normally produce one
+  // for a paragraph somebody left blank — that is `<w:p><w:pPr>…</w:pPr></w:p>`
+  // — but a generator might, and half-writing into a self-closing tag would
+  // produce a file that will not open.
+  if (paragraph.insertAt < 0) {
+    return refuse(
+      `paragraph ${instruction.paragraphIndex} is self-closing and cannot hold a drawing`,
+    )
+  }
+
+  return {
+    type: 'edits',
+    edits: [
+      ...removals,
+      { start: paragraph.insertAt, end: paragraph.insertAt, replacement: instruction.run },
+    ],
   }
 }
 

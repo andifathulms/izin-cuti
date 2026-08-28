@@ -200,7 +200,7 @@ describe('an empty document', () => {
 
   it('renders a model with nothing in it', () => {
     expect(renderPdf({ blocks: [], hasUnmapped: false }).length).toBeGreaterThan(0)
-    expect(pageCount(buildPreview({ xml: '', textNodes: [], checkboxCells: [], blocks: [], structuralHash: '' }, NOTHING))).toBe(1)
+    expect(pageCount(buildPreview({ xml: '', textNodes: [], checkboxCells: [], paragraphs: [], blocks: [], structuralHash: '' }, NOTHING))).toBe(1)
   })
 })
 

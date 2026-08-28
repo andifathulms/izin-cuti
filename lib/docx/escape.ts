@@ -67,3 +67,18 @@ export function stripInvalidXmlChars(value: string): string {
 export function escapeForDocument(value: string): string {
   return escapeXmlText(stripInvalidXmlChars(value))
 }
+
+/**
+ * The same full path, for a value on its way into a double-quoted attribute.
+ *
+ * `escapeXmlAttribute` was here and `stripInvalidXmlChars` was here, and
+ * nothing paired them — so the one call site that needed both (a signature's
+ * name and description, which land in `wp:docPr`) would have had to compose
+ * them itself, and composing the escape at the call site is exactly what this
+ * module exists to prevent. An unescaped `"` in an attribute closes it early
+ * and produces a document Word refuses to open, the same failure as a bare `&`
+ * in character data.
+ */
+export function escapeForAttribute(value: string): string {
+  return escapeXmlAttribute(stripInvalidXmlChars(value))
+}
