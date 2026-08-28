@@ -1,14 +1,25 @@
-# Izin Cuti
+<div align="center">
 
-**Map an office form once, fill it in six fields forever. Your document never leaves your device.**
+<img src="docs/lockup.png" alt="Izin Cuti" width="420">
+
+**Map an office form once, fill it in six fields forever.<br>Your document never leaves your device.**
+
+[**andifathulms.github.io/izin-cuti**](https://andifathulms.github.io/izin-cuti/)
+
+[![Build and deploy](https://github.com/andifathulms/izin-cuti/actions/workflows/deploy.yml/badge.svg)](https://github.com/andifathulms/izin-cuti/actions/workflows/deploy.yml)
+[![Licence: MIT](https://img.shields.io/badge/licence-MIT-1F3A5C)](#licence)
+![No backend](https://img.shields.io/badge/backend-none-1F3A5C)
+![Nothing transmitted](https://img.shields.io/badge/network_at_runtime-zero-1F3A5C)
+
+</div>
+
+---
 
 A client-side docx template mapper and filler. Upload a Word form as it is —
 no placeholders, no `{nama}` tokens, no rewriting — mark the fields that vary,
 and fill it from a short form after that.
 
 Static site. No backend, no accounts, no runtime network, nothing transmitted.
-
----
 
 ## Why
 
@@ -161,3 +172,16 @@ above. `basePath` must match the repository name — it is taken from
 ## Licence
 
 MIT.
+
+---
+
+<div align="center">
+
+<img src="docs/icon-128.png" alt="" width="48">
+
+Designed & built by [**Andi Fathul Mukminin**](https://andifathulms.github.io/en/)
+· [GitHub](https://github.com/andifathulms)
+· [LinkedIn](https://www.linkedin.com/in/andifathulmukminin/)
+· [Instagram](https://www.instagram.com/andifathulms/)
+
+</div>
