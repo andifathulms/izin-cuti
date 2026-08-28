@@ -1,6 +1,7 @@
 import type { Block, ParsedDocument } from '../docx/parse'
+import { clampWidthMm } from '../signature/signature'
 import type { FilledField } from '../mapping/apply'
-import { textTargets, type Mapping } from '../mapping/schema'
+import { textTargets, type Mapping, signatureTargets } from '../mapping/schema'
 
 /**
  * The preview's view model.
@@ -35,6 +36,23 @@ export type PreviewBox = {
   readonly focused: boolean
 }
 
+/**
+ * A signature the fill will place in this paragraph.
+ *
+ * The preview shows it where it lands, at the size it lands at, because the
+ * whole point of the pane is answering "where does what I am doing go". A
+ * signature nobody can see the position of is a signature somebody discovers
+ * in the wrong place after the letter is sent.
+ */
+export type PreviewSignature = {
+  readonly targetId: string
+  /** PNG bytes. The component makes its own object URL and revokes it. */
+  readonly png: Uint8Array
+  readonly widthMm: number
+  readonly heightMm: number
+  readonly focused: boolean
+}
+
 export type PreviewBlock =
   | {
       readonly type: 'paragraph'
@@ -42,6 +60,8 @@ export type PreviewBlock =
       readonly runs: ReadonlyArray<PreviewRun>
       readonly alignment: 'left' | 'center' | 'right' | 'both'
       readonly bold: boolean
+      /** Null unless a signature target names this paragraph and one is set. */
+      readonly signature: PreviewSignature | null
     }
   | {
       readonly type: 'table'
@@ -77,6 +97,8 @@ export type Resolution = {
   readonly markUnmapped: boolean
   readonly mappedNodes: ReadonlySet<number>
   readonly mappedCells: ReadonlySet<number>
+  /** Paragraph index → the signature that lands there. */
+  readonly signatures: ReadonlyMap<number, Omit<PreviewSignature, 'focused'>>
   readonly focusedTargetId: string | null
 }
 
@@ -86,6 +108,7 @@ export const NOTHING: Resolution = {
   markUnmapped: false,
   mappedNodes: new Set(),
   mappedCells: new Set(),
+  signatures: new Map(),
   focusedTargetId: null,
 }
 
@@ -105,12 +128,17 @@ function unmappedIn(block: PreviewBlock): boolean {
 
 function convert(block: Block, resolution: Resolution, key: string): PreviewBlock {
   if (block.type === 'paragraph') {
+    const signature = resolution.signatures.get(block.paragraphIndex) ?? null
     return {
       type: 'paragraph',
       key,
       alignment: block.alignment,
       bold: block.bold,
       runs: block.runs.map((run) => convertRun(run.text, run.textNodeIndex, resolution)),
+      signature:
+        signature === null
+          ? null
+          : { ...signature, focused: resolution.focusedTargetId === signature.targetId },
     }
   }
   return {
@@ -186,6 +214,8 @@ export function resolutionFromFill(
   fields: ReadonlyArray<FilledField>,
   checkedTargetIds: ReadonlySet<string>,
   focusedTargetId: string | null,
+  /** The signature to show where it lands, or null when there is none set. */
+  signature: { readonly png: Uint8Array; readonly widthPx: number; readonly heightPx: number } | null = null,
 ): Resolution {
   const values = new Map<number, { text: string; state: RunState; targetId: string }>()
   const targets = textTargets(mapping)
@@ -212,12 +242,28 @@ export function resolutionFromFill(
     })
   }
 
+  const signatures = new Map<number, Omit<PreviewSignature, 'focused'>>()
+  if (signature !== null) {
+    for (const target of signatureTargets(mapping)) {
+      const widthMm = clampWidthMm(target.widthMm)
+      signatures.set(target.paragraphIndex, {
+        targetId: target.id,
+        png: signature.png,
+        widthMm,
+        // From the aspect ratio, the same way the drawing's extent is, so the
+        // preview and the document agree about the shape of it.
+        heightMm: (widthMm * signature.heightPx) / signature.widthPx,
+      })
+    }
+  }
+
   return {
     values,
     boxes,
     markUnmapped: false,
     mappedNodes: new Set(),
     mappedCells: new Set(),
+    signatures,
     focusedTargetId,
   }
 }
@@ -234,6 +280,7 @@ export function resolutionForMapping(
     markUnmapped: true,
     mappedNodes,
     mappedCells,
+    signatures: new Map(),
     focusedTargetId,
   }
 }

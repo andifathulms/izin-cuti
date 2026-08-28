@@ -57,8 +57,34 @@ export function renderPdf(model: PreviewModel, options: RenderOptions = {}): Uin
     pages = layout(model, size)
   }
 
-  return writePdf(pages, options.title ?? 'Surat')
+  return writePdf(pages, options.title ?? 'Surat', collectImages(model))
 }
+
+/**
+ * Every signature in the model, by the key its op refers to.
+ *
+ * Collected from the model rather than passed in, so the PDF and the on-screen
+ * preview are drawing the same thing from the same place — the two disagreeing
+ * about whether a letter is signed is exactly the failure a preview exists to
+ * prevent.
+ */
+function collectImages(model: PreviewModel): Record<string, Uint8Array> {
+  const images: Record<string, Uint8Array> = {}
+  const walk = (blocks: ReadonlyArray<PreviewBlock>): void => {
+    for (const block of blocks) {
+      if (block.type === 'paragraph') {
+        if (block.signature !== null) images[block.signature.targetId] = block.signature.png
+        continue
+      }
+      for (const row of block.rows) for (const cell of row.cells) walk(cell.blocks)
+    }
+  }
+  walk(model.blocks)
+  return images
+}
+
+/** Millimetres to points, which is what a PDF measures in. */
+const MM = 72 / 25.4
 
 /** How many pages this comes to at a given size. Useful to the caller and to tests. */
 export function pageCount(model: PreviewModel, size = BASE_SIZE): number {
@@ -108,6 +134,26 @@ function drawParagraph(
   const text = block.runs.map((run) => run.text).join('')
   const font: PdfFont = block.bold ? 'bold' : 'regular'
   const lineHeight = cursor.size * LINE_GAP
+
+  // The signature first, if this paragraph carries one. It takes the vertical
+  // room the image needs rather than a line, so the block below it moves down
+  // by the same amount here as it does in Word.
+  if (block.signature !== null) {
+    const w = block.signature.widthMm * MM
+    const h = block.signature.heightMm * MM
+    needRoom(cursor, h)
+    cursor.y -= h
+    // Centred in the column, which is where a signature sits above a name in
+    // this form. Left-aligning it would put it against the cell edge.
+    cursor.ops.push({
+      type: 'image',
+      key: block.signature.targetId,
+      x: x + Math.max(0, (width - w) / 2),
+      y: cursor.y,
+      w,
+      h,
+    })
+  }
 
   if (text.trim() === '') {
     // An empty paragraph is spacing in the document and spacing here too.

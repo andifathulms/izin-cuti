@@ -155,6 +155,7 @@ export function FillMode({ locale }: { locale: Locale }) {
         markUnmapped: false,
         mappedNodes: new Set(),
         mappedCells: new Set(),
+        signatures: new Map(),
         focusedTargetId,
       })
     }
