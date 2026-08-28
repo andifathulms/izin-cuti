@@ -9,6 +9,29 @@ import { strings, type Locale } from '@/lib/i18n/strings'
  * the chrome around them stays quiet enough to disappear.
  */
 
+/**
+ * The mark beside the wordmark: a checked box — the one field you fill by
+ * hand, in the same navy the app's own checkboxes confirm with. Drawn here in
+ * tokens rather than shipped as the brand PNG, so it is literally the app's
+ * palette: `--typed` box, `--ink` stroke, `--paper` tick. The favicon and the
+ * app icons carry the full brand tile; the header carries its meaning.
+ */
+function Mark() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 100 100" aria-hidden="true" className="shrink-0">
+      <rect x="9" y="9" width="82" height="82" fill="var(--typed)" stroke="var(--ink)" strokeWidth="6" />
+      <path
+        d="M28 50 L42 64 L72 26"
+        fill="none"
+        stroke="var(--paper)"
+        strokeWidth="11"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function Header({ locale }: { locale: Locale }) {
   const t = strings(locale)
   const pathname = usePathname()
@@ -41,7 +64,11 @@ export function Header({ locale }: { locale: Locale }) {
      */
     <header className="no-print border-b border-rule bg-paper">
       <div className="mx-auto flex max-w-full flex-wrap items-baseline gap-x-6 gap-y-1 px-6 py-3">
-        <Link href={`/${locale}/isi`} className="text-lg font-semibold tracking-tight">
+        <Link
+          href={`/${locale}/isi`}
+          className="inline-flex items-center gap-2 text-lg font-semibold tracking-tight"
+        >
+          <Mark />
           {t.appName}
         </Link>
 
