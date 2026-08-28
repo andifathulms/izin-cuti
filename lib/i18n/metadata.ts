@@ -16,6 +16,18 @@ import { DEFAULT_LOCALE, strings, type Locale } from './strings'
 export const SITE_ORIGIN = 'https://andifathulms.github.io'
 export const SITE_BASE = '/izin-cuti'
 
+/**
+ * The share card's artwork: the app's own mark — a checked box beside the
+ * boxes it fills for you — not a picture of any government form. One image
+ * for every route; what differs per route is the text beside it.
+ */
+export const OG_IMAGE = {
+  url: `${SITE_ORIGIN}${SITE_BASE}/og.png`,
+  width: 1200,
+  height: 630,
+  alt: 'Izin Cuti',
+}
+
 /** Which page, in the app's own words — the same words the nav uses. */
 export const PAGES = ['isi', 'petakan', 'profil'] as const
 export type Page = (typeof PAGES)[number]
@@ -71,9 +83,9 @@ export function pageMetadata(locale: Locale, page: Page): Metadata {
      * link to the form.
      *
      * Same title and description as above rather than a second set written by
-     * hand — a card that disagrees with the page is worse than no card. No
-     * image: there is no artwork in this repository, and an invented one
-     * would be a claim about a government form that nobody made.
+     * hand — a card that disagrees with the page is worse than no card. The
+     * image is the app's own mark, not a picture of a government form —
+     * artwork that claims only what the app is.
      */
     openGraph: {
       type: 'website',
@@ -82,11 +94,13 @@ export function pageMetadata(locale: Locale, page: Page): Metadata {
       url: pageUrl(locale, page),
       title: `${pageName(locale, page)} — ${t.appName}`,
       description,
+      images: [OG_IMAGE],
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: `${pageName(locale, page)} — ${t.appName}`,
       description,
+      images: [OG_IMAGE.url],
     },
   }
 }

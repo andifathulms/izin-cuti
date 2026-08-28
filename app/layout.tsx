@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { IBM_Plex_Mono, Public_Sans, Source_Serif_4 } from 'next/font/google'
+import { OG_IMAGE } from '@/lib/i18n/metadata'
 import './globals.css'
 
 /**
@@ -48,6 +49,17 @@ export const metadata: Metadata = {
   title: 'Izin Cuti',
   description:
     'Isi Formulir Permintaan dan Pemberian Cuti, lalu unduh suratnya sebagai DOCX. Semuanya berjalan di perangkat ini — tidak ada yang dikirim ke mana pun.',
+  openGraph: { images: [OG_IMAGE] },
+  twitter: { card: 'summary_large_image', images: [OG_IMAGE.url] },
+  /*
+   * A static file in public/, linked by hand: Next prefixes basePath onto the
+   * icon links it writes but not onto a manifest route's link, which pointed
+   * installs at a manifest GitHub Pages does not serve. The file itself bakes
+   * the production paths in, so it is only right in production — which is the
+   * only place anyone installs from.
+   */
+  manifest:
+    process.env.NODE_ENV === 'production' ? '/izin-cuti/manifest.webmanifest' : '/manifest.webmanifest',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -1,0 +1,19 @@
+{
+  "name": "Izin Cuti",
+  "short_name": "Izin Cuti",
+  "description": "Isi Formulir Permintaan dan Pemberian Cuti, lalu unduh suratnya sebagai DOCX. Semuanya berjalan di perangkat ini — tidak ada yang dikirim ke mana pun.",
+  "start_url": "/izin-cuti/",
+  "display": "standalone",
+  "background_color": "#F5F4EC",
+  "theme_color": "#F5F4EC",
+  "icons": [
+    { "src": "/izin-cuti/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/izin-cuti/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    {
+      "src": "/izin-cuti/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
