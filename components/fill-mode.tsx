@@ -18,7 +18,14 @@ import {
 } from '@/components/form/fields'
 import { buildForm, checkedTargetIds, leaveTypeSelection } from '@/lib/fill/form'
 import { sectionProgress } from '@/lib/fill/progress'
-import { DIREKTORAT, direktoratOf, managedKeys } from '@/lib/presets/kedeputian'
+import {
+  DIREKTORAT,
+  KEDUDUKAN,
+  direktoratOf,
+  kedudukanOf,
+  managedKeys,
+  type Kedudukan,
+} from '@/lib/presets/kedeputian'
 import { formatNip, normaliseNip } from '@/lib/derive/nip'
 import { applyMapping } from '@/lib/mapping/apply'
 import { buildPreview, resolutionFromFill } from '@/lib/preview/model'
@@ -54,6 +61,7 @@ export function FillMode({ locale }: { locale: Locale }) {
     setChoice,
     setBox,
     chooseDirektorat,
+    chooseKedudukan,
     openBundledForm,
   } = app
 
@@ -343,9 +351,24 @@ export function FillMode({ locale }: { locale: Locale }) {
                   </SelectShell>
                 </label>
 
+                {/*
+                  * Whether the direktur holds the post or is standing in for
+                  * it. Beside the direktorat because it is the same question —
+                  * who signs — and because the prefix it writes appears in the
+                  * block immediately below, where it can be read back.
+                  */}
+                <KedudukanChoice
+                  locale={locale}
+                  chosen={kedudukanOf(profileValues)}
+                  onChoose={chooseKedudukan}
+                />
+
                 {chosenDirektorat !== null && (
                   <div className="border-l-2 border-derived pl-3">
-                    <p className="text-sm font-medium">{chosenDirektorat.jabatanDirektur}</p>
+                    {/* What actually reaches the document, not the preset it came from —
+                        this block exists to be read back, and it would have gone
+                        on saying "Direktur" while the letter said "Plt. Direktur". */}
+                    <p className="text-sm font-medium">{profileValues.atasanJabatan}</p>
                     <p className="text-base text-derived">{chosenDirektorat.direkturNama}</p>
                     {chosenDirektorat.direkturNip === null ? (
                       <>
@@ -533,6 +556,53 @@ function Section({
       {note !== undefined && <p className="mt-2 max-w-[68ch] text-sm text-ink-muted">{note}</p>}
       <div className={grid ? 'mt-1 grid grid-cols-6 gap-x-4' : 'mt-3 space-y-4'}>{children}</div>
     </section>
+  )
+}
+
+/**
+ * Definitif, Plt. or Plh.
+ *
+ * Three mutually exclusive options, so radios — drawn as the same ruled cell
+ * with a √ that every other choice on this form uses, because a control that
+ * looks like the platform's belongs to the platform. DESIGN.md §5.
+ *
+ * The vocabulary is not translated in either locale. "Plt." and "Plh." are
+ * what goes on the letter; an English "Acting" would be a different document.
+ */
+function KedudukanChoice({
+  locale,
+  chosen,
+  onChoose,
+}: {
+  locale: Locale
+  chosen: Kedudukan
+  onChoose: (kedudukan: Kedudukan) => void
+}) {
+  const t = strings(locale)
+  const label: Record<Kedudukan, string> = {
+    definitif: t.kedudukanDefinitif,
+    plt: t.kedudukanPlt,
+    plh: t.kedudukanPlh,
+  }
+  return (
+    <fieldset>
+      <legend className="text-sm font-medium">{t.kedudukanLegend}</legend>
+      <div className="mt-1 flex flex-wrap gap-x-6 gap-y-1">
+        {KEDUDUKAN.map((option) => (
+          <label key={option} className="flex items-center gap-2 text-base">
+            <input
+              type="radio"
+              name="kedudukan"
+              className="box-mark"
+              checked={chosen === option}
+              onChange={() => onChoose(option)}
+            />
+            {label[option]}
+          </label>
+        ))}
+      </div>
+      <p className="mt-1 max-w-[64ch] text-sm text-ink-muted">{t.kedudukanHint}</p>
+    </fieldset>
   )
 }
 

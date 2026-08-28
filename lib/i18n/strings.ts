@@ -17,6 +17,11 @@ export function isLocale(value: string): value is Locale {
 
 type Strings = {
   readonly appName: string
+  readonly kedudukanLegend: string
+  readonly kedudukanHint: string
+  readonly kedudukanDefinitif: string
+  readonly kedudukanPlt: string
+  readonly kedudukanPlh: string
   readonly railLabel: string
   readonly railFilled: string
   /**
@@ -156,6 +161,12 @@ type Strings = {
 
 const id: Strings = {
   appName: 'Izin Cuti',
+  kedudukanLegend: 'Kedudukan penanda tangan',
+  kedudukanHint:
+    'Bila direktur sedang berhalangan, pilih Plt. atau Plh. Awalan itu ikut tertulis pada jabatan di seluruh surat.',
+  kedudukanDefinitif: 'Definitif',
+  kedudukanPlt: 'Plt.',
+  kedudukanPlh: 'Plh.',
   railLabel: 'Bagian formulir',
   railFilled: 'terisi',
   taglineWhat:
@@ -329,6 +340,10 @@ const id: Strings = {
 
 const en: Strings = {
   ...id,
+  kedudukanLegend: 'Signatory’s standing',
+  kedudukanHint:
+    'If the direktur is away, choose Plt. or Plh. The prefix is written into the jabatan everywhere it appears in the letter.',
+  kedudukanDefinitif: 'Substantive',
   railLabel: 'Form sections',
   railFilled: 'filled',
   taglineWhat:

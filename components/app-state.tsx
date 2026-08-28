@@ -31,7 +31,13 @@ import {
   FORMULIR_CUTI_DOCX_BASE64,
   FORMULIR_CUTI_MAPPING,
 } from '@/lib/presets/formulir-cuti.generated'
-import { applyDirektorat, direktorat, PROFILE_DEFAULTS } from '@/lib/presets/kedeputian'
+import {
+  PROFILE_DEFAULTS,
+  applyDirektorat,
+  applyKedudukan,
+  direktorat,
+  type Kedudukan,
+} from '@/lib/presets/kedeputian'
 
 /**
  * One place holds the document, the mapping and the values, so map mode and
@@ -89,6 +95,7 @@ type Action =
   | { type: 'profile-selected'; id: string | null; values: ProfileValues }
   | { type: 'profile-value-changed'; key: keyof ProfileValues; value: string }
   | { type: 'direktorat-chosen'; id: string }
+  | { type: 'kedudukan-chosen'; kedudukan: Kedudukan }
   | { type: 'request-value-changed'; key: keyof RequestValues; value: string }
   | { type: 'choice-changed'; group: string; targetId: string | null }
   | { type: 'box-toggled'; targetId: string; checked: boolean }
@@ -170,6 +177,8 @@ function reduce(state: State, action: Action): State {
         ? state
         : { ...state, profileValues: applyDirektorat(state.profileValues, chosen) }
     }
+    case 'kedudukan-chosen':
+      return { ...state, profileValues: applyKedudukan(state.profileValues, action.kedudukan) }
     case 'request-value-changed':
       return { ...state, request: { ...state.request, [action.key]: action.value } }
     case 'choice-changed':
@@ -205,6 +214,7 @@ export type AppState = State & {
   readonly selectProfile: (id: string | null) => void
   readonly setProfileValue: (key: keyof ProfileValues, value: string) => void
   readonly chooseDirektorat: (id: string) => void
+  readonly chooseKedudukan: (kedudukan: Kedudukan) => void
   readonly setRequestValue: (key: keyof RequestValues, value: string) => void
   readonly setChoice: (group: string, targetId: string | null) => void
   readonly setBox: (targetId: string, checked: boolean) => void
@@ -374,6 +384,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       setProfileValue: (key, valueText) =>
         dispatch({ type: 'profile-value-changed', key, value: valueText }),
       chooseDirektorat: (id) => dispatch({ type: 'direktorat-chosen', id }),
+      chooseKedudukan: (kedudukan) => dispatch({ type: 'kedudukan-chosen', kedudukan }),
       setRequestValue: (key, valueText) =>
         dispatch({ type: 'request-value-changed', key, value: valueText }),
       setChoice: (group, targetId) => dispatch({ type: 'choice-changed', group, targetId }),
