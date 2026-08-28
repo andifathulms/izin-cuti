@@ -7,7 +7,10 @@ import {
   type ProfileValues,
   type RequestValues,
 } from '../derive/compute'
-import { checkboxGroups, textTargets, type Mapping, type TextTarget } from './schema'
+import { checkboxGroups, signatureTargets, textTargets, type Mapping, type TextTarget } from './schema'
+import type { PackageChanges } from '../docx/serialise'
+import type { DocxPackage } from '../docx/unzip'
+import { placeSignature, type Signature } from '../signature/signature'
 
 /**
  * The one path from a mapping to a filled document — and the only place a fill
@@ -26,6 +29,21 @@ export type FillValues = {
   readonly checkboxChoice: Readonly<Record<string, string | null>>
   /** Standalone boxes, by target id. */
   readonly checkboxState: Readonly<Record<string, boolean>>
+  /**
+   * The signature to place, or null for none.
+   *
+   * The package comes with it, because placing an image is the one thing a
+   * fill cannot do from the parsed document alone: the relationship id and the
+   * media path have to be allocated against the parts the package already has.
+   * Both are optional together — a fill with no signature never looks at
+   * either, and produces exactly the document it produced before.
+   */
+  readonly signature?: {
+    readonly image: Signature
+    readonly widthMm: number
+    readonly name: string
+    readonly package: DocxPackage
+  } | null
 }
 
 export type FilledField = {
@@ -44,6 +62,8 @@ export type ApplyResult =
       /** What went in, for the summary shown before download. DESIGN.md §7. */
       readonly fields: ReadonlyArray<FilledField>
       readonly checkedLabels: ReadonlyArray<string>
+      /** Parts the package gains, empty unless a signature was placed. */
+      readonly changes: PackageChanges
     }
   | { readonly type: 'refused-drift'; readonly differences: ReadonlyArray<Difference> }
   | { readonly type: 'refused-fill'; readonly problems: ReadonlyArray<FillProblem> }
@@ -68,9 +88,77 @@ export function applyMapping(
     value: fields[i]?.value ?? '',
   }))
 
-  const result = fillDocument(document, [...textInstructions, ...instructions])
+  const signed = signatureInstructions(mapping, values)
+  if (signed.type === 'refused') {
+    return {
+      type: 'refused-fill',
+      problems: [
+        {
+          reason: signed.reason,
+          instruction: { type: 'signature', paragraphIndex: -1, run: null },
+        },
+      ],
+    }
+  }
+
+  const result = fillDocument(document, [
+    ...textInstructions,
+    ...instructions,
+    ...signed.instructions,
+  ])
   if (result.type === 'refused') return { type: 'refused-fill', problems: result.problems }
-  return { type: 'filled', xml: result.xml, fields, checkedLabels }
+  return { type: 'filled', xml: result.xml, fields, checkedLabels, changes: signed.changes }
+}
+
+/**
+ * One instruction per signature target, whether or not there is a signature.
+ *
+ * The same argument as the checkboxes: writing the empty state as well is what
+ * makes a re-fill of an already-signed template land in the right state rather
+ * than accumulating drawings. Somebody who removes their signature and
+ * downloads again gets a document with no signature in it, not one with the
+ * old signature still there.
+ */
+function signatureInstructions(
+  mapping: Mapping,
+  values: FillValues,
+):
+  | { type: 'ok'; instructions: FillInstruction[]; changes: PackageChanges }
+  | { type: 'refused'; reason: string } {
+  const targets = signatureTargets(mapping)
+  if (targets.length === 0) return { type: 'ok', instructions: [], changes: {} }
+
+  const wanted = values.signature ?? null
+  if (wanted === null) {
+    return {
+      type: 'ok',
+      instructions: targets.map((target) => ({
+        type: 'signature',
+        paragraphIndex: target.paragraphIndex,
+        run: null,
+      })),
+      changes: {},
+    }
+  }
+
+  // Placed once, not once per target. Each call allocates a relationship id and
+  // a media path against the same unchanged package, so calling it in a loop
+  // would hand every target the same id while pretending to have allocated it
+  // afresh — right by accident today, wrong the moment two signature targets
+  // want two different images. One image, one part, one relationship, reused
+  // by every target that asks for it.
+  const placed = placeSignature(wanted.package, wanted.image, wanted.widthMm, wanted.name)
+  if (placed.type === 'refused') return { type: 'refused', reason: placed.reason }
+
+  return {
+    type: 'ok',
+    instructions: targets.map((target) => ({
+      type: 'signature',
+      paragraphIndex: target.paragraphIndex,
+      run: placed.placement.run,
+    })),
+    changes: placed.placement.changes,
+  }
 }
 
 function resolveField(target: TextTarget, inputs: DerivationInputs): FilledField {
