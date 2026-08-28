@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { AppStateProvider } from '@/components/app-state'
 import { Header } from '@/components/shell/chrome'
+import { MakerSignature } from '@/components/shell/maker-signature'
 import { HtmlLang } from '@/components/shell/html-lang'
 import { isLocale, LOCALES } from '@/lib/i18n/strings'
 
@@ -35,6 +36,12 @@ export default function LocaleLayout({
         <HtmlLang locale={params.locale} />
         <Header locale={params.locale} />
         <main className="relative min-h-0 flex-1 overflow-auto">{children}</main>
+        {/* One seam: the footer's own top rule. Anything else that ever lands
+            here (a legal or data line) shares this bar and stays visually
+            separate from the maker's mark — opposite it, not merged into it. */}
+        <footer className="no-print border-t border-rule bg-paper px-6 py-2">
+          <MakerSignature />
+        </footer>
       </div>
     </AppStateProvider>
   )
