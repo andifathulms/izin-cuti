@@ -90,7 +90,11 @@ export function PdfPreview({
           <h2 id="pdf-preview-heading" className="text-base font-semibold">
             {t.previewPdf}
           </h2>
-          <p className="flex-1 text-sm text-ink-muted">{t.pdfApproximate}</p>
+          {/* Both sentences, here of all places: this is the moment somebody
+              is deciding whether to send this file. */}
+          <p className="flex-1 text-sm text-ink-muted">
+            {t.pdfApproximate} <span className="text-ink">{t.pdfExact}</span>
+          </p>
           <button
             type="button"
             onClick={onDownload}

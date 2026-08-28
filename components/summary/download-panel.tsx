@@ -128,6 +128,15 @@ export function DownloadPanel({
           </div>
           {/* Beside the buttons, not hidden behind them. */}
           <p className="text-sm text-ink-muted">{t.pdfApproximate}</p>
+          {/*
+           * And the way to get the other thing.
+           *
+           * "The DOCX is authoritative" is true and, on its own, unhelpful to
+           * somebody whose office wants a PDF. The exact PDF exists — it is
+           * the DOCX opened in Word and saved — and saying so is more use than
+           * repeating that this one is approximate.
+           */}
+          <p className="text-sm text-ink-muted">{t.pdfExact}</p>
         </div>
 
         {/* The citation line: small, monospace, where the claim is made. */}

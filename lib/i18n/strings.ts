@@ -150,6 +150,7 @@ type Strings = {
   readonly printPdf: string
   readonly docxAuthoritative: string
   readonly pdfApproximate: string
+  readonly pdfExact: string
 
   readonly driftTitle: string
   readonly driftExplain: string
@@ -227,7 +228,7 @@ const id: Strings = {
   railLabel: 'Bagian formulir',
   railFilled: 'terisi',
   taglineWhat:
-    'Isi Formulir Permintaan dan Pemberian Cuti, lalu unduh suratnya sebagai DOCX.',
+    'Isi Formulir Permintaan dan Pemberian Cuti, lalu unduh suratnya sebagai DOCX atau PDF.',
   taglineWhere: 'Semuanya berjalan di perangkat ini — tidak ada yang dikirim ke mana pun.',
   navFill: 'Isi',
   navMap: 'Petakan',
@@ -321,7 +322,7 @@ const id: Strings = {
   preview: 'Pratinjau',
   previewHeading: 'Pratinjau surat',
   previewApproximate:
-    'Pratinjau ini perkiraan tata letak, bukan hasil akhir. DOCX adalah keluaran yang berlaku.',
+    'Pratinjau ini perkiraan tata letak, bukan hasil akhir. Tata letak yang persis ada pada DOCX.',
   previewEmpty: 'Pratinjau muncul setelah dokumen dipilih.',
   previewChecked: 'dicentang',
   previewUnchecked: 'tidak dicentang',
@@ -334,9 +335,11 @@ const id: Strings = {
   previewPdf: 'Pratinjau PDF',
   close: 'Tutup',
   printPdf: 'Cetak',
-  docxAuthoritative: 'DOCX adalah keluaran yang berlaku.',
+  docxAuthoritative: 'DOCX memakai berkas formulir aslinya. PDF di sini disusun ulang.',
   pdfApproximate:
-    'PDF disusun dari pratinjau, bukan dari dokumen aslinya, sehingga tata letaknya bisa berbeda. Isinya sama.',
+    'PDF ini disusun ulang oleh aplikasi, bukan dicetak dari dokumen aslinya. Isinya sama persis; tata letaknya bisa sedikit berbeda.',
+  pdfExact:
+    'Perlu PDF yang tata letaknya sama persis dengan formulir? Unduh DOCX, buka di Word, lalu simpan sebagai PDF.',
 
   driftTitle: 'Dokumen ini tidak cocok dengan pemetaan yang tersimpan',
   driftExplain:
@@ -435,7 +438,7 @@ const en: Strings = {
   railLabel: 'Form sections',
   railFilled: 'filled',
   taglineWhat:
-    'Fill the Indonesian leave-request form, then download the letter as a DOCX.',
+    'Fill the Indonesian leave-request form, then download the letter as a DOCX or a PDF.',
   taglineWhere: 'It all runs on this device — nothing is sent anywhere.',
   navFill: 'Fill',
   navMap: 'Map',
@@ -529,7 +532,7 @@ const en: Strings = {
 
   preview: 'Preview',
   previewApproximate:
-    'This preview approximates the layout. The DOCX is the authoritative output.',
+    'This preview approximates the layout. The exact layout is in the DOCX.',
   previewEmpty: 'The preview appears once a document is chosen.',
   previewAsText: 'Copy as text',
 
@@ -540,9 +543,11 @@ const en: Strings = {
   previewPdf: 'Preview PDF',
   close: 'Close',
   printPdf: 'Print',
-  docxAuthoritative: 'The DOCX is the authoritative output.',
+  docxAuthoritative: 'The DOCX uses the office’s own form file. The PDF here is re-composed.',
   pdfApproximate:
-    'The PDF is laid out from the preview rather than from the document, so its layout may differ. The content is the same.',
+    'This PDF is re-composed by the app rather than printed from the original document. The contents are identical; the layout can differ a little.',
+  pdfExact:
+    'Need a PDF whose layout matches the form exactly? Download the DOCX, open it in Word, and save it as a PDF.',
 
   driftTitle: 'This document does not match the saved mapping',
   driftExplain:

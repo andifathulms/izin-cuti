@@ -10,7 +10,7 @@ Read `PRD.md` before starting any task, and **`DESIGN.md` before writing any UI*
 2. **Escaping is mandatory.** An address containing `&`, a name containing `<` — unescaped, these produce a file Word refuses to open. Every substituted value is escaped.
 3. **Nothing leaves the device.** Name, NIP, home address, phone, reason for leave. There is no server, so this is structural rather than a policy — and it is stated where the user is typing.
 4. **Only `word/document.xml` is modified.** Every other package part is copied through byte-for-byte.
-5. **DOCX is authoritative; PDF is approximate.** Faithful docx-to-PDF needs a rendering engine and cannot be done in a browser. Never imply otherwise.
+5. **DOCX carries the office's own form; the PDF is re-composed.** Faithful docx-to-PDF needs a rendering engine and cannot be done in a browser, so the built-in PDF has identical content and its own layout. Say that, and say where an exact PDF comes from — Word. **Never imply the PDF is invalid**, and never imply it is a render of the DOCX.
 
 ---
 
@@ -102,7 +102,7 @@ tests/
 
 12. **No submission, no approval routing, no signing on anybody's behalf.** A person may place an image of their own handwriting in the pemohon's block — drawn, scanned or photographed. That is what printing the form and signing it with a pen does, and it carries the same authority: none of its own. It is not a digital signature, proves nothing about who made it, and the UI says so where it is offered. Sections VII and VIII are somebody else's to sign and the app never writes into them.
 
-13. **DOCX is labelled authoritative and PDF approximate** everywhere the two appear together. `DESIGN.md` §7.
+13. **The difference between the two outputs is stated wherever they appear together, and stated accurately.** The DOCX is the office's own form file with values written into it. The PDF is re-composed by the app in Helvetica from the same model — identical content, layout that can differ a little. **Neither may be inflated into "the PDF is not valid"**: for most offices it is fine, and this app has no standing to rule on it. Wherever the approximation is mentioned, so is the route to an exact PDF — open the DOCX in Word and save. `DESIGN.md` §7.
 
 14. **No red in the UI**, including validation. Amber warns; ink explains. `DESIGN.md` §3.
 

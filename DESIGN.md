@@ -221,6 +221,8 @@ The one place to get the tone right. A person has just produced an official docu
 
 - **It does not scroll away.** The panel is pinned to the foot of the form column rather than sitting at the end of it. It used to be four sections below the fold, which meant the one button this app exists to offer was reachable only by scrolling past every field.
 - **Three actions, clearly unequal:** *Unduh DOCX* is primary; *Pratinjau PDF* and *Cetak* are secondary, with the approximation note beside them, not hidden behind a tooltip.
+
+  DOCX leads for one reason, and it is not that the PDF matters less. **The DOCX is the office's own form file** — opened, written into, closed again — so its layout is the form's by construction. The PDF is composed by this app in Helvetica from the same model: identical content, its own layout. Somebody sending the built-in PDF is very likely fine; somebody whose office checks it against the printed form is not, and only one of those two failures is silent. So the safer file leads, and the note beside the PDF says **how to get an exact one** rather than only that this one is approximate.
 - **The PDF is looked at before it is downloaded.** *Pratinjau PDF* opens the real file in the browser's own reader, at the size it prints, with the download inside it. Downloading a PDF unseen is how the wrong year reaches an atasan — and it is offered at all only because the file is built in the tab and never uploaded.
 - **A last chance to notice the wrong year** — the warnings that stand, and any computed field still waiting on an input, immediately above the buttons.
 
@@ -262,7 +264,8 @@ The profile panel carries an explicit **export** and **clear all**, both visible
 - No browser spellchecker on a field that is not prose. Red is red whoever drew it.
 - No `select` without `.field-select`. Preflight will not reset `appearance` for you.
 - No celebration on download.
-- No PDF button without its approximation note.
+- No PDF button without its approximation note, and no approximation note without the way to get an exact one. "The DOCX is authoritative" is true and, alone, useless to somebody whose office wants a PDF.
+- No claim that the PDF is invalid. It is re-composed, not wrong — for most offices it is fine, and this app has no standing to rule on it.
 - No mapping UI on mobile.
 - No dark mode.
 - No component library.
