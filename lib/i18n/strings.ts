@@ -209,7 +209,8 @@ const id: Strings = {
   signatureRemoveWhiteHint:
     'Untuk foto tanda tangan di atas kertas. Pada tinta yang pucat, coretannya bisa ikut terhapus — periksa hasilnya.',
   signatureWidth: 'Lebar pada surat',
-  signatureWidthHint: 'Tingginya mengikuti, supaya tanda tangan tidak berubah bentuk.',
+  signatureWidthHint:
+    'Tingginya mengikuti, supaya tanda tangan tidak berubah bentuk. Ukuran awal disesuaikan dengan ruang yang disediakan formulir, jadi blok pemohon setinggi blok atasan di bawahnya.',
   signatureSaved: 'Tersimpan di perangkat ini',
   signatureSavedDrawn: 'digambar',
   signatureSavedUploaded: 'diunggah',
@@ -418,7 +419,8 @@ const en: Strings = {
   signatureRemoveWhiteHint:
     'For a photo of a signature on paper. On pale ink it will eat the stroke too — check the result.',
   signatureWidth: 'Width on the letter',
-  signatureWidthHint: 'The height follows, so the signature is never stretched out of shape.',
+  signatureWidthHint:
+    'The height follows, so the signature is never stretched out of shape. It starts at the size of the gap the form leaves, so the applicant’s block is as tall as the atasan’s below it.',
   signatureSaved: 'Kept on this device',
   signatureSavedDrawn: 'drawn',
   signatureSavedUploaded: 'uploaded',

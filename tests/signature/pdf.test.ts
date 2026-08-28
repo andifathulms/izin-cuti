@@ -142,6 +142,16 @@ describe('a PDF carrying an image', () => {
   })
 })
 
+const para = (key: string, text: string) =>
+  ({
+    type: 'paragraph' as const,
+    key,
+    runs: text === '' ? [] : [{ text, state: 'plain' as const, targetId: null, nodeIndex: null, focused: false }],
+    alignment: 'center' as const,
+    bold: false,
+    signature: null,
+  })
+
 describe('renderPdf with a signature', () => {
   const model: PreviewModel = {
     hasUnmapped: false,
@@ -230,6 +240,70 @@ describe('renderPdf with a signature', () => {
     const text = new TextDecoder('latin1').decode(renderPdf(inTable))
     expect(text).toContain('/Subtype /Image')
     expect(text).toContain('/Imtandatangan Do')
+  })
+
+  it('fills the reserved gap rather than being added to it', () => {
+    // The document leaves blank paragraphs for a signature. Keeping them *and*
+    // drawing the image put the picture between them: the applicant's block
+    // came out half again as tall as the atasan's, and the form spilled onto a
+    // second page.
+    const cell = (signatureHeightMm: number | null): PreviewModel => ({
+      hasUnmapped: false,
+      blocks: [
+        {
+          type: 'table',
+          key: 't0',
+          rows: [
+            {
+              cells: [
+                {
+                  widthTwips: null,
+                  box: null,
+                  blocks: [
+                    para('p0', 'Hormat Saya,'),
+                    para('p1', ''),
+                    signatureHeightMm === null
+                      ? para('p2', '')
+                      : {
+                          ...para('p2', ''),
+                          signature: {
+                            targetId: 'ttd',
+                            png: realPng(),
+                            widthMm: 30,
+                            heightMm: signatureHeightMm,
+                            focused: false,
+                          },
+                        },
+                    para('p3', ''),
+                    para('p4', ''),
+                    para('p5', 'Andi Fathul Mukminin Salahuddin'),
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    })
+
+    // The unsigned block is the baseline: heading, the reserved gap, the name.
+    const unsigned = renderPdf(cell(null), { fitOnePage: false }).length
+    const signed = renderPdf(cell(12), { fitOnePage: false }).length
+    expect(signed).toBeGreaterThan(unsigned) // the image itself is in there
+
+    // What matters is the geometry, not the byte count: the row must not be
+    // taller than the reserved gap for a signature that fits inside it.
+    const rows = (model: PreviewModel) => {
+      const text = new TextDecoder('latin1').decode(renderPdf(model, { fitOnePage: false }))
+      return [...text.matchAll(/([\d.]+) ([\d.]+) m ([\d.]+) ([\d.]+) l S/g)].map((m) =>
+        Number(m[2]),
+      )
+    }
+    const span = (model: PreviewModel) => {
+      const ys = rows(model)
+      return Math.max(...ys) - Math.min(...ys)
+    }
+    expect(span(cell(12))).toBeCloseTo(span(cell(null)), 0)
   })
 
   it('leaves no image behind when nothing is signed', () => {

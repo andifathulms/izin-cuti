@@ -253,8 +253,14 @@ function drawTable(
             ),
     }))
 
+    // A signature never makes the block shorter than the space the form leaves
+    // for one, and never taller unless the image genuinely needs the room.
+    const reservedFor = (line: CellLine): number =>
+      Math.max(line.reservedLines ?? MIN_SIGNATURE_LINES, MIN_SIGNATURE_LINES) * lineHeight
     const lineHeightOf = (line: CellLine): number =>
-      line.signature === undefined ? lineHeight : line.signature.heightMm * MM
+      line.signature === undefined
+        ? lineHeight
+        : Math.max(reservedFor(line), line.signature.heightMm * MM)
     const height = Math.max(
       lineHeight + CELL_PAD * 2,
       ...cells.map(
@@ -291,15 +297,18 @@ function drawTable(
           if (line.signature !== undefined) {
             const w = line.signature.widthMm * MM
             const h = line.signature.heightMm * MM
+            const band = Math.max(reservedFor(line), h)
             cursor.ops.push({
               type: 'image',
               key: line.signature.targetId,
               x: cellX + CELL_PAD + Math.max(0, (cellWidth - CELL_PAD * 2 - w) / 2),
-              y: lineTop - h,
+              // Sat on the bottom of the band it was given, the way a pen sits
+              // on the line rather than floating above it.
+              y: lineTop - band,
               w,
               h,
             })
-            lineTop -= h
+            lineTop -= band
             continue
           }
           // Alignment comes from the paragraph, so a centred signature block
@@ -330,9 +339,15 @@ function drawTable(
 
 /** Widen the largest run of blank lines to leave room for a signature. */
 function openSignatureGap(lines: ReadonlyArray<CellLine>): CellLine[] {
-  // A real signature already occupies the space, and adding blank lines under
-  // it would push the name away from it.
-  if (lines.some((line) => line.signature !== undefined)) return [...lines]
+  // A real signature fills the gap rather than sitting inside it.
+  //
+  // The blank paragraphs around it are the space the document left *for* a
+  // signature. Keeping them and then adding the image put the picture between
+  // them, so the applicant's block came out half as tall again as the atasan's
+  // and the pejabat's and the form spilled onto a second page. The image takes
+  // the gap it was left; `lineHeightOf` gives it a floor of the same three
+  // lines the other blocks reserve, so it is never shorter either.
+  if (lines.some((line) => line.signature !== undefined)) return collapseAroundSignature(lines)
 
   let bestStart = -1
   let bestLength = 0
@@ -404,6 +419,14 @@ type CellLine = {
    * is measured from the image instead of from the type.
    */
   readonly signature?: PreviewSignature
+  /**
+   * How many blank lines this signature replaced.
+   *
+   * Its band is at least that tall, so signing never changes the height of the
+   * block: the picture fills the space the document already left rather than
+   * being added to it or shrinking it.
+   */
+  readonly reservedLines?: number
 }
 
 /**
@@ -444,6 +467,28 @@ function lineOf(raw: string, alignment: CellLine['alignment']): CellLine {
     return { text, alignment: 'center', indent: 0 }
   }
   return { text, alignment, indent: leading }
+}
+
+/** Drop the blank lines a signature is standing in; it occupies them itself. */
+function collapseAroundSignature(lines: ReadonlyArray<CellLine>): CellLine[] {
+  const blank = (line: CellLine | undefined): boolean =>
+    line !== undefined && line.text === '' && line.signature === undefined
+
+  // The blank run the signature stands in, counted so its band is exactly as
+  // tall as the space it takes over.
+  const signatureAt = lines.findIndex((line) => line.signature !== undefined)
+  if (signatureAt === -1) return [...lines]
+
+  let first = signatureAt
+  while (first > 0 && blank(lines[first - 1])) first--
+  let last = signatureAt
+  while (last < lines.length - 1 && blank(lines[last + 1])) last++
+
+  return [
+    ...lines.slice(0, first),
+    { ...lines[signatureAt]!, reservedLines: last - first + 1 },
+    ...lines.slice(last + 1),
+  ]
 }
 
 function cellLines(blocks: ReadonlyArray<PreviewBlock>): CellLine[] {

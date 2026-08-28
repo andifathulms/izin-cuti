@@ -89,6 +89,30 @@ export function readSignature(
 export const MIN_WIDTH_MM = 10
 export const MAX_WIDTH_MM = 90
 
+/**
+ * How tall a signature should be, before anybody adjusts it.
+ *
+ * Width was the wrong thing to default. The form reserves a fixed gap for a
+ * signature — a few blank lines between "Hormat Saya," and the name, and the
+ * same again in the atasan's and pejabat's blocks — and it is the *height* of
+ * the image that decides whether that gap is filled or blown open. A fixed
+ * 40mm width is a different height for every person: a wide, flat signature
+ * comes out right and a compact, square one comes out three times too tall,
+ * pushing the block past the space the document left for it.
+ *
+ * 15mm is about the height of a signature written on a form by hand, and it is
+ * close to the gap sections VII and VIII reserve — so the applicant's block
+ * comes out the same height as the two below it, whatever shape somebody's
+ * signature is. The width follows from the aspect ratio, and the slider still
+ * moves it.
+ */
+export const DEFAULT_HEIGHT_MM = 15
+
+/** The width that gives an image a particular height. The inverse of `heightMm`. */
+export function widthForHeight(info: PngInfo, targetHeightMm: number): number {
+  return clampWidthMm((targetHeightMm * info.widthPx) / info.heightPx)
+}
+
 export function clampWidthMm(widthMm: number): number {
   if (!Number.isFinite(widthMm)) return MIN_WIDTH_MM
   return Math.min(MAX_WIDTH_MM, Math.max(MIN_WIDTH_MM, Math.round(widthMm)))

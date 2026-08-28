@@ -5,13 +5,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { SignaturePad, type SignaturePadHandle } from './signature-pad'
 import { canvasToPng, fileToPng, trimToInk } from '@/lib/signature/browser'
 import {
+  DEFAULT_HEIGHT_MM,
   MAX_WIDTH_MM,
   MIN_WIDTH_MM,
   clampWidthMm,
   heightMm,
   readSignature,
-  type Signature,
+  widthForHeight,
 } from '@/lib/signature/signature'
+import type { Signature } from '@/lib/signature/signature'
 import { strings, type Locale } from '@/lib/i18n/strings'
 
 /**
@@ -89,7 +91,11 @@ export function SignaturePanel({
       return
     }
     setProblem(null)
-    onSet(read.signature, widthMm)
+    // Sized from its height rather than kept at whatever width was last set.
+    // The gap the form leaves for a signature is a height, and a fixed width
+    // is a different height for every person — a square signature at 40mm wide
+    // is three times too tall for the space and pushes the block open.
+    onSet(read.signature, widthForHeight(read.signature.info, DEFAULT_HEIGHT_MM))
   }
 
   const acceptDrawing = async () => {

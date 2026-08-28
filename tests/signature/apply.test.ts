@@ -6,6 +6,7 @@ import { serialiseDocx } from '@/lib/docx/serialise'
 import { applyMapping } from '@/lib/mapping/apply'
 import { finaliseDraft } from '@/lib/mapping/draft'
 import {
+  DEFAULT_HEIGHT_MM,
   MAX_WIDTH_MM,
   MIN_WIDTH_MM,
   clampWidthMm,
@@ -14,6 +15,7 @@ import {
   readSignature,
   restoreSignature,
   storeSignature,
+  widthForHeight,
   type Signature,
 } from '@/lib/signature/signature'
 import { EMPTY_PROFILE, EMPTY_REQUEST } from '@/lib/derive/compute'
@@ -62,6 +64,26 @@ describe('reading a signature', () => {
     expect(result.type).toBe('rejected')
     if (result.type !== 'rejected') return
     expect(result.reason).toContain('kB')
+  })
+})
+
+describe('sizing from height', () => {
+  it('gives a wide and a square signature the same height', () => {
+    // A fixed width does not: at 40mm across, a 4:1 signature is 10mm tall and
+    // a 1:1 signature is 40mm, and only one of them fits the gap the form
+    // leaves. Height is the dimension that decides whether the block grows.
+    const wide = widthForHeight({ widthPx: 400, heightPx: 100 }, DEFAULT_HEIGHT_MM)
+    const square = widthForHeight({ widthPx: 200, heightPx: 200 }, DEFAULT_HEIGHT_MM)
+    expect(heightMm({ widthPx: 400, heightPx: 100 }, wide)).toBeCloseTo(DEFAULT_HEIGHT_MM, 0)
+    expect(heightMm({ widthPx: 200, heightPx: 200 }, square)).toBeCloseTo(DEFAULT_HEIGHT_MM, 0)
+    expect(wide).toBeGreaterThan(square)
+  })
+
+  it('still respects the width bounds for an extreme shape', () => {
+    // A signature a hundred times wider than it is tall would want a width off
+    // the page; the clamp is what stops it.
+    expect(widthForHeight({ widthPx: 10000, heightPx: 10 }, DEFAULT_HEIGHT_MM)).toBe(MAX_WIDTH_MM)
+    expect(widthForHeight({ widthPx: 10, heightPx: 10000 }, DEFAULT_HEIGHT_MM)).toBe(MIN_WIDTH_MM)
   })
 })
 
