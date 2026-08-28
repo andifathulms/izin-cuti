@@ -14,12 +14,24 @@ import type { ParsedDocument } from './parse'
  * invariant 4.
  */
 
+/**
+ * The kinds a fingerprint can pin.
+ *
+ * `signature` names a paragraph rather than a node or a cell, because that is
+ * what a signature is placed into. It is fingerprinted for the same reason the
+ * other two are: a mapping that puts an image into paragraph 79 of last year's
+ * edition of this form will happily put it into whatever paragraph 79 is in
+ * this year's, and a signature landing in the middle of section V is exactly
+ * the silent wrong output this file exists to refuse.
+ */
+export type TargetKind = 'text' | 'checkbox' | 'signature'
+
 export type FingerprintTarget = {
   /** The mapping's own id for this target, so a mismatch can be named. */
   readonly id: string
   /** What a person calls it — "NIP", "Nama Atasan". */
   readonly label: string
-  readonly kind: 'text' | 'checkbox'
+  readonly kind: TargetKind
   /** Document-order index within its kind. */
   readonly index: number
 }
@@ -34,7 +46,7 @@ export type Fingerprint = {
   readonly targets: ReadonlyArray<{
     readonly id: string
     readonly label: string
-    readonly kind: 'text' | 'checkbox'
+    readonly kind: TargetKind
     readonly index: number
     readonly contextHash: string
   }>
@@ -48,14 +60,14 @@ export type Difference =
       readonly type: 'target-missing'
       readonly id: string
       readonly label: string
-      readonly kind: 'text' | 'checkbox'
+      readonly kind: TargetKind
       readonly index: number
     }
   | {
       readonly type: 'target-context'
       readonly id: string
       readonly label: string
-      readonly kind: 'text' | 'checkbox'
+      readonly kind: TargetKind
       readonly index: number
       /** What surrounds the node now — the sentence shown to the user. */
       readonly foundContext: string
@@ -142,7 +154,7 @@ export function checkFingerprint(
 
 function contextHashOf(
   document: ParsedDocument,
-  kind: 'text' | 'checkbox',
+  kind: TargetKind,
   index: number,
 ): string | null {
   switch (kind) {
@@ -150,6 +162,8 @@ function contextHashOf(
       return document.textNodes[index]?.contextHash ?? null
     case 'checkbox':
       return document.checkboxCells[index]?.contextHash ?? null
+    case 'signature':
+      return document.paragraphs[index]?.contextHash ?? null
     default: {
       const unreachable: never = kind
       throw new Error(`unhandled target kind ${String(unreachable)}`)
@@ -160,13 +174,15 @@ function contextHashOf(
 /** The surroundings, in words, for the refusal message. */
 function describeContext(
   document: ParsedDocument,
-  kind: 'text' | 'checkbox',
+  kind: TargetKind,
   index: number,
 ): string {
   const context =
     kind === 'text'
       ? document.textNodes[index]?.context
-      : document.checkboxCells[index]?.context
+      : kind === 'signature'
+        ? document.paragraphs[index]?.context
+        : document.checkboxCells[index]?.context
   if (context === undefined) return ''
   return [context.section, context.rowLabel, context.paragraph]
     .filter((part) => part.trim() !== '')

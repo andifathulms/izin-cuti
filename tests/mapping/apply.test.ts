@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { parseDocument, type ParsedDocument } from '@/lib/docx/parse'
 import { fingerprintDocument } from '@/lib/docx/fingerprint'
 import { applyMapping, type FillValues } from '@/lib/mapping/apply'
-import type { Mapping, Target } from '@/lib/mapping/schema'
+import { type Mapping, type Target, targetIndex } from '@/lib/mapping/schema'
 import { EMPTY_PROFILE, EMPTY_REQUEST } from '@/lib/derive/compute'
 import { syntheticDocumentXml, type SyntheticOptions } from '../fixtures/synthetic-template'
 
@@ -67,7 +67,7 @@ function mappingFor(doc: ParsedDocument, extra: Target[] = []): Mapping {
         id: target.id,
         label: target.label,
         kind: target.type,
-        index: target.type === 'text' ? (target.nodeIndices[0] ?? -1) : target.cellIndex,
+        index: targetIndex(target),
       })),
     ),
     targets,

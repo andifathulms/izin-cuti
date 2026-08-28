@@ -40,7 +40,27 @@ export type CheckboxTarget = {
   readonly group: string | null
 }
 
-export type Target = TextTarget | CheckboxTarget
+/**
+ * Where a signature is placed.
+ *
+ * A paragraph rather than a node or a cell, because a signature is not a value
+ * written over something that is already there — it is a drawing added to a
+ * space the document deliberately leaves empty. In this form that is the four
+ * blank paragraphs between "Hormat Saya," and the applicant's name.
+ *
+ * There is at most one per mapping and the app enforces that, but the schema
+ * does not: a form with two signature blocks is a form somebody will meet.
+ */
+export type SignatureTarget = {
+  readonly type: 'signature'
+  readonly id: string
+  readonly label: string
+  readonly paragraphIndex: number
+  /** How wide the image is drawn, in millimetres. The height follows. */
+  readonly widthMm: number
+}
+
+export type Target = TextTarget | CheckboxTarget | SignatureTarget
 
 export type Mapping = {
   readonly version: 1
@@ -67,6 +87,33 @@ export function textTargets(mapping: Mapping): ReadonlyArray<TextTarget> {
 
 export function checkboxTargets(mapping: Mapping): ReadonlyArray<CheckboxTarget> {
   return mapping.targets.filter((target): target is CheckboxTarget => target.type === 'checkbox')
+}
+
+export function signatureTargets(mapping: Mapping): ReadonlyArray<SignatureTarget> {
+  return mapping.targets.filter((target): target is SignatureTarget => target.type === 'signature')
+}
+
+/**
+ * The index a target is pinned by, whatever kind it is.
+ *
+ * Three call sites were computing this as "text ? first node : cellIndex",
+ * which quietly meant "not text is a checkbox" — true until it was not. One
+ * definition, exhaustive over the union, so adding a fourth kind is a type
+ * error here rather than a signature fingerprinted against a cell index.
+ */
+export function targetIndex(target: Target): number {
+  switch (target.type) {
+    case 'text':
+      return target.nodeIndices[0] ?? -1
+    case 'checkbox':
+      return target.cellIndex
+    case 'signature':
+      return target.paragraphIndex
+    default: {
+      const unreachable: never = target
+      throw new Error(`unhandled target ${JSON.stringify(unreachable)}`)
+    }
+  }
 }
 
 /** Takes targets rather than a mapping, so a draft can ask the same question. */

@@ -28,6 +28,31 @@ const box = (id: string, label: string, cellIndex: number, group: string | null)
   group,
 })
 
+/**
+ * Where a signature goes on this form.
+ *
+ * The document leaves four empty paragraphs between "Hormat Saya," (77) and
+ * the applicant's name (82). 79 is the second of them, which puts one blank
+ * line under "Hormat Saya," and leaves two under the image before the name —
+ * the space somebody signing on paper actually uses.
+ *
+ * 40mm is about the width of a signature written across a form by hand, and
+ * at that width its height comes out near the four lines the form reserves, so
+ * the block does not grow enough to push section VII onto a second page. It is
+ * a starting point, not a rule: the width is stored on the target and the fill
+ * screen changes it.
+ */
+const TANDA_TANGAN_PARAGRAPH = 79
+export const TANDA_TANGAN_DEFAULT_WIDTH_MM = 40
+
+const signature = (id: string, label: string, paragraphIndex: number): Target => ({
+  type: 'signature',
+  id,
+  label,
+  paragraphIndex,
+  widthMm: TANDA_TANGAN_DEFAULT_WIDTH_MM,
+})
+
 export const JENIS_CUTI_GROUP = 'Jenis cuti'
 
 export const FORMULIR_CUTI_TARGETS: ReadonlyArray<Target> = [
@@ -103,6 +128,9 @@ export const FORMULIR_CUTI_TARGETS: ReadonlyArray<Target> = [
     kind: 'derived',
     computation: 'nip-berawalan',
   }),
+  // The pemohon's own signature, and only theirs. Sections VII and VIII are
+  // signed by other people and this tool does not sign on anybody's behalf.
+  signature('tanda-tangan', 'Tanda tangan pemohon', TANDA_TANGAN_PARAGRAPH),
 
   // VII and VIII carry the names of the people who sign them. The tick boxes
   // in those sections are left unmapped on purpose — they are somebody else's

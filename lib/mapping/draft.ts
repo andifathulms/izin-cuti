@@ -1,6 +1,6 @@
 import { fingerprintDocument, type FingerprintTarget } from '../docx/fingerprint'
 import type { ParsedDocument } from '../docx/parse'
-import type { CheckboxTarget, FieldSource, Mapping, Target, TextTarget } from './schema'
+import { type CheckboxTarget, type FieldSource, type Mapping, type Target, type TextTarget, targetIndex } from './schema'
 
 /**
  * A mapping under construction.
@@ -178,7 +178,7 @@ export function finaliseDraft(
     id: target.id,
     label: target.label,
     kind: target.type,
-    index: target.type === 'text' ? (target.nodeIndices[0] ?? -1) : target.cellIndex,
+    index: targetIndex(target),
   }))
 
   return {

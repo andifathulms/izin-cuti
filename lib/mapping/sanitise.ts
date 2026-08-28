@@ -43,8 +43,13 @@ export function blankCopy(
           nodeIndices: target.nodeIndices,
           value: target.label.trim() === '' ? FALLBACK_LABEL : target.label,
         }
-      : // Every mapped box is cleared, whatever state the original was in.
-        { type: 'checkbox', cellIndex: target.cellIndex, checked: false },
+      : target.type === 'checkbox'
+        ? // Every mapped box is cleared, whatever state the original was in.
+          { type: 'checkbox', cellIndex: target.cellIndex, checked: false }
+        : // A blank copy made from a document somebody had already signed must
+          // not ship their signature inside it. Removing one is exact and
+          // costs nothing when there is none.
+          { type: 'signature', paragraphIndex: target.paragraphIndex, run: null },
   )
   return fillDocument(document, instructions)
 }

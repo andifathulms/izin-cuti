@@ -319,7 +319,7 @@ function TargetControls({
             <p className="max-w-[60ch] text-sm text-ink-muted">{t.mapSplitHint}</p>
           )}
         </>
-      ) : (
+      ) : target.type === 'checkbox' ? (
         <label className="block">
           <span className="block text-sm font-medium">{t.mapGroup}</span>
           <input
@@ -338,7 +338,10 @@ function TargetControls({
             ))}
           </datalist>
         </label>
-      )}
+      ) : null}
+      {/* A signature target has no controls in this list. It names a paragraph
+          rather than a node or a cell, so it does not appear among them —
+          where it goes is chosen on the fill screen, beside the signature. */}
     </div>
   )
 }

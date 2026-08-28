@@ -55,9 +55,11 @@ export function nodeList(
         textOwner.set(nodeIndex, target)
         if (position > 0) spanTail.add(nodeIndex)
       })
-    } else {
+    } else if (target.type === 'checkbox') {
       cellOwner.set(target.cellIndex, target)
     }
+    // A signature owns a paragraph, which is neither a node nor a cell, so it
+    // claims nothing in this list and nothing here is shown as taken by it.
   }
 
   const entries: NodeEntry[] = [

@@ -143,6 +143,13 @@ export const FORMULIR_CUTI_MAPPING: Mapping = {
         "contextHash": "feec3e0f1f1b2b5c"
       },
       {
+        "id": "tanda-tangan",
+        "label": "Tanda tangan pemohon",
+        "kind": "signature",
+        "index": 79,
+        "contextHash": "1dc7fa48724ea094"
+      },
+      {
         "id": "atasan-jabatan",
         "label": "Jabatan atasan langsung",
         "kind": "text",
@@ -445,6 +452,13 @@ export const FORMULIR_CUTI_MAPPING: Mapping = {
         "kind": "derived",
         "computation": "nip-berawalan"
       }
+    },
+    {
+      "type": "signature",
+      "id": "tanda-tangan",
+      "label": "Tanda tangan pemohon",
+      "paragraphIndex": 79,
+      "widthMm": 40
     },
     {
       "type": "text",
