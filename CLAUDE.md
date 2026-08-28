@@ -78,11 +78,13 @@ tests/
 
 2. **Every substituted value passes through `escape.ts`.** One definition, no exceptions, no call site that bypasses it. **Preserve `xml:space="preserve"` wherever it appears** — dropping it collapses leading and trailing spaces that the document relies on.
 
-3. **Only `word/document.xml` is modified.** All other parts — fonts, images, styles, settings, relationships — are copied byte-for-byte. Asserted by test.
+3. **Only a named list of parts may differ.** `word/document.xml` is rewritten. When — and only when — a signature is placed, `word/_rels/document.xml.rels` gains one relationship, `[Content_Types].xml` gains one `<Default Extension="png">`, and one `word/media/*.png` is added. **Everything else is copied byte-for-byte**, fonts and pre-existing images included, and `tests/package` asserts that against the list rather than against "the document only". A fill with no signature produces a byte-identical package to the one it always did. `lib/docx/parts.ts` is where the list lives; widening it is a decision, not a convenience.
 
 4. **Mappings carry a fingerprint** of node count, structural hash, and per-target surrounding context. **On mismatch the fill is refused**, the specific differences are named, and a re-map is offered. **Never fill a template whose fingerprint does not match.**
 
 5. **A target split across runs is never partially filled.** Word-edited templates may split a value across `<w:r>` elements. The mapper either merges the runs or flags the target as unmappable — **there is no path that writes into one half of a split value.**
+
+6a. **Signature targets are a third type.** They pin a paragraph rather than a node or a cell, because a signature is a drawing added to a space the form leaves empty, not a value written over something. Fingerprinted like the other two: a mapping that puts an image into paragraph 79 of last year's edition will put it into whatever paragraph 79 is in this year's. Placing one twice replaces rather than accumulates, and clearing one returns the document to the bytes it had.
 
 6. **Checkbox targets are a distinct type from text targets.** Empty cells do not appear among text nodes; a text-only mapper misses every checkbox in the form. Inserting and removing `√` is idempotent, and single-select groups enforce exactly one.
 
@@ -98,7 +100,7 @@ tests/
 
 11. **No nomor surat generation.** A shared sequential number is shared state; the number is an input.
 
-12. **No signature, no submission, no approval routing.**
+12. **No submission, no approval routing, no signing on anybody's behalf.** A person may place an image of their own handwriting in the pemohon's block — drawn, scanned or photographed. That is what printing the form and signing it with a pen does, and it carries the same authority: none of its own. It is not a digital signature, proves nothing about who made it, and the UI says so where it is offered. Sections VII and VIII are somebody else's to sign and the app never writes into them.
 
 13. **DOCX is labelled authoritative and PDF approximate** everywhere the two appear together. `DESIGN.md` §7.
 
@@ -115,6 +117,12 @@ tests/
 - **Evaluate mammoth's output honestly.** It maps semantic structure rather than layout. If the preview is not good enough for someone to check their fill, say so and reconsider rather than shipping a misleading preview.
 - **When a template does not fingerprint-match, stop.** Do not offer a best-effort fill. Name the mismatch.
 - **Don't touch `next.config.js`, the Actions workflow, `escape.ts`, or `fingerprint.ts` without saying so explicitly.**
+- **Tailwind's spacing scale is replaced, not extended.** `h-40`, `w-56` and
+  `max-h-20` are not "close enough" — they match no rule at all and the element
+  falls back to whatever the browser does, silently. Only `0 1 2 3 4 6 8 12 16
+  24 32 px full` exist; anything else is an arbitrary value in brackets.
+  `tests/design/spacing-scale.test.ts` checks this, because it has happened
+  twice.
 - **Never weaken a test to make something pass**, especially `test:escape` or `test:roundtrip`.
 
 ## Conventions
@@ -171,6 +179,14 @@ M0–M5 built. `pnpm test:run` green; `test:escape`, `test:roundtrip` and
   not adopted: it has no node indices and cannot answer "where does what I am
   typing land".
 - **Profiles** — saved, switchable, exportable, clearable.
+- **Signature** — drawn on a pad or uploaded, trimmed to the ink, sized in
+  millimetres, and placed in the pemohon's block. Embedded as a real image in
+  the DOCX and drawn into the PDF from the same model, so the two never
+  disagree about whether a letter is signed. Kept under its own storage key —
+  removable on its own, cleared by clear-all, and deliberately left out of the
+  export file.
+- **Plt. / Plh.** — the signatory's standing, written into the jabatan as the
+  prefix the office uses, everywhere the jabatan appears.
 
 **Verified:** a filled output opens with no repair in macOS `textutil`, an
 independent OOXML reader, with `& < > " '` intact. **Not yet verified in Word

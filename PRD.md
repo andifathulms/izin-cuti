@@ -91,7 +91,8 @@ The cost is stated where it is offered rather than hidden: **a remembered templa
 ## 8. Non-goals
 
 - **No approval workflow, no submission, no routing.** Those need state and a server.
-- **No digital signature.** TTE via BSrE requires a server and credentials; there is no client-side path.
+- **No digital signature.** TTE via BSrE requires a server and credentials; there is no client-side path. What the app does do is place *an image of your own handwriting* in the applicant's block — a scan, a photograph, or something drawn with a finger. That is the same thing as printing the form and signing it with a pen, and it carries exactly as much authority: none of its own. It is not a certificate, it proves nothing about who made it, and the app says so where it is offered rather than in a footnote.
+- **No signing on anybody else's behalf.** Sections VII and VIII belong to the atasan and the pejabat berwenang. There is one signature target in the bundled mapping and it is the pemohon's.
 - **No nomor surat minting.** A sequential number shared across users is shared state. **The number is an input**, assigned by whoever assigns it.
 - **No bundled *filled* templates, and no template the app depends on.** One blank form ships as a convenience — the standard *Formulir Permintaan dan Pemberian Cuti*, blanked by the app's own engine, carrying nobody's data — with a preset mapping so a common case works without mapping ninety-six nodes first. The app remains generic: the bundled form is one mapping among many, fingerprinted like any other, and a different office form is supplied and mapped by whoever owns it.
 - **No OCR, no scanned documents, no PDF templates in v1.**

@@ -162,6 +162,22 @@ A `select` is the same argument and needs saying separately, because Tailwind's 
 
 A name, a NIP, a jabatan, a unit kerja, a phone number and an address are all underlined in red by the browser, and **this product has no red in it**. A person's own name is not a misspelling. `alasan` is the one field somebody writes a sentence in and the one field that keeps its checker; the rule is `PROSE_KEYS` in `lib/fill/form.ts` and no component decides it.
 
+### The signature
+
+Section V, and three numbered steps — make it, size it, check it. The numbering is information rather than decoration here: you cannot size a signature you have not made, and you cannot see where it lands until it has a size. §10 forbids numbering that is not a sequence; this one is.
+
+The third step holds no control. It says where to look, because the answer is already in the preview beside it, and a second smaller preview inside the panel would be a second thing to reconcile — the same argument that keeps derived values out of the form.
+
+**One number, not two.** The width is chosen and the height follows from the aspect ratio. A signature stretched out of proportion is not that person's signature, and offering two boxes is offering somebody the chance to make it wrong.
+
+**Drawn or uploaded, and nothing downstream knows which.** Both end at PNG bytes. The drawing is trimmed to the ink before it is kept, so the width chosen in step two is the width of the signature rather than the width of the pad it was drawn in.
+
+**Removing a photograph's white background is offered, never assumed.** It is a guess about which pixels are paper, and on pale ink it eats the stroke. Off by default, with the risk stated beside the control, so somebody can see it happen and say no.
+
+**It is not a claim about identity, and the panel says so.** The line at the top of the section is that the signature is for the applicant's block only and that this app does not sign on anybody's behalf. Sections VII and VIII belong to other people.
+
+**The image is the most personal thing here.** It says where it is kept, that clear-all removes it, and that the export file does not carry it — an export is a thing people mail to themselves or hand to a colleague, and a handwritten signature travelling inside one is a surprise nobody asked for.
+
 ### The preview is a sheet, at the document's scale
 
 `--page` on `--paper`, with the app's one shadow under it and margins inside it. It is what somebody checks their letter against before it goes to an atasan, and it should look like the thing being checked. No page number: the preview is one continuous article and pagination is Word's to decide.
@@ -240,6 +256,8 @@ The profile panel carries an explicit **export** and **clear all**, both visible
 - No serif outside a section heading or the document's title. §4.
 - No shadow anywhere but under the preview sheet.
 - No page count on the preview — pagination belongs to Word.
+- No signature drawn into a PDF that the DOCX does not carry, or the other way round. Both render from one model.
+- No second box for a signature's height.
 - No second set of figures for the preview. It reads `lib/pdf/render.ts`'s constants or it is lying about what will print.
 - No browser spellchecker on a field that is not prose. Red is red whoever drew it.
 - No `select` without `.field-select`. Preflight will not reset `appearance` for you.
