@@ -102,7 +102,7 @@ tests/
 
 12. **No submission, no approval routing, no signing on anybody's behalf.** A person may place an image of their own handwriting in the pemohon's block — drawn, scanned or photographed. That is what printing the form and signing it with a pen does, and it carries the same authority: none of its own. It is not a digital signature, proves nothing about who made it, and the UI says so where it is offered. Sections VII and VIII are somebody else's to sign and the app never writes into them.
 
-13. **The difference between the two outputs is stated wherever they appear together, and stated accurately.** The DOCX is the office's own form file with values written into it. The PDF is re-composed by the app in Helvetica from the same model — identical content, layout that can differ a little. **Neither may be inflated into "the PDF is not valid"**: for most offices it is fine, and this app has no standing to rule on it. Wherever the approximation is mentioned, so is the route to an exact PDF — open the DOCX in Word and save. `DESIGN.md` §7.
+13. **The two outputs carry equal weight, and the difference between them is stated accurately in words rather than implied by ranking.** The DOCX is the office's own form file with values written into it. The PDF is re-composed by the app in Helvetica from the same model — identical content, layout that can differ a little. **Neither may be inflated into "the PDF is not valid"**: for most offices it is fine, and this app has no standing to rule on it. Wherever the approximation is mentioned, so is the route to an exact PDF — open the DOCX in Word and save. `DESIGN.md` §7.
 
 14. **No red in the UI**, including validation. Amber warns; ink explains. `DESIGN.md` §3.
 

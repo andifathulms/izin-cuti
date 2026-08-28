@@ -88,14 +88,21 @@ export function DownloadPanel({
       )}
 
       {/*
-       * Aligned to the top, not the middle.
+       * Two outcomes, equal weight, and one utility action beside them.
        *
-       * The secondary column is two rows tall — buttons over the
-       * approximation note — so centring the row floated Unduh DOCX below
-       * Pratinjau PDF. Three actions clearly unequal, with the primary one
-       * sitting lower than the others, is the hierarchy stated backwards.
+       * This was one primary and two secondaries, on the argument that the
+       * DOCX is the safer file. It is — its layout is the office's form by
+       * construction, where the PDF's is composed here — but "safer" is not
+       * the same as "the one you want", and a PDF is what most offices are
+       * actually sent. Ranking one above the other made the app's answer to
+       * "what do I do with this" quietly wrong for the common case.
+       *
+       * `Pratinjau PDF` keeps its verb rather than becoming `Unduh PDF`. It
+       * opens the file and the download sits inside it: looking before
+       * sending is how the wrong year gets caught, and a button that says
+       * download and does not download would be a lie told for symmetry.
        */}
-      <div className="flex flex-wrap items-start gap-x-4 gap-y-2">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <button
           type="button"
           onClick={onDownload}
@@ -105,45 +112,42 @@ export function DownloadPanel({
           {t.downloadDocx}
         </button>
 
-        <div className="flex max-w-[46ch] flex-col gap-1">
-          <div className="flex gap-2">
-            {/* Look at it, then download from there. Downloading a PDF
-                unseen is how the wrong year reaches an atasan. */}
-            <button
-              type="button"
-              onClick={onPreviewPdf}
-              disabled={disabled}
-              className="rounded border border-rule px-4 py-2 text-base disabled:opacity-40"
-            >
-              {t.previewPdf}
-            </button>
-            <button
-              type="button"
-              onClick={onPrint}
-              disabled={disabled}
-              className="rounded border border-rule px-4 py-2 text-base disabled:opacity-40"
-            >
-              {t.printPdf}
-            </button>
-          </div>
-          {/* Beside the buttons, not hidden behind them. */}
-          <p className="text-sm text-ink-muted">{t.pdfApproximate}</p>
-          {/*
-           * And the way to get the other thing.
-           *
-           * "The DOCX is authoritative" is true and, on its own, unhelpful to
-           * somebody whose office wants a PDF. The exact PDF exists — it is
-           * the DOCX opened in Word and saved — and saying so is more use than
-           * repeating that this one is approximate.
-           */}
-          <p className="text-sm text-ink-muted">{t.pdfExact}</p>
-        </div>
+        <button
+          type="button"
+          onClick={onPreviewPdf}
+          disabled={disabled}
+          className="rounded border border-typed bg-typed px-6 py-2 text-base font-medium text-white disabled:opacity-40"
+        >
+          {t.previewPdf}
+        </button>
 
-        {/* The citation line: small, monospace, where the claim is made. */}
-        <p className="ml-auto max-w-[30ch] font-mono text-sm text-ink-muted">
-          {t.docxAuthoritative}
-        </p>
+        {/* Printing is neither outcome — it is the browser's own path to
+            paper, and it stays quieter than the two files. */}
+        <button
+          type="button"
+          onClick={onPrint}
+          disabled={disabled}
+          className="rounded border border-rule px-4 py-2 text-base disabled:opacity-40"
+        >
+          {t.printPdf}
+        </button>
       </div>
+
+      {/*
+       * The difference, stated between the two rather than hung off one of
+       * them. With equal buttons there is no hierarchy left to imply it, so
+       * the words have to carry it — and the second line is the one somebody
+       * whose office wants an exact PDF actually needs.
+       */}
+      <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1">
+        <p className="max-w-[58ch] text-sm text-ink-muted">{t.pdfApproximate}</p>
+        <p className="max-w-[58ch] text-sm text-ink-muted">{t.pdfExact}</p>
+      </div>
+
+      {/* The citation line: small, monospace, where the claim is made. */}
+      <p className="mt-1 max-w-[72ch] font-mono text-sm text-ink-muted">
+        {t.docxAuthoritative}
+      </p>
     </section>
   )
 }
